@@ -38,10 +38,10 @@ class PDPGenerator:
         self.report_dict = {
             'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
             'report_type': "Polling District Profile / Profil de Section de Vote",
-            'rep_order': f"Representation order of {self.row1['RDSTRBTN_YEAR']} / Décret de représentation de {self.row1['RDSTRBTN_YEAR']}",
-            'ed_namee': self.row1["ED_NAMEE"],
-            'ed_namef': self.row1["ED_NAMEF"],
-            'prov': self.row1['PRVNC_NAMEE']
+            'rep_order': f"Representation order of {self.row1['RDSTRBTN_YEAR'].to_list()[0]} / Décret de représentation de {self.row1['RDSTRBTN_YEAR'].to_list()[0]}",
+            'ed_namee': self.row1["ED_NAMEE"].to_list()[0],
+            'ed_namef': self.row1["ED_NAMEF"].to_list()[0],
+            'prov': self.row1['PRVNC_NAMEE'].to_list()[0]
         }
 
         self.logger.info("Creating Report PDF")
