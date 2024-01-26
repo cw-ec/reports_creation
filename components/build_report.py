@@ -32,6 +32,13 @@ class BuildReport:
                     add_tag_text(soup, tag_type='h1', tag_id=k, new_tag_text=self.header_dict[k], )
 
             self.logger.info("Adding table(s) to html")
+            old_tt = soup.find("table", attrs={'id': 'table1'})
+            new_tt = soup.new_tag(self.in_data.to_html(), attrs={'id': 'table1'})
+            old_tt.replace_with(new_tt)
+        with open(".\\templates\working\pdp.html") as outhtml:
+            outhtml.write(str(soup))
+
+
 
 
 
