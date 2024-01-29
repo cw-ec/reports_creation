@@ -3,6 +3,7 @@ import sys
 import os
 import pandas as pd
 from datetime import datetime
+from pathlib import Path
 
 
 def logging_setup(log_dir=".\\") -> logging.getLogger():
@@ -43,3 +44,19 @@ def to_dataframe(to_import: str, sheet=0, encoding='UTF-8') -> pd.DataFrame:
         return pd.read_excel(to_import, sheet_name=sheet)
     else:
         raise Exception(f"File Extension: {f_type} not yet handled by this function")
+
+def csv_to_tbl(in_csv, out_tbl_nme, out_gdb):
+    """Takes input csv and exports it as a table in the given gdb. checks if gdb exists create if it doesn't """
+
+    import arcpy
+    if not arcpy.Exists(out_gdb):
+        gdb_path = os.path.split(out_gdb)[0]
+        gdb_name = os.path.split(out_gdb)[-1].split('.')[0]
+        arcpy.CreateFileGDB_management(gdb_path, gdb_name)
+    arcpy.ExportTable_conversion(in_csv, os.path.join(out_gdb, out_tbl_nme))
+
+def check_dir(in_path):
+    """Checks to see if a input directory exists and if it doesn't create it"""
+
+    Path(in_path).mkdir(parents=True, exist_ok=True)
+

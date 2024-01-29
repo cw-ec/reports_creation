@@ -3,8 +3,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from commons import logging_setup
 import sys, os
 import PyPDF2
-
-
+from .commons import logging_setup
 class BuildReport:
     """Builds the report pdf with a header and footer"""
 
