@@ -21,12 +21,12 @@ class PDPGenerator:
         #Export the table and check to ensure that the required directories exist
         out_csv_path = os.path.join(".\\scratch\\", f"{self.header_dict['ed_code']}_pdp.csv")
         check_dir(".\\scratch\\")
-        out_df[['PD_NO_CONCAT', 'POLL_NAME', 'ELECTORS_LISTED', 'VOID_IND']].to_csv(out_csv_path)
-        csv_to_tbl(out_csv_path, f"pdp_{self.header_dict['ed_code']}", ".\\scratch\\scratch.gdb")
-        return os.path.join(".\\scratch\\scratch.gdb", f"pdp_{self.header_dict['ed_code']}")
+        out_df[['PD_NO_CONCAT', 'POLL_NAME', 'ELECTORS_LISTED', 'VOID_IND', 'RDSTRBTN_YEAR', "ED_NAMEE", "ED_NAMEF", 'ED_CODE', 'PRVNC_NAMEE']].to_csv(out_csv_path)
+        csv_to_tbl(out_csv_path, f"pdp_{self.header_dict['ed_code']}", os.path.join(self.out_path, "scratch.gdb"))
+        return os.path.join(os.path.join(self.out_path, "scratch.gdb"), f"pdp_{self.header_dict['ed_code']}")
 
 
-    def gen_report(self):
+    def gen_report(self) -> None:
         """Generates the report from the template using the esri reports function"""
         self.logger.info("Opening report template")
         self.template_aprx = arcpy.mp.ArcGISProject(r"C:\reports_creation\templates\blanks\blank.aprx")
@@ -36,19 +36,19 @@ class PDPGenerator:
 
         self.logger.info("Adding report data to map")
         m = self.template_aprx.listMaps()[0]
-
-        addtab = arcpy.mp.Table(r"C:\reports_creation\scratch\scratch.gdb\pdp_48001")
+        addtab = arcpy.mp.Table(self.cleaned_tbl)
         m.addTable(addtab)
-        # l = m.listTables()[0] # find the table we just added to the map
+        l = m.listTables()[0] # find the table we just added to the map
 
         r =  self.template_aprx.listReports()[0]
 
         self.logger.info("Adding report data to report")
         r.name = self.header_dict['ed_namee']
-        r.setReferenceDataSource(addtab)
+        r.setReferenceDataSource(l)
 
         check_dir("\\data")
         self.logger.info("Exporting Report to PDf")
+        check_dir(".\\data\\outputs")
         r.exportToPDF(os.path.join(".\\data\\outputs", f"{self.header_dict['ed_code']}_pdp.pdf"))
 
 

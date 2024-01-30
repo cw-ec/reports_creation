@@ -56,7 +56,7 @@ def csv_to_tbl(in_csv, out_tbl_nme, out_gdb):
     arcpy.ExportTable_conversion(in_csv, os.path.join(out_gdb, out_tbl_nme))
 
 def check_dir(in_path):
-    """Checks to see if a input directory exists and if it doesn't create it"""
-
-    Path(in_path).mkdir(parents=True, exist_ok=True)
+    """Checks to see if the input directory exists and if it doesn't create it"""
+    if not os.path.isdir(in_path):
+        Path(in_path).mkdir(parents=True, exist_ok=True)
 
