@@ -5,6 +5,9 @@ import pandas as pd
 from datetime import datetime
 from pathlib import Path
 
+"""
+A file for functions and classes that are used between files. File specific versions are in the file they are used.
+"""
 
 def logging_setup(log_dir=".\\") -> logging.getLogger():
     """Sets up logging takes one parameter to set a directory for the output log file"""
@@ -59,4 +62,3 @@ def check_dir(in_path):
     """Checks to see if the input directory exists and if it doesn't create it"""
     if not os.path.isdir(in_path):
         Path(in_path).mkdir(parents=True, exist_ok=True)
-

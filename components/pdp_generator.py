@@ -32,7 +32,7 @@ class PDPGenerator:
         self.template_aprx = arcpy.mp.ArcGISProject(r"C:\reports_creation\templates\blanks\blank.aprx")
 
         self.logger.info("Importing Report template")
-        self.template_aprx.importDocument(".\\templates\\Report1.rptx")
+        self.template_aprx.importDocument(".\\templates\\Report2.rptx")
 
         self.logger.info("Adding report data to map")
         m = self.template_aprx.listMaps()[0]
@@ -43,7 +43,15 @@ class PDPGenerator:
         r =  self.template_aprx.listReports()[0]
 
         self.logger.info("Adding report data to report")
-        r.name = self.header_dict['ed_namee']
+        r.name = f"""
+{self.header_dict['dept_nme']}
+{self.header_dict['report_type']}
+{self.header_dict['rep_order']}
+{self.header_dict['ed_namee']}
+{self.header_dict['prov']}
+{self.header_dict['ed_code']}
+        
+        """
         r.setReferenceDataSource(l)
 
         check_dir("\\data")
