@@ -12,9 +12,8 @@ Suite of report creation tools. The following reports can be created using this 
 
 ## Requirements
 
-This project will require the installation of ArcGIS Pro as access to the default ArcGIS Pro python environment as well 
-as arcpy are required to run the projects workflows. Ensure that you have a valid licence associated with your 
-installation of Arcgis Pro before running any of tools in this repository.
+This project will require the installation python 3.9 or newer. Package requirements can be found in the requirements.txt
+and can be installed using pip or the package manager of your choice. 
 
 ## Usage 
 
