@@ -79,4 +79,5 @@ class PDPGenerator:
 
 
 if __name__ == "__main__":
-    PDPGenerator(data=r"C:\reports_creation\data\47001_nums.csv", out_path=r"C:\reports_creation\data\outputs")
+    PDPGenerator(data=r"C:\reports_creation\data\47001_nums.csv",
+                 out_path=r"C:\reports_creation\data\outputs",)
