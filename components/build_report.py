@@ -1,10 +1,11 @@
 import datetime
 
+import pandas as pd
+
 from .commons import logging_setup
 from io import BytesIO
 import sys, os
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Frame, PageTemplate, PageBreak, NextPageTemplate
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 from reportlab.lib.units import cm, mm, inch
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib import colors
@@ -12,9 +13,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib import pagesizes
 from reportlab.pdfgen import canvas
-from functools import partial
+
 registerFont(TTFont('Times','TIMES.ttf'))
 
 class NumberedCanvas(canvas.Canvas):
@@ -35,15 +35,15 @@ class NumberedCanvas(canvas.Canvas):
         num_pages = len(self._saved_page_states)
         for state in self._saved_page_states:
             self.__dict__.update(state)
-            self.setFont('Times', 8)
+            self.setFont('Helvetica', 9)
             self.draw_page_number(num_pages)
             self.Canvas.showPage(self)
         self.Canvas.save(self)
 
     def draw_page_number(self, page_count):
         # Change the position of this to wherever you want the page number to be
-        self.drawRightString(200 * mm, 5 * mm + (0.2 * inch),
-                             "Page %d of %d" % (self._pageNumber, page_count))
+        self.drawRightString(200 * mm, 0 * mm + (0.2 * inch),
+                             "Page %d of / de %d" % (self._pageNumber, page_count))
 
 
 class BuildReport:
@@ -58,88 +58,130 @@ class BuildReport:
                 ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
                 ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
                 ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-                ('FONT', (0, 0), (-1, 0), 'Times-Bold'),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
-                ('TEXTCOLOR', (0, 0), (1, -1), colors.black)]
+                ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+            ]
 
             lista = [self.data_df.columns[:, ].values.astype(str).tolist()] + self.data_df.values.tolist()
-            table = Table(lista, style=ts)
+            tbl = Table(lista, style=ts, repeatRows=1)
 
+            return tbl
+
+        def add_summary_box() -> Table:
+            """Adds the summary stats box at the bottom of the main table.
+            For a PDP this consists of: Total de sections de votes actives / Total of Active Polling Divisions,Nombre moyen d'électeurs par section de vote ordinaire /
+            Average Number of Electors per Ordinary Polling Division"""
+
+            # Table Style Setup
+            ts = [
+                ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
+                ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
+                ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
+                ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+            ]
+
+            # Calc Stats
+            total_active_pd = len(self.data_df[self.data_df['VOID_IND']=='N'])
+            total_electors = self.data_df['ELECTORS_LISTED'].sum()
+            avg_ele_per_pd = int(self.data_df.loc[:, 'ELECTORS_LISTED'].mean())
+            total_void = len(self.data_df[self.data_df['VOID_IND'] !='N'])
+
+            # Setup Stats DF
+            cols = ['Statistics', '']
+            stats = [(Paragraph('Total de sections de votes actives / Total of Active Polling Divisions', self.styles['BodyText']), total_active_pd),
+                     (Paragraph('Total Number of Electors', self.styles['BodyText']), total_electors),
+                     (Paragraph("Nombre moyen d'électeurs par section de vote ordinaire /Average Number of Electors per Ordinary Polling Division", self.styles['BodyText']), avg_ele_per_pd),
+                     (Paragraph("Total Void Polling Divisions", self.styles['BodyText']), total_void)]
+
+            # Convert the df to a table and export
+            stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
+            listb = [stats_df.columns[:, ].values.astype(str).tolist()] + stats_df.values.tolist()
+
+            table = Table(listb, style=ts, colWidths=[210,210])
             return table
 
+
         def _header_footer(canvas, doc):
-            # Save the state of our canvas so we can draw on it
+            # Save the state of our canvas, so we can draw on it
             canvas.saveState()
-            styles = getSampleStyleSheet()
 
             # Header
-            header = Paragraph(self.header_text, styles['Normal'])
+            header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
             w, h = header.wrap(doc.width, doc.topMargin)
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
 
             # Footer
-            footer = Paragraph(f"Printed on / Imprimé le: {datetime.date.today()}", styles['Normal'])
+            footer = Paragraph(f"Printed on / Imprimé le: {datetime.date.today()}", self.styles['Normal'])
             w, h = footer.wrap(doc.width, doc.bottomMargin)
             footer.drawOn(canvas, doc.leftMargin, h)
 
             # Release the canvas
             canvas.restoreState()
 
-        def main_pages():
-            """ Main page consists of header, table and footer with page counts"""
+        # Setup basic styles
 
-            elements = []
-            styles = getSampleStyleSheet()
-            styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER))
+        self.styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER))
+        # Header style changes
 
-            #header_content = Paragraph(self.header_text)
-            #footer_content = Paragraph(f"Printed on / Imprimé le: {datetime.date.today()}")
+        header_style = ParagraphStyle('header',
+                                      fontName="Helvetica",
+                                      fontSize=12,
+                                      parent=self.styles['Heading2'],
+                                      alignment=1,
+                                      spaceAfter=14)
+        self.styles.add(header_style)
 
-            #template = PageTemplate(id='test', frames=frame, onPage=partial(_header_footer, header_content=header_content, footer_content=footer_content))
-            #self.pdf.addPageTemplates([template])
+        # Create report elements
+        # elements = [add_summary_box()]
+        elements = [add_report_table(), Spacer(0 * cm, 2 * cm), add_summary_box()]
 
-            elements = [add_report_table()]
+        # Build the document from the elements we have
+        self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer,  canvasmaker=NumberedCanvas)
 
-            self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer,  canvasmaker=NumberedCanvas)
-            #self.pdf.append(PageBreak())
-
-        main_pages()
-
-        def last_page():
-            """Last page consists of header table and footer as well as totals table"""
-
-
-
-    def __init__(self, doctype, in_dict, data_df, buffer=BytesIO(), pagesize='Letter', orientation='Portrait'):
+    def __init__(self, doctype, in_dict, data_df, out_dir, pagesize='Letter', orientation='Portrait'):
         self.logger = logging_setup()
+
+        # Parameters sets from inputs
         self.doctype = doctype
         self.in_dict = in_dict
+        self.out_dir = out_dir
         self.data_df = data_df
-        self.buffer = buffer
         self.pagesize = pagesize
         self.orientation = orientation
 
+        # Setup other parameters
         if pagesize == 'Letter':
             self.pagesize = letter
         self.width, self.height = self.pagesize
+        self.font = 'Helvetica'
+        self.styles = getSampleStyleSheet()
 
-        self.header_text = f"""
-{self.in_dict['dept_nme']}
+        # This is like this because we need to newline characters for the header to work properly
+        self.header_text = f"""{self.in_dict['dept_nme']}
 {self.in_dict['report_type']}
 {self.in_dict['rep_order']}
-{self.in_dict['rep_order']}
-{self.in_dict['ed_namee']}/{self.in_dict['ed_namef']} 
+{self.in_dict['prov']}
+{self.in_dict['ed_namee']}/{self.in_dict['ed_namef']}
+{self.in_dict['ed_code']} 
 """
-
-        self.pdf = SimpleDocTemplate(f"test.pdf",
+        # Setup document
+        # If things are overlapping the header / footer change the margins below
+        self.logger.info("Creating PDP document")
+        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"test.pdf"),
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
                             rightMargin=2.2 * cm,
-                            topMargin=4 * cm,
+                            topMargin=7 * cm,
                             bottomMargin=2.5 * cm
         )
-
+        self.logger.info("Creating document tables")
+        # Creates the document for the report and exports
         self.pdp_report_pages()
 
