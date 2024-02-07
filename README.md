@@ -17,6 +17,8 @@ and can be installed using pip or the package manager of your choice.
 
 ## Usage 
 
-TBA
+In order to run the reports generation tool you will need to create a workflow. Example workflows can be found in the 
+workflows directory at the root of this repository. Each workflow is a JSON file and contains the specific information
+needed to direct the script in the creation of the desired reports.
 
-## 
+## More to come

@@ -1,8 +1,6 @@
 import datetime
-
 import pandas as pd
-
-from .commons import logging_setup
+from components.commons import logging_setup
 from io import BytesIO
 import sys, os
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
@@ -13,43 +11,14 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.pdfgen import canvas
+from .common_builds import NumberedCanvas
 
 registerFont(TTFont('Times','TIMES.ttf'))
 
-class NumberedCanvas(canvas.Canvas):
-    """ Adds page numbers to the canvas.
-    Numbered Canvas from: https://gist.github.com/nenodias/8c54500eb27884935d05b3ed3b0dd793
-    """
-    def __init__(self, *args, **kwargs):
-        canvas.Canvas.__init__(self, *args, **kwargs)
-        self.Canvas = canvas.Canvas
-        self._saved_page_states = []
-
-    def showPage(self):
-        self._saved_page_states.append(dict(self.__dict__))
-        self._startPage()
-
-    def save(self):
-        """add page info to each page (page x of y)"""
-        num_pages = len(self._saved_page_states)
-        for state in self._saved_page_states:
-            self.__dict__.update(state)
-            self.setFont('Helvetica', 9)
-            self.draw_page_number(num_pages)
-            self.Canvas.showPage(self)
-        self.Canvas.save(self)
-
-    def draw_page_number(self, page_count):
-        # Change the position of this to wherever you want the page number to be
-        self.drawRightString(200 * mm, 0 * mm + (0.2 * inch),
-                             "Page %d of / de %d" % (self._pageNumber, page_count))
-
-
-class BuildReport:
+class BuildAPDReport:
     """Builds the report pdf with a header and footer"""
 
-    def pdp_report_pages(self):
+    def apd_report_pages(self):
         """Setups the template for the pdp report"""
 
         def add_report_table() -> Table:
@@ -65,8 +34,16 @@ class BuildReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
-            lista = [self.data_df.columns[:, ].values.astype(str).tolist()] + self.data_df.values.tolist()
-            tbl = Table(lista, style=ts, repeatRows=1)
+            self.data_df['PD_LIST'] = self.data_df['PD_LIST'].apply(lambda x: Paragraph(x, style=self.styles['BodyText']))
+
+            # Prep data for table conversion
+            data_summary = [["NO. / Nº", "NAME / NOM", "POLLING DIVISIONS / SECTIONS DE VOTE", "TOTAL / TOTAL"]] + self.data_df.values.tolist()
+
+            # config the widths and heights of this specific table
+            # colwidths_2 = [175] * len(data_summary)
+            # rowheights_2 = [20] * len(data_summary)
+
+            tbl = Table(data_summary, style=ts, repeatRows=1,)# colWidths=colwidths_2, rowHeights=rowheights_2)
 
             return tbl
 
@@ -88,23 +65,19 @@ class BuildReport:
             ]
 
             # Calc Stats
-            total_active_pd = len(self.data_df[self.data_df['VOID_IND']=='N'])
-            total_electors = self.data_df['ELECTORS_LISTED'].sum()
-            avg_ele_per_pd = int(self.data_df.loc[:, 'ELECTORS_LISTED'].mean())
-            total_void = len(self.data_df[self.data_df['VOID_IND'] !='N'])
+            total_apd = len(self.data_df)
 
             # Setup Stats DF
             cols = ['Statistics', '']
-            stats = [(Paragraph('Total de sections de votes actives / Total of Active Polling Divisions', self.styles['BodyText']), total_active_pd),
-                     (Paragraph('Total Number of Electors', self.styles['BodyText']), total_electors),
-                     (Paragraph("Nombre moyen d'électeurs par section de vote ordinaire /Average Number of Electors per Ordinary Polling Division", self.styles['BodyText']), avg_ele_per_pd),
-                     (Paragraph("Total Void Polling Divisions", self.styles['BodyText']), total_void)]
+            stats = [(Paragraph('Total number of advanced polling districts /Nombre total de districts de vote par anticipation', self.styles['BodyText']),
+                      total_apd),
+                     ]
 
             # Convert the df to a table and export
             stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
             listb = [stats_df.columns[:, ].values.astype(str).tolist()] + stats_df.values.tolist()
 
-            table = Table(listb, style=ts, colWidths=[210,210])
+            table = Table(listb, style=ts, colWidths=[245,245])
             return table
 
 
@@ -145,11 +118,10 @@ class BuildReport:
         # Build the document from the elements we have
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer,  canvasmaker=NumberedCanvas)
 
-    def __init__(self, doctype, in_dict, data_df, out_dir, pagesize='Letter', orientation='Portrait'):
+    def __init__(self, in_dict, data_df, out_dir, pagesize='Letter', orientation='Portrait'):
         self.logger = logging_setup()
 
         # Parameters sets from inputs
-        self.doctype = doctype
         self.in_dict = in_dict
         self.out_dir = out_dir
         self.data_df = data_df
@@ -168,13 +140,13 @@ class BuildReport:
 {self.in_dict['report_type']}
 {self.in_dict['rep_order']}
 {self.in_dict['prov']}
-{self.in_dict['ed_namee']}/{self.in_dict['ed_namef']}
+{self.in_dict['ed_name']}
 {self.in_dict['ed_code']} 
 """
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.logger.info("Creating PDP document")
-        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"test.pdf"),
+        self.logger.info("Creating APD document")
+        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"ADVANC_{self.in_dict['ed_code']}.pdf"),
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
                             rightMargin=2.2 * cm,
@@ -183,5 +155,4 @@ class BuildReport:
         )
         self.logger.info("Creating document tables")
         # Creates the document for the report and exports
-        self.pdp_report_pages()
-
+        self.apd_report_pages()
