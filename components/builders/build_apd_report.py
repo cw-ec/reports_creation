@@ -1,8 +1,7 @@
 import datetime
 import pandas as pd
 from components.commons import logging_setup
-from io import BytesIO
-import sys, os
+import os
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 from reportlab.lib.units import cm, mm, inch
 from reportlab.lib.enums import TA_CENTER
@@ -12,38 +11,46 @@ from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from .common_builds import NumberedCanvas
+from .report_parameters import APDSettings
 
-registerFont(TTFont('Times','TIMES.ttf'))
 
 class BuildAPDReport:
-    """Builds the report pdf with a header and footer"""
+    """Builds the report pdf using the input data"""
 
     def apd_report_pages(self):
         """Setups the template for the pdp report"""
 
         def add_report_table() -> Table:
             """Sets the table"""
+
+            # Defines the table style
             ts = [
                 ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
                 ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
                 ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
-                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONT', (0, 0), (-1, 0), f"{self.font}-Bold"),
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
+            # Convert the strings in the PD_LIST field into Paragraph objects to allow us to apply styling (esp word wrap)
             self.data_df['PD_LIST'] = self.data_df['PD_LIST'].apply(lambda x: Paragraph(x, style=self.styles['BodyText']))
 
+            data_list = []
+            for h in self.settings_dict['table_header']:
+                data_list.append(Paragraph(h,style=self.styles['BodyText']))
+
             # Prep data for table conversion
-            data_summary = [["NO. / Nº", "NAME / NOM", "POLLING DIVISIONS / SECTIONS DE VOTE", "TOTAL / TOTAL"]] + self.data_df.values.tolist()
+            data_summary = [data_list] + self.data_df.values.tolist()
 
+            # COMMENTED OUT UNLESS WE WANT TO APPLY SPECIFIC SIZING TO THE OUTPUT TABLE
             # config the widths and heights of this specific table
-            # colwidths_2 = [175] * len(data_summary)
-            # rowheights_2 = [20] * len(data_summary)
+            colwidths_2 = [120] * len(data_summary)
+            #rowheights_2 = [50] * len(data_summary)
 
-            tbl = Table(data_summary, style=ts, repeatRows=1,)# colWidths=colwidths_2, rowHeights=rowheights_2)
+            tbl = Table(data_summary, style=ts, repeatRows=1, colWidths=colwidths_2) #rowHeights=rowheights_2)
 
             return tbl
 
@@ -58,18 +65,18 @@ class BuildAPDReport:
                 ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
                 ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
-                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONT', (0, 0), (-1, 0), f"{self.font}-Bold"),
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
-            # Calc Stats
+            # Calculate Summary Statistics
             total_apd = len(self.data_df)
 
             # Setup Stats DF
-            cols = ['Statistics', '']
-            stats = [(Paragraph('Total number of advanced polling districts /Nombre total de districts de vote par anticipation', self.styles['BodyText']),
+            cols = [f"{self.settings_dict['ss_table_header']}", '']
+            stats = [(Paragraph(self.settings_dict['ss_total_apd'], self.styles['BodyText']),
                       total_apd),
                      ]
 
@@ -91,7 +98,7 @@ class BuildAPDReport:
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
 
             # Footer
-            footer = Paragraph(f"Printed on / Imprimé le: {datetime.date.today()}", self.styles['Normal'])
+            footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
             w, h = footer.wrap(doc.width, doc.bottomMargin)
             footer.drawOn(canvas, doc.leftMargin, h)
 
@@ -104,7 +111,7 @@ class BuildAPDReport:
         # Header style changes
 
         header_style = ParagraphStyle('header',
-                                      fontName="Helvetica",
+                                      fontName=f"{self.font}",
                                       fontSize=12,
                                       parent=self.styles['Heading2'],
                                       alignment=1,
@@ -116,7 +123,7 @@ class BuildAPDReport:
         elements = [add_report_table(), Spacer(0 * cm, 2 * cm), add_summary_box()]
 
         # Build the document from the elements we have
-        self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer,  canvasmaker=NumberedCanvas)
+        self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
 
     def __init__(self, in_dict, data_df, out_dir, pagesize='Letter', orientation='Portrait'):
         self.logger = logging_setup()
@@ -134,11 +141,13 @@ class BuildAPDReport:
         self.width, self.height = self.pagesize
         self.font = 'Helvetica'
         self.styles = getSampleStyleSheet()
+        # Import special e/f headings and title parameters based on location
+        self.settings_dict = APDSettings(self.in_dict['ed_code']).settings_dict
 
         # This is like this because we need to newline characters for the header to work properly
-        self.header_text = f"""{self.in_dict['dept_nme']}
-{self.in_dict['report_type']}
-{self.in_dict['rep_order']}
+        self.header_text = f"""{self.settings_dict['header']['dept_nme']}
+{self.settings_dict['header']['report_type']}
+{self.settings_dict['header']['rep_order']}
 {self.in_dict['prov']}
 {self.in_dict['ed_name']}
 {self.in_dict['ed_code']} 

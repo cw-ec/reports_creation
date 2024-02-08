@@ -37,9 +37,6 @@ class PDPGenerator:
         # Set a bunch of things for the report from the first line of the data and create a dict to hold them
         self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
         self.report_dict = {
-            'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
-            'report_type': "Polling District Profile / Profil de Section de Vote",
-            'rep_order': f"Representation order of {self.row1['RDSTRBTN_YEAR'].to_list()[0]} / Décret de représentation de {self.row1['RDSTRBTN_YEAR'].to_list()[0]}",
             'ed_name': self.row1["ED_NAME_BIL"].to_list()[0],
             'ed_code': self.row1['ED_CODE'].to_list()[0],
             'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]

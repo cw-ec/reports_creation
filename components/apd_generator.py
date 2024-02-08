@@ -23,6 +23,9 @@ class APDGenerator:
         # Join the tables together so that ADV_PD_NBR and ADV POLL name are with the list of pds
         out_df = out_df[["ADV_PD_NBR", "ADV_POLL_NAME_FIXED"]].drop_duplicates(subset='ADV_PD_NBR', keep='first').join(grouped, on="ADV_PD_NBR")
 
+        # Drop NAN rows if any
+        out_df = out_df[~out_df['ADV_PD_NBR'].isnull()]
+
         out_df['TOTAL'] = out_df['PD_LIST'].apply(lambda x: len(x) if isinstance(x, list) else 0 ) # Create a field that gives us how many pds are in the apd
         out_df['PD_LIST'] = out_df['PD_LIST'].apply(lambda  x: ', '.join(x) if isinstance(x,list) else '')  # Convert from list to string (list breaks reportlab)
 

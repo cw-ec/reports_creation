@@ -3,17 +3,15 @@ import datetime
 import pandas as pd
 
 from components.commons import logging_setup
-from io import BytesIO
-import sys, os
+import os
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
-from reportlab.lib.units import cm, mm, inch
+from reportlab.lib.units import cm
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfbase.pdfmetrics import registerFont
-from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from .common_builds import *
+from .report_parameters import PDPSettings
 
 class BuildPDPReport:
     """Builds the report pdf with a header and footer"""
@@ -28,7 +26,7 @@ class BuildPDPReport:
                 ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
                 ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
-                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
@@ -38,7 +36,7 @@ class BuildPDPReport:
             #                                 'POLL_NAME': "NOM / NAME",
             #                                 "ELECTORS_LISTED": "ÉLECTEURS INSCRITS / ELECTORS LISTED",
             #                                 "VOID_IND": "NUL / VOID"})
-            lista = [["Nº / NO.", "NOM / NAME", "ÉLECTEURS INSCRITS / ELECTORS LISTED", "NUL / VOID"]] + self.data_df.values.tolist()
+            lista = [self.settings_dict['table_header']] + self.data_df.values.tolist()
             tbl = Table(lista, style=ts, repeatRows=1)
 
             return tbl
@@ -54,7 +52,7 @@ class BuildPDPReport:
                 ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
                 ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
-                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
@@ -67,11 +65,11 @@ class BuildPDPReport:
             total_void = len(self.data_df[self.data_df['VOID_IND'] !='N'])
 
             # Setup Stats DF
-            cols = ['Statistics', '']
-            stats = [(Paragraph('Total de sections de votes actives / Total of Active Polling Divisions', self.styles['BodyText']), total_active_pd),
-                     (Paragraph('Total Number of Electors', self.styles['BodyText']), total_electors),
-                     (Paragraph("Nombre moyen d'électeurs par section de vote ordinaire /Average Number of Electors per Ordinary Polling Division", self.styles['BodyText']), avg_ele_per_pd),
-                     (Paragraph("Total Void Polling Divisions", self.styles['BodyText']), total_void)]
+            cols = [f"{self.settings_dict['ss_table_header']}", '']
+            stats = [(Paragraph(self.settings_dict['ss_total_apd'], self.styles['BodyText']), total_active_pd),
+                     (Paragraph(self.settings_dict['ss_total_noe'], self.styles['BodyText']), total_electors),
+                     (Paragraph(self.settings_dict['ss_avg_noe_per_apd'], self.styles['BodyText']), avg_ele_per_pd),
+                     (Paragraph(self.settings_dict['ss_total_vpd'], self.styles['BodyText']), total_void)]
 
             # Convert the df to a table and export
             stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
@@ -91,7 +89,7 @@ class BuildPDPReport:
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
 
             # Footer
-            footer = Paragraph(f"Printed on / Imprimé le: {datetime.date.today()}", self.styles['Normal'])
+            footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
             w, h = footer.wrap(doc.width, doc.bottomMargin)
             footer.drawOn(canvas, doc.leftMargin, h)
 
@@ -104,7 +102,7 @@ class BuildPDPReport:
         # Header style changes
 
         header_style = ParagraphStyle('header',
-                                      fontName="Helvetica",
+                                      fontName=self.font,
                                       fontSize=12,
                                       parent=self.styles['Heading2'],
                                       alignment=1,
@@ -112,11 +110,10 @@ class BuildPDPReport:
         self.styles.add(header_style)
 
         # Create report elements
-        # elements = [add_summary_box()]
         elements = [add_report_table(), Spacer(0 * cm, 2 * cm), add_summary_box()]
 
-        # Build the document from the elements we have
-        self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer,  canvasmaker=NumberedCanvas)
+        # Build the document from the elements we have and using the custom canvas with numbers
+        self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
 
     def __init__(self,in_dict, data_df, out_dir, pagesize='Letter', orientation='Portrait'):
         self.logger = logging_setup()
@@ -135,10 +132,14 @@ class BuildPDPReport:
         self.font = 'Helvetica'
         self.styles = getSampleStyleSheet()
 
+        # Import special e/f headings and title parameters based on location
+        self.settings_dict = PDPSettings(self.in_dict['ed_code']).settings_dict
+
+
         # This is like this because we need to newline characters for the header to work properly
-        self.header_text = f"""{self.in_dict['dept_nme']}
-{self.in_dict['report_type']}
-{self.in_dict['rep_order']}
+        self.header_text = f"""{self.settings_dict['header']['dept_nme']}
+{self.settings_dict['header']['report_type']}
+{self.settings_dict['header']['rep_order']}
 {self.in_dict['prov']}
 {self.in_dict['ed_name']}
 {self.in_dict['ed_code']} 
