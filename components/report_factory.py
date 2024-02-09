@@ -28,16 +28,23 @@ class ReportFactory:
         """Processes the order after extraction"""
 
         for k in self.order.keys():
-            self.logger.info(f"Producing Reports: {k}")
-            for r in self.order[k]:
-                self.logger.info(f"Producing {k} Report for: {r}")
-                out_path = os.path.join(self.out_dir, k)
-                create_dir(out_path)
-                if k == 'PDP':
-                    PDPGenerator(self.data_path, out_path, r)
 
-                if k == 'APD':
-                    APDGenerator(self.data_path, out_path, r)
+            # Sets data path from workflow
+            if k == "NUMBERS_DATA":
+                self.data_path = self.order[k]
+
+            else:
+                # Handles all the reports
+                self.logger.info(f"Producing Reports: {k}")
+                for r in self.order[k]:
+                    self.logger.info(f"Producing {k} Report for: {r}")
+                    out_path = os.path.join(self.out_dir, k)
+                    create_dir(out_path)
+                    if k == 'PDP':
+                        PDPGenerator(self.data_path, out_path, r)
+
+                    if k == 'APD':
+                        APDGenerator(self.data_path, out_path, r)
 
 
     def __init__(self, workflow, data_path):

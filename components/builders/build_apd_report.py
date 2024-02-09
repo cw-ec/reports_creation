@@ -1,4 +1,7 @@
+# -*- coding: latin-1 -*-
 import datetime
+import sys
+
 import pandas as pd
 from components.commons import logging_setup
 import os
@@ -10,10 +13,11 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from .common_builds import NumberedCanvas
+from .common_builds import NumberedCanvas, add_em_dash
 from .report_parameters import APDSettings
 
-
+registerFont(TTFont('Arial','ARIAL.ttf'))
+registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 class BuildAPDReport:
     """Builds the report pdf using the input data"""
 
@@ -38,6 +42,10 @@ class BuildAPDReport:
             # Convert the strings in the PD_LIST field into Paragraph objects to allow us to apply styling (esp word wrap)
             self.data_df['PD_LIST'] = self.data_df['PD_LIST'].apply(lambda x: Paragraph(x, style=self.styles['BodyText']))
 
+            # Convert certain types of text to body text to ensure no cell overruns with longer strings
+            self.data_df["ADV_POLL_NAME_FIXED"] = self.data_df["ADV_POLL_NAME_FIXED"].apply(
+                lambda x: Paragraph(x, style=self.styles['BodyText']))
+
             data_list = []
             for h in self.settings_dict['table_header']:
                 data_list.append(Paragraph(h,style=self.styles['BodyText']))
@@ -56,7 +64,7 @@ class BuildAPDReport:
 
         def add_summary_box() -> Table:
             """Adds the summary stats box at the bottom of the main table.
-            For a PDP this consists of: Total de sections de votes actives / Total of Active Polling Divisions,Nombre moyen d'Ã©lecteurs par section de vote ordinaire /
+            For a PDP this consists of: Total de sections de votes actives / Total of Active Polling Divisions,Nombre moyen d'électeurs par section de vote ordinaire /
             Average Number of Electors per Ordinary Polling Division"""
 
             # Table Style Setup
@@ -98,7 +106,7 @@ class BuildAPDReport:
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
 
             # Footer
-            footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
+            footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'], encoding=self.encoding)
             w, h = footer.wrap(doc.width, doc.bottomMargin)
             footer.drawOn(canvas, doc.leftMargin, h)
 
@@ -139,9 +147,11 @@ class BuildAPDReport:
         if pagesize == 'Letter':
             self.pagesize = letter
         self.width, self.height = self.pagesize
-        self.font = 'Helvetica'
+        self.font = 'Arial'
+        self.encoding = 'LATIN-1'
         self.styles = getSampleStyleSheet()
-        # Import special e/f headings and title parameters based on location
+
+        # Import e/f text objects based on report location
         self.settings_dict = APDSettings(self.in_dict['ed_code']).settings_dict
 
         # This is like this because we need to newline characters for the header to work properly

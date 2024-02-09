@@ -17,7 +17,6 @@ class PDPGenerator:
 
         out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
         out_df["VOID_IND"] = 'N' # This field is missing in most recent version of the data placeholder until fixed
-
         return out_df[['PD_NO_CONCAT', 'POLL_NAME_FIXED', 'ELECTORS_LISTED', 'VOID_IND']]
 
 
@@ -41,7 +40,7 @@ class PDPGenerator:
             'ed_code': self.row1['ED_CODE'].to_list()[0],
             'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
         }
-
+        
         self.logger.info("Creating Report PDF")
         self.template = BuildPDPReport(self.report_dict, self.report_df, out_dir=self.out_path)
 

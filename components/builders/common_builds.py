@@ -1,5 +1,6 @@
 from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
+import sys
 
 
 class NumberedCanvas(canvas.Canvas):
@@ -29,3 +30,11 @@ class NumberedCanvas(canvas.Canvas):
         # Change the position of this to wherever you want the page number to be
         self.drawRightString(200 * mm, 0 * mm + (0.2 * inch),
                              f"Page {self._pageNumber} / {page_count}")
+
+def add_em_dash(text):
+    """Adds em dashes to text"""
+    if u'\u0097' in text:
+        print(text)
+        sys.exit()
+        # Replace hyphens with em dashes
+        return text.replace(u"\u0097", u"\u2014")

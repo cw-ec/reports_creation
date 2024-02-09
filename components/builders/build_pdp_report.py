@@ -1,17 +1,21 @@
+# -*- coding: latin-1 -*-
 import datetime
-
 import pandas as pd
-
 from components.commons import logging_setup
 import os
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 from reportlab.lib.units import cm
+from reportlab.pdfbase.pdfmetrics import registerFont
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from .common_builds import *
 from .report_parameters import PDPSettings
+
+registerFont(TTFont('Arial','ARIAL.ttf'))
+registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 
 class BuildPDPReport:
     """Builds the report pdf with a header and footer"""
@@ -31,20 +35,18 @@ class BuildPDPReport:
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
+            # COMMENTED OUT UNLESS WE WANT TO APPLY SPECIFIC SIZING TO THE OUTPUT TABLE
+            # config the widths and heights of this specific table
+            colwidths_2 = [120] * len(self.settings_dict['table_header'])
+            # rowheights_2 = [50] * len(self.settings_dict['table_header'])
 
-            # display_df = self.data_df.rename({'PD_NO_CONCAT': "Nº / NO.",
-            #                                 'POLL_NAME': "NOM / NAME",
-            #                                 "ELECTORS_LISTED": "ÉLECTEURS INSCRITS / ELECTORS LISTED",
-            #                                 "VOID_IND": "NUL / VOID"})
             lista = [self.settings_dict['table_header']] + self.data_df.values.tolist()
-            tbl = Table(lista, style=ts, repeatRows=1)
+            tbl = Table(lista, style=ts, repeatRows=1, colWidths=colwidths_2)
 
             return tbl
 
         def add_summary_box() -> Table:
-            """Adds the summary stats box at the bottom of the main table.
-            For a PDP this consists of: Total de sections de votes actives / Total of Active Polling Divisions,Nombre moyen d'électeurs par section de vote ordinaire /
-            Average Number of Electors per Ordinary Polling Division"""
+            """Adds the summary stats box at the bottom of the main table."""
 
             # Table Style Setup
             ts = [
@@ -57,6 +59,9 @@ class BuildPDPReport:
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
+
+            self.data_df["POLL_NAME_FIXED"] = self.data_df["POLL_NAME_FIXED"].apply(
+                lambda x: Paragraph(x, style=self.styles['BodyText']))
 
             # Calc Stats
             total_active_pd = len(self.data_df[self.data_df['VOID_IND']=='N'])
@@ -129,7 +134,7 @@ class BuildPDPReport:
         if pagesize == 'Letter':
             self.pagesize = letter
         self.width, self.height = self.pagesize
-        self.font = 'Helvetica'
+        self.font = 'Arial'
         self.styles = getSampleStyleSheet()
 
         # Import special e/f headings and title parameters based on location
