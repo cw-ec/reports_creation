@@ -130,20 +130,37 @@ class PDDSettings:
                     'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
 
         # Headers for main table
-        f_table_header = ["Nº / NO.", "NOM / NAME", "SECTIONS DE VOTE / LISTED POLLING", "NUL / VOID"]
-        e_table_header = ["NO. / Nº", "NAME / NOM", "POLLING DIVISIONS / SECTIONS DE VOTE", "VOID / NUL"]
+        e_table_header_range = ["STREET NAME / NOM DE RUE", "FROM / DE", "TO / À", "FROM / DE", "TO / À", "SIDE / CÔTÉ"]
+        f_table_header_range = ["NOM DE RUE / STREET NAME", "DE / FROM", "À / TO", "DE / FROM", "À / TO", "CÔTÉ / SIDE"]
+
+        e_table_header_ind = ["INSTITUTION / ÉTABLISSEMENT", "ADDRESS / ADRESSE", "ELECTORS_LISTED / ÉLECTEURS INSCRITS"]
+        f_table_header_ind = ["ÉTABLISSEMENT / INSTITUTION", "ADRESSE / ADDRESS", "ÉLECTEURS INSCRITS / ELECTORS_LISTED"]
+
+        e_table_title = "Polling Division / Section de Vote"
+        f_table_title = "Section de Vote / Polling Division"
+
+        e_table_note = "NOTE: COMPRISES THE ENTIRE TERRITORY DELINEATED ON THE MAP. / COMPREND TOUT LE TERRITOIRE TEL QUE DÉLIMITÉ SUR LA CARTE."
+        f_table_note = "NOTE: COMPREND TOUT LE TERRITOIRE TEL QUE DÉLIMITÉ SUR LA CARTE. / COMPRISES THE ENTIRE TERRITORY DELINEATED ON THE MAP."
 
         # Footer Text
         e_footer_text = "Printed on / Imprimé le"
         f_footer_text = "Imprimé le / Printed on"
 
+
+
         # Create a dictionary of english first parameters to allow for easy access
         self.e_params_dict = {"header": e_header,
-                              "table_header": e_table_header,
+                              "table_title": e_table_title,
+                              "table_header_range": e_table_header_range,
+                              "table_header_ind": e_table_header_ind,
+                              "table_note": e_table_note,
                               "footer_text": e_footer_text,
                               }
         self.f_params_dict = {"header": f_header,
-                              "table_header": f_table_header,
+                              "table_title": f_table_title,
+                              "table_header_range": f_table_header_range,
+                              "table_header_ind": f_table_header_ind,
+                              "table_note": f_table_note,
                               "footer_text": f_footer_text,
                               }
 

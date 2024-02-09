@@ -16,11 +16,15 @@ class PDDGenerator:
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
 
+        out_df = out_df[['PD_NO_CONCAT', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL']]
         df_list = []
+        # Create a df for each pd and append it to the df list
+        for pd in out_df['PD_NO_CONCAT'].values.tolist():
+            pd_df = out_df[out_df['PD_NO_CONCAT'] == pd ]
+            df_list.append(pd_df)
 
-        out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
-        out_df["VOID_IND"] = 'N'  # This field is missing in most recent version of the data placeholder until fixed
         return df_list
+
 
     def __init__(self, data, out_path, ed_num):
         # Setup logging
