@@ -1,4 +1,5 @@
-from .commons import logging_setup, to_dataframe
+# -*- coding: utf-8 -*-
+from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
 from components.builders.build_pdp_report import BuildPDPReport
 import pandas as pd
 import sys
@@ -14,6 +15,9 @@ class PDPGenerator:
 
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
+
+        # Fix en dashes if needed
+        out_df['POLL_NAME_FIXED'] = out_df['POLL_NAME_FIXED'].apply(lambda x: add_en_dash(x))
 
         out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
         out_df["VOID_IND"] = 'N' # This field is missing in most recent version of the data placeholder until fixed
@@ -35,12 +39,14 @@ class PDPGenerator:
 
         # Set a bunch of things for the report from the first line of the data and create a dict to hold them
         self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
+        ed_name = self.row1["ED_NAME_BIL"].to_list()[0]
+
         self.report_dict = {
-            'ed_name': self.row1["ED_NAME_BIL"].to_list()[0],
+            'ed_name': ed_name.replace(u"\u0097", u"\u2013"),
             'ed_code': self.row1['ED_CODE'].to_list()[0],
             'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
         }
-        
+        create_dir(self.out_path)
         self.logger.info("Creating Report PDF")
         self.template = BuildPDPReport(self.report_dict, self.report_df, out_dir=self.out_path)
 

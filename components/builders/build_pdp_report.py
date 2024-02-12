@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8-*-
 import datetime
 import pandas as pd
 from components.commons import logging_setup
@@ -37,10 +37,10 @@ class BuildPDPReport:
             ]
             # COMMENTED OUT UNLESS WE WANT TO APPLY SPECIFIC SIZING TO THE OUTPUT TABLE
             # config the widths and heights of this specific table
-            colwidths_2 = [120] * len(self.settings_dict['table_header'])
+            colwidths_2 = [80, 180, 180,80]
             # rowheights_2 = [50] * len(self.settings_dict['table_header'])
 
-            lista = [self.settings_dict['table_header']] + self.data_df.values.tolist()
+            lista = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
             tbl = Table(lista, style=ts, repeatRows=1, colWidths=colwidths_2)
 
             return tbl
@@ -89,7 +89,8 @@ class BuildPDPReport:
             canvas.saveState()
 
             # Header
-            header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
+            #header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
+            header = Paragraph(self.header_text, self.styles['header'])
             w, h = header.wrap(doc.width, doc.topMargin)
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
 
@@ -110,8 +111,9 @@ class BuildPDPReport:
                                       fontName=self.font,
                                       fontSize=12,
                                       parent=self.styles['Heading2'],
-                                      alignment=1,
-                                      spaceAfter=14)
+                                      alignment=TA_CENTER,
+                                      spaceAfter=14,
+                                      )
         self.styles.add(header_style)
 
         # Create report elements
@@ -140,15 +142,15 @@ class BuildPDPReport:
         # Import special e/f headings and title parameters based on location
         self.settings_dict = PDPSettings(self.in_dict['ed_code']).settings_dict
 
-
         # This is like this because we need to newline characters for the header to work properly
-        self.header_text = f"""{self.settings_dict['header']['dept_nme']}
-{self.settings_dict['header']['report_type']}
-{self.settings_dict['header']['rep_order']}
-{self.in_dict['prov']}
-{self.in_dict['ed_name']}
-{self.in_dict['ed_code']} 
-"""
+        self.header_text =  f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
+        {self.settings_dict['header']['report_type']}<br/>
+        {self.settings_dict['header']['rep_order']}<br/>
+        {self.in_dict['prov']}<br/>
+        <b>{self.in_dict['ed_name']}</b><br/>
+        <b>{self.in_dict['ed_code']}</b> 
+        """
+
         # Setup document
         # If things are overlapping the header / footer change the margins below
         self.logger.info("Creating PDP document")

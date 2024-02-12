@@ -1,4 +1,4 @@
-from .commons import logging_setup, to_dataframe
+from .commons import logging_setup, to_dataframe, create_dir
 from components.builders.build_pdd_report import BuildPDDReport
 import pandas as pd
 import sys
@@ -16,11 +16,12 @@ class PDDGenerator:
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
 
-        out_df = out_df[['PD_NO_CONCAT', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL']]
+        out_df = out_df[['PD_NO_CONCAT', 'STREET_NME_FULL', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL']]
         df_list = []
         # Create a df for each pd and append it to the df list
         for pd in out_df['PD_NO_CONCAT'].values.tolist():
-            pd_df = out_df[out_df['PD_NO_CONCAT'] == pd ]
+            pd_df = out_df[out_df['PD_NO_CONCAT'] == pd ].copy()
+            pd_df.drop(labels=["PD_NO_CONCAT"], inplace=True, axis=1)
             df_list.append(pd_df)
 
         return df_list
@@ -40,12 +41,13 @@ class PDDGenerator:
 
         # Set a bunch of things for the report from the first line of the data and create a dict to hold them
         self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
+
         self.report_dict = {
-            'ed_name': self.row1["ED_NAME_BIL"].to_list()[0],
+            'ed_name': u""+ed_name,
             'ed_code': self.row1['ED_CODE'].to_list()[0],
             'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
         }
-
+        create_dir(self.out_path)
         self.logger.info("Creating Report PDF")
         BuildPDDReport(self.report_dict, self.report_dfs, out_dir=self.out_path)
 

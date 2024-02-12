@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 import datetime
 import sys
 
@@ -13,8 +13,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from .common_builds import NumberedCanvas, add_em_dash
 from .report_parameters import APDSettings
+from .. import NumberedCanvas
 
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
@@ -55,7 +55,7 @@ class BuildAPDReport:
 
             # COMMENTED OUT UNLESS WE WANT TO APPLY SPECIFIC SIZING TO THE OUTPUT TABLE
             # config the widths and heights of this specific table
-            colwidths_2 = [120] * len(data_summary)
+            colwidths_2 = [80, 180, 180, 80]
             #rowheights_2 = [50] * len(data_summary)
 
             tbl = Table(data_summary, style=ts, repeatRows=1, colWidths=colwidths_2) #rowHeights=rowheights_2)
@@ -64,7 +64,7 @@ class BuildAPDReport:
 
         def add_summary_box() -> Table:
             """Adds the summary stats box at the bottom of the main table.
-            For a PDP this consists of: Total de sections de votes actives / Total of Active Polling Divisions,Nombre moyen d'électeurs par section de vote ordinaire /
+            For a PDP this consists of: Total de sections de votes actives / Total of Active Polling Divisions,Nombre moyen d'Ã©lecteurs par section de vote ordinaire /
             Average Number of Electors per Ordinary Polling Division"""
 
             # Table Style Setup
@@ -155,12 +155,12 @@ class BuildAPDReport:
         self.settings_dict = APDSettings(self.in_dict['ed_code']).settings_dict
 
         # This is like this because we need to newline characters for the header to work properly
-        self.header_text = f"""{self.settings_dict['header']['dept_nme']}
+        self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b>
 {self.settings_dict['header']['report_type']}
 {self.settings_dict['header']['rep_order']}
 {self.in_dict['prov']}
-{self.in_dict['ed_name']}
-{self.in_dict['ed_code']} 
+<b>{self.in_dict['ed_name']}</b>
+<b>{self.in_dict['ed_code']}</b> 
 """
         # Setup document
         # If things are overlapping the header / footer change the margins below

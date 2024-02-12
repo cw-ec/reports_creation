@@ -1,4 +1,5 @@
-from components import logging_setup, to_dataframe
+# -*- coding: utf-8 -*-
+from components import logging_setup, to_dataframe, create_dir, add_en_dash
 from components.builders.build_apd_report import BuildAPDReport
 import pandas as pd
 
@@ -22,9 +23,13 @@ class APDGenerator:
 
         # Join the tables together so that ADV_PD_NBR and ADV POLL name are with the list of pds
         out_df = out_df[["ADV_PD_NBR", "ADV_POLL_NAME_FIXED"]].drop_duplicates(subset='ADV_PD_NBR', keep='first').join(grouped, on="ADV_PD_NBR")
+
         # Drop NAN rows if any
         out_df = out_df[~out_df['ADV_PD_NBR'].isnull()]
         out_df['ADV_PD_NBR'] = out_df['ADV_PD_NBR'].astype(int)
+
+        # Fix en dashes in the adv poll name
+        out_df["ADV_POLL_NAME_FIXED"] = out_df["ADV_POLL_NAME_FIXED"].apply(lambda x: add_en_dash(x))
 
         out_df['TOTAL'] = out_df['PD_LIST'].apply(lambda x: len(x) if isinstance(x, list) else 0 ) # Create a field that gives us how many pds are in the apd
         out_df['PD_LIST'] = out_df['PD_LIST'].apply(lambda  x: ', '.join(x) if isinstance(x,list) else '')  # Convert from list to string (list breaks reportlab)
@@ -52,9 +57,9 @@ class APDGenerator:
             'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
             'report_type': "Advance Polling Districts / Districts de vote par anticipation",
             'rep_order': f"Representation order of 2013 / Décret de représentation de 2013",
-            'ed_name': self.row1["ED_NAME_BIL"].to_list()[0],
+            'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
             'ed_code': self.row1['ED_CODE'].to_list()[0],
-            'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
+            'prov': add_en_dash(self.row1['PRVNC_NAME_BIL'].to_list()[0])
         }
 
         self.logger.info("Creating Report PDF")

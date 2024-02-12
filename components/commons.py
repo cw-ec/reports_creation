@@ -43,3 +43,11 @@ def to_dataframe(to_import: str, sheet=0, encoding='UTF-8') -> pd.DataFrame:
         return pd.read_excel(to_import, sheet_name=sheet)
     else:
         raise Exception(f"File Extension: {f_type} not yet handled by this function")
+
+def add_en_dash(text:str) -> str:
+    """Adds en dashes to text"""
+    if u'\u0097' in text:
+        # Replace hyphens with em dashes
+        return text.replace(u"\u0097", u"\u2014")
+    else:
+        return text

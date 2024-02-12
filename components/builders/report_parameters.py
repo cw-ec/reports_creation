@@ -16,8 +16,8 @@ class PDPSettings:
             'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
 
         # Headers for main table
-        f_table_header = ["Nº / NO.", "NOM / NAME", "ÉLECTEURS INSCRITS / ELECTORS LISTED", "NUL / VOID"]
-        e_table_header = ["NO. / Nº", "NAME / NOM", "ELECTORS LISTED / ÉLECTEURS INSCRITS ", "VOID / NUL"]
+        f_table_header = ["<b>Nº / NO.</b>", "<b>NOM / NAME</b>", "<b>ÉLECTEURS INSCRITS / ELECTORS LISTED</b>", "<b>NUL / VOID</b>"]
+        e_table_header = ["<b>NO. / Nº</b>", "<b>NAME / NOM</b>", "<b>ELECTORS LISTED / ÉLECTEURS INSCRITS</b>", "<b>VOID / NUL</b>"]
 
         # Summary Statistics Table Header
         e_ss_table_header = "Summary Statistics / Statistiques récapitulatives"
@@ -81,8 +81,8 @@ class APDSettings:
             'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
 
         # Headers for main table
-        f_table_header = ["Nº / NO.", "NOM / NAME", "SECTIONS DE VOTE / LISTED POLLING", "NUL / VOID"]
-        e_table_header = ["NO. / Nº", "NAME / NOM", "POLLING DIVISIONS / SECTIONS DE VOTE", "VOID / NUL"]
+        f_table_header = ["<b>Nº / NO.</b>", "<b>NOM / NAME</b>", "<b>SECTIONS DE VOTE / LISTED POLLING</b>", "<b>NUL / VOID</b>"]
+        e_table_header = ["<b>NO. / Nº</b>", "<b>NAME / NOM</b>", "<b>POLLING DIVISIONS / SECTIONS DE VOTE</b>", "<b>VOID / NUL</b>"]
 
         # Summary Statistics Table Header
         e_ss_table_header = "Summary Statistics / Statistiques récapitulatives"
