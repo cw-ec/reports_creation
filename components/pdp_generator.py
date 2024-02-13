@@ -39,10 +39,9 @@ class PDPGenerator:
 
         # Set a bunch of things for the report from the first line of the data and create a dict to hold them
         self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
-        ed_name = self.row1["ED_NAME_BIL"].to_list()[0]
 
         self.report_dict = {
-            'ed_name': ed_name.replace(u"\u0097", u"\u2013"),
+            'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
             'ed_code': self.row1['ED_CODE'].to_list()[0],
             'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
         }

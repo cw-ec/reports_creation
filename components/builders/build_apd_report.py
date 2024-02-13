@@ -53,12 +53,10 @@ class BuildAPDReport:
             # Prep data for table conversion
             data_summary = [data_list] + self.data_df.values.tolist()
 
-            # COMMENTED OUT UNLESS WE WANT TO APPLY SPECIFIC SIZING TO THE OUTPUT TABLE
             # config the widths and heights of this specific table
-            colwidths_2 = [80, 180, 180, 80]
-            #rowheights_2 = [50] * len(data_summary)
+            colwidths_custom = [50, 180, 220, 70]
 
-            tbl = Table(data_summary, style=ts, repeatRows=1, colWidths=colwidths_2) #rowHeights=rowheights_2)
+            tbl = Table(data_summary, style=ts, repeatRows=1, colWidths=colwidths_custom) #rowHeights=rowheights_2)
 
             return tbl
 

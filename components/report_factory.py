@@ -3,6 +3,7 @@ from collections import OrderedDict
 from .commons import logging_setup, create_dir
 from .apd_generator import APDGenerator
 from .pdp_generator import PDPGenerator
+from .pdd_generator import PDDGenerator
 
 class ReportFactory:
     """Class responsible for organizing the creation of reports from input json"""
@@ -40,11 +41,14 @@ class ReportFactory:
                     self.logger.info(f"Producing {k} Report for: {r}")
                     out_path = os.path.join(self.out_dir, k)
                     create_dir(out_path)
-                    if k == 'PDP':
+                    if k == 'PDP': # For Polling District Profiles
                         PDPGenerator(self.data_path, out_path, r)
 
-                    if k == 'APD':
+                    if k == 'APD': # For Advance Polling Districts
                         APDGenerator(self.data_path, out_path, r)
+
+                    if k == "PDD": # For Polling District Descriptions
+                        PDDGenerator(self.data_path, out_path, r)
 
 
     def __init__(self, workflow, data_path):

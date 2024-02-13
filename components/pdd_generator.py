@@ -1,4 +1,4 @@
-from .commons import logging_setup, to_dataframe, create_dir
+from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
 from components.builders.build_pdd_report import BuildPDDReport
 import pandas as pd
 import sys
@@ -16,12 +16,11 @@ class PDDGenerator:
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
 
-        out_df = out_df[['PD_NO_CONCAT', 'STREET_NME_FULL', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL']]
+        out_df = out_df[['PD_NO_CONCAT', 'STREET_NME_FULL', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL', 'POLL_NAME_FIXED']]
         df_list = []
         # Create a df for each pd and append it to the df list
         for pd in out_df['PD_NO_CONCAT'].values.tolist():
             pd_df = out_df[out_df['PD_NO_CONCAT'] == pd ].copy()
-            pd_df.drop(labels=["PD_NO_CONCAT"], inplace=True, axis=1)
             df_list.append(pd_df)
 
         return df_list
@@ -43,7 +42,7 @@ class PDDGenerator:
         self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
         self.report_dict = {
-            'ed_name': u""+ed_name,
+            'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
             'ed_code': self.row1['ED_CODE'].to_list()[0],
             'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
         }

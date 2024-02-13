@@ -28,7 +28,8 @@ class BuildPDDReport:
         def add_report_table(df) -> Table:
             """Sets the table"""
             ts = [
-                ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
                 ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
                 ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
@@ -72,9 +73,9 @@ class BuildPDDReport:
             canvas.saveState()
 
             # Header
-            header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
-            w, h = header.wrap(self.page_width, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin, self.page_height + doc.topMargin - h)
+            header = Paragraph(self.header_text, self.styles['header'])
+            w, h = header.wrap(self.page_width - 0.4 * inch, doc.topMargin)
+            header.drawOn(canvas, doc.leftMargin - 0.2 * inch, (3.0 * inch) + doc.topMargin - h)
 
             # Footer
             footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
@@ -100,8 +101,15 @@ class BuildPDDReport:
         # Create list of elements that will go into the report using the input list of PD's dataframes
         elements = []
         for pd in self.df_list:
+
+            # Get the header name and num then drop those columns
+            pd_num = pd["PD_NO_CONCAT"].values.tolist()[0]
+            pd_name = pd["POLL_NAME_FIXED"].values.tolist()[0]
+            pd.drop(labels=["PD_NO_CONCAT", "POLL_NAME_FIXED"], inplace=True, axis=1)
+
+            # Generate the table for the pd
             elements.append(add_report_table(pd))
-            elements.append(Spacer(0 * cm, 2 * cm))
+            elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
 
         #self.pdf.addPageTemplates([PageTemplate(id='landscape', pagesize=landscape(letter))])
         # Build the document from the elements we have and using the custom canvas with numbers
@@ -119,29 +127,30 @@ class BuildPDDReport:
         # Setup other parameters
         self.font = 'Arial'
         self.styles = getSampleStyleSheet()
-        self.page_height = 11 * inch
-        self.page_width = 8.5 * inch
+        self.page_height = 8.5 * inch
+        self.page_width = 11 * inch
 
         # Import special e/f headings and title parameters based on location
         self.settings_dict = PDDSettings(self.in_dict['ed_code']).settings_dict
 
         # This is like this because we need to newline characters for the header to work properly
-        self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b>
-        {self.settings_dict['header']['report_type']}
-        {self.settings_dict['header']['rep_order']}
-        {self.in_dict['prov']}
-        <b>{self.in_dict['ed_name']}</b>
-        <b>{self.in_dict['ed_code']}</b> 
+        self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
+        {self.settings_dict['header']['report_type']}<br/>
+        {self.settings_dict['header']['rep_order']}<br/>
+        {self.in_dict['prov']}<br/>
+        <b>{self.in_dict['ed_name']}</b><br/>
+        <b>{self.in_dict['ed_code']}</b><br/>
         """
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
         self.logger.info("Creating PDD document")
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"DESCRIPTIONS_{self.in_dict['ed_code']}.pdf"),
-                                     leftMargin=7 * cm,
-                                     rightMargin=2.2 * cm,
-                                     topMargin=10 * cm,
-                                     bottomMargin=2.5 * cm
+                                     leftMargin=2 * cm,
+                                     rightMargin=-5 * cm,
+                                     topMargin=13 * cm,
+                                     bottomMargin=2.5 * cm,
+                                     showBoundary=1
                                      )
         self.logger.info("Creating document tables")
         # Creates the document for the report and exports
