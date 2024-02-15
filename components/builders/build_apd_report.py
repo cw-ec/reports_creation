@@ -14,7 +14,7 @@ from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from .report_parameters import APDSettings
-from .. import NumberedCanvas
+from .common_builds import *
 
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
@@ -40,11 +40,11 @@ class BuildAPDReport:
             ]
 
             # Convert the strings in the PD_LIST field into Paragraph objects to allow us to apply styling (esp word wrap)
-            self.data_df['PD_LIST'] = self.data_df['PD_LIST'].apply(lambda x: Paragraph(x, style=self.styles['BodyText']))
+            self.data_df['PD_LIST'] = self.data_df['PD_LIST'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
 
             # Convert certain types of text to body text to ensure no cell overruns with longer strings
             self.data_df["ADV_POLL_NAME_FIXED"] = self.data_df["ADV_POLL_NAME_FIXED"].apply(
-                lambda x: Paragraph(x, style=self.styles['BodyText']))
+                lambda x: Paragraph(x, style=self.styles['CellText']))
 
             data_list = []
             for h in self.settings_dict['table_header']:
@@ -82,7 +82,7 @@ class BuildAPDReport:
 
             # Setup Stats DF
             cols = [f"{self.settings_dict['ss_table_header']}", '']
-            stats = [(Paragraph(self.settings_dict['ss_total_apd'], self.styles['BodyText']),
+            stats = [(Paragraph(self.settings_dict['ss_total_apd'], self.styles['CellText']),
                       total_apd),
                      ]
 
@@ -112,10 +112,9 @@ class BuildAPDReport:
             canvas.restoreState()
 
         # Setup basic styles
-
         self.styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER))
-        # Header style changes
 
+        # Header style changes
         header_style = ParagraphStyle('header',
                                       fontName=f"{self.font}",
                                       fontSize=12,
@@ -123,6 +122,9 @@ class BuildAPDReport:
                                       alignment=1,
                                       spaceAfter=14)
         self.styles.add(header_style)
+
+        # Add cell text style
+        self.styles.add(set_table_text_style('CellText'))
 
         # Create report elements
         # elements = [add_summary_box()]

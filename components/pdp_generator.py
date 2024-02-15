@@ -21,6 +21,8 @@ class PDPGenerator:
 
         out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
         out_df["VOID_IND"] = 'N' # This field is missing in most recent version of the data placeholder until fixed
+
+        out_df["VOID_IND"] = out_df["VOID_IND"].replace('N', '') # No need to show N's replace with nothing
         return out_df[['PD_NO_CONCAT', 'POLL_NAME_FIXED', 'ELECTORS_LISTED', 'VOID_IND']]
 
 

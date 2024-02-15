@@ -1,7 +1,11 @@
+import numpy as np
+
 from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
 from components.builders.build_pdd_report import BuildPDDReport
 import pandas as pd
 import sys
+
+pd.options.mode.chained_assignment = None  # default='warn'
 
 
 class PDDGenerator:
@@ -10,16 +14,18 @@ class PDDGenerator:
         """Generates the table that will be put into the report. Return the table with only the required fields"""
 
         # Create data copy because we may need the orig later
-        out_df = self.df.copy()
-        out_df = out_df[out_df["ED_CODE"] == self.ed_num]
+        out_df = self.df[self.df["ED_CODE"] == self.ed_num].copy()
 
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
+        out_df = out_df.sort_values(by='PD_NBR') # Sort ascending
+
 
         out_df = out_df[['PD_NO_CONCAT', 'STREET_NME_FULL', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL', 'POLL_NAME_FIXED']]
+
         df_list = []
         # Create a df for each pd and append it to the df list
-        for pd in out_df['PD_NO_CONCAT'].values.tolist():
+        for pd in out_df['PD_NO_CONCAT'].unique().tolist(): # Iterate over list of unique pd numbers
             pd_df = out_df[out_df['PD_NO_CONCAT'] == pd ].copy()
             df_list.append(pd_df)
 

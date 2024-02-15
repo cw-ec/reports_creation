@@ -60,8 +60,10 @@ class BuildPDPReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
-            self.data_df["POLL_NAME_FIXED"] = self.data_df["POLL_NAME_FIXED"].apply(
-                lambda x: Paragraph(x, style=self.styles['BodyText']))
+            # Apply cell text style to text based fields
+            for c in ["POLL_NAME_FIXED", 'PD_NO_CONCAT']:
+                self.data_df[c] = self.data_df[c].apply(
+                    lambda x: Paragraph(x, style=self.styles['CellText']))
 
             # Calc Stats
             total_active_pd = len(self.data_df[self.data_df['VOID_IND']=='N'])
@@ -106,7 +108,6 @@ class BuildPDPReport:
 
         self.styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER))
         # Header style changes
-
         header_style = ParagraphStyle('header',
                                       fontName=self.font,
                                       fontSize=12,
@@ -115,6 +116,9 @@ class BuildPDPReport:
                                       spaceAfter=14,
                                       )
         self.styles.add(header_style)
+
+        # Add cell style changes
+        self.styles.add(set_table_text_style('CellText'))
 
         # Create report elements
         elements = [add_report_table(), Spacer(0 * cm, 2 * cm), add_summary_box()]

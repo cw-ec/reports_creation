@@ -4,7 +4,7 @@ Suite of report creation tools. The following reports can be created using this 
 
 |         Report Name         | Abbreviation | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 |:---------------------------:|:------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|  Polling District Profile   |     PDD      | Lists all PDs in a given FED. Shows PD number, PD name, electors listed and void status. Totals are included at end of report.                                                                                                                                                                                                                                                                                                                                    |
+|  Polling District Profile   |     PDP      | Lists all PDs in a given FED. Shows PD number, PD name, electors listed and void status. Totals are included at end of report.                                                                                                                                                                                                                                                                                                                                    |
 |  Advance Polling Districts  |     APD      | Lists all APDs in a given FED. Shows APD #, APD name, PDs served, total # of PDs in each APD (includes MOBs and SBPDs). Total number of APDs included at end of report                                                                                                                                                                                                                                                                                            |
 |    Mobile Polls Summary     |     MPS      | Lists all MOBs in a given FED. Shows PD #s, # of institutions, electors listed, and APD # for each MOB.                                                                                                                                                                                                                                                                                                                                                           |
 |        Descriptions         |     PDD      | Lists the PD street segments for each ORD PD, lists each SBPD and MOB in a given FED. Shows PD #, PD name, and CSD name for every PD. ORD PD: Street names, FROM-TO features, FROM-TO civic # ranges, and sides. TRMs are added at the end of affected ORD PDs in the Prairies only. SBPDs: Building name and civic address associated with it. MOBs: Institution names, institution addresses, and electors listed. There is a sub-total at the end of each MOB. |
@@ -22,5 +22,19 @@ workflows directory at the root of this repository. Each workflow is a JSON file
 needed to direct the script in the creation of the desired reports.
 
 The JSON should be formatted as follows:
+
+{
+    "Report Abbreviation": [Array of ED Numbers, etc, etc]
+}
+
+Using the above format a valid workflow would look as follows:
+
+{
+    "PDP": [47001,48001, 24001],
+    "PDD": [24005]
+}
+
+The above script would create a PDP report for each of the three ED's listed in the array and a PDD report for the single
+ED listed in its associated array. 
 
 ## More to come

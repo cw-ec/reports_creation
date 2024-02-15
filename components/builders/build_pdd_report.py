@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
@@ -7,7 +7,7 @@ import datetime
 import pandas as pd
 from components.commons import logging_setup
 import os
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer, NextPageTemplate, PageTemplate, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer, Frame
 from reportlab.lib.units import cm
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
@@ -25,8 +25,31 @@ class BuildPDDReport:
 
     def pdd_report_pages(self):
         """Sets up the pages for the pdd report"""
+
+        def create_table_title(pd_number:str, pd_nme:str, width:int):
+            """Creates the table header which contains: polling div name, polling div number, etc"""
+
+            ts = [
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
+                ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
+                ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+            ]
+
+            para = Paragraph(f"{self.settings_dict['table_title']}: {pd_number} <br/> ({pd_nme})")
+
+            tbl = Table([[para]], style=ts, colWidths=[width])
+
+            return tbl
+
         def add_report_table(df) -> Table:
-            """Sets the table"""
+            """Sets the table for normal PD tables (mobile polls, single building, and strm's excluded)"""
+
             ts = [
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                 ("ALIGN", (0, 0), (-1, -1), "CENTER"),
@@ -41,32 +64,82 @@ class BuildPDDReport:
 
             data_df = df.copy()
 
-            # Split because we have multiple different types of poll in this report, and they are handled differently
-            if len(data_df) > 1: # For regular polls
+            # Replace the nan's in the columns as needed to make the report table prettier
+            for c in ['FROM_CIV_NUM', 'TO_CIV_NUM']:
+                data_df[c].fillna('----', inplace=True)  # Replace nan with '----' to make the report prettier
+                data_df[c] = data_df[c].apply(lambda x: str(int(x) if isinstance(x, float) else x))
+            for c in ['FROM_CROSS_FEAT', 'TO_CROSS_FEAT']:
+                data_df[c].fillna('', inplace=True)  # Replace nan with '' for the features same reason as above
 
-                # COMMENTED OUT UNLESS WE WANT TO APPLY SPECIFIC SIZING TO THE OUTPUT TABLE
-                # config the widths and heights of this specific table
-                # colwidths_2 = [120] * len(self.settings_dict['table_header_range'])
-                # rowheights_2 = [50] * len(self.settings_dict['table_header'])
+            # COMMENTED OUT UNLESS WE WANT TO APPLY SPECIFIC SIZING TO THE OUTPUT TABLE
+            # config the widths and heights of this specific table
+            # colwidths_2 = [120] * len(self.settings_dict['table_header_range'])
+            # rowheights_2 = [50] * len(self.settings_dict['table_header'])
 
-                out_elements = []
+            element_list = [self.settings_dict['table_header_range']] + data_df.values.tolist()
+            tbl = Table(element_list, style=ts, repeatRows=1)
 
-                lista = [self.settings_dict['table_header_range']] + data_df.values.tolist()
-                tbl = Table(lista, style=ts, repeatRows=1)
+            return tbl
 
-                return tbl
+        def add_strm_table(df) -> Table:
+            """Add a table containing all strms in the df with the strm custom formatting"""
 
-            else: # For single building polls
+            ts = [
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
+                ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
+                ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+            ]
 
-                # COMMENTED OUT UNLESS WE WANT TO APPLY SPECIFIC SIZING TO THE OUTPUT TABLE
-                # config the widths and heights of this specific table
-                # colwidths_2 = [120] * len(self.settings_dict['table_header_ind'])
-                # rowheights_2 = [50] * len(self.settings_dict['table_header'])
+        def add_mp_table(df) -> Table:
+            """Add a table for all mobile polls with the mobile poll custom formatting"""
 
-                lista = [self.settings_dict['table_header_ind']] + data_df.values.tolist()
-                tbl = Table(lista, style=ts, repeatRows=1)
+            ts = [
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
+                ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
+                ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+            ]
 
-                return tbl
+            data_df = df[['FROM_CROSS_FEAT', 'STREET_NME_FULL']].copy() # Copy the df so prevent warnings
+
+
+            element_list = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header_mp']] + data_df.values.tolist()]
+            tbl = Table(element_list, style=ts, repeatRows=1, colWidths=mp_widths)
+
+            return tbl
+
+        def add_sbp_table(df) -> Table:
+            """Add single building poll table with the single building poll custom formatting"""
+
+            ts = [
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
+                ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
+                ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+            ]
+
+            data_df = df['STREET_NME_FULL'].copy() # Copy data
+
+            element_list = data_df.values.tolist()
+            tbl = Table(element_list, style=ts, repeatRows=1)
+
+            return tbl
 
         def _header_footer(canvas, doc):
             # Save the state of our canvas, so we can draw on it
@@ -75,7 +148,7 @@ class BuildPDDReport:
             # Header
             header = Paragraph(self.header_text, self.styles['header'])
             w, h = header.wrap(self.page_width - 0.4 * inch, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin - 0.2 * inch, (3.0 * inch) + doc.topMargin - h)
+            header.drawOn(canvas, doc.leftMargin - 1 * inch, (3.0 * inch) + doc.topMargin - h)
 
             # Footer
             footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
@@ -100,16 +173,38 @@ class BuildPDDReport:
 
         # Create list of elements that will go into the report using the input list of PD's dataframes
         elements = []
-        for pd in self.df_list:
+
+        # Build each table based of its type and specifications
+        for pd_df in self.df_list:
 
             # Get the header name and num then drop those columns
-            pd_num = pd["PD_NO_CONCAT"].values.tolist()[0]
-            pd_name = pd["POLL_NAME_FIXED"].values.tolist()[0]
-            pd.drop(labels=["PD_NO_CONCAT", "POLL_NAME_FIXED"], inplace=True, axis=1)
+            pd_num = pd_df["PD_NO_CONCAT"].values.tolist()[0]
+            pd_name = pd_df["POLL_NAME_FIXED"].values.tolist()[0]
+            pd_df.drop(labels=["PD_NO_CONCAT", "POLL_NAME_FIXED"], inplace=True, axis=1)
 
-            # Generate the table for the pd
-            elements.append(add_report_table(pd))
-            elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
+            pd_pre = int(pd_num.split('-')[0])
+
+            # Generate the table for the pd based on the dataframes contents
+            if pd_pre <= 399: # for regular tables
+                elements.append(add_report_table(pd_df))
+                elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
+
+            if (pd_pre >= 400) and (pd_pre < 500): # for single building poll tables
+
+                if len(pd_df) > 1: # Single building poll should be a single location
+                    self.logger.error("Single Building Poll greater than 1 location")
+                    sys.exit()
+
+                elements.append(add_sbp_table(pd_df))
+                elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
+
+            if pd_pre >= 500: # for mobile polls (MOB)
+
+                mp_widths = [250, 250, 150]
+
+                elements.append(create_table_title(pd_num, pd_name, width=sum(mp_widths)))
+                elements.append(add_mp_table(pd_df))
+                elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
 
         #self.pdf.addPageTemplates([PageTemplate(id='landscape', pagesize=landscape(letter))])
         # Build the document from the elements we have and using the custom canvas with numbers
