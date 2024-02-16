@@ -13,17 +13,16 @@ from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from .common_builds import *
-from .report_parameters import PDDSettings
+from .report_parameters import DPKSettings
 
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 
-class BuildPDDReport:
+class BuildDPKReport:
 
-    def pdd_report_pages(self):
+    def dpk_report_pages(self):
         """Sets up the pages for the pdd report"""
 
         def add_report_table(df, col_widths) -> Table:
@@ -42,7 +41,6 @@ class BuildPDDReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
-            title_para = [Paragraph(f"{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})"), '', '', '', '', '']
             data_df = df.copy()
 
             # Replace the nan's in the columns as needed to make the report table prettier
@@ -53,28 +51,15 @@ class BuildPDDReport:
                 data_df[c].fillna('', inplace=True)  # Replace nan with '' for the features same reason as above
                 data_df[c] = data_df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText'])) # Add cell text with word wrap
 
-            element_list = [title_para] + [ [Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header_range']]] + data_df.values.tolist()
+            element_list = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header']]] + data_df.values.tolist()
             tbl = Table(element_list, style=ts, repeatRows=2, colWidths=col_widths)
 
             return tbl
 
-        def add_strm_table(df) -> Table:
-            """Add a table containing all strms in the df with the strm custom formatting"""
 
-            ts = [
-                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
-                ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
-                ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
-                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-                ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
-                ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
-            ]
-
-        def add_mp_table(df) -> Table:
-            """Add a table for all mobile polls with the mobile poll custom formatting"""
+        def _header_footer(canvas, doc):
+            # Save the state of our canvas, so we can draw on it
+            canvas.saveState()
 
             ts = [
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
@@ -89,43 +74,6 @@ class BuildPDDReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
-            title_para = [Paragraph(f"{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})"), '', '']
-            data_df = df[['FROM_CROSS_FEAT', 'STREET_NME_FULL']].copy() # Copy the df so prevent warnings
-
-
-            element_list = [title_para] + [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header_mp']]] + data_df.values.tolist()
-            tbl = Table(element_list, style=ts, repeatRows=2, colWidths=mp_widths)
-
-            return tbl
-
-        def add_sbp_table(df) -> Table:
-            """Add single building poll table with the single building poll custom formatting"""
-
-            ts = [
-                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
-                ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
-                ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
-                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-                ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
-                ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
-            ]
-
-            title_para = [Paragraph(f"{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})"),]
-
-            data_df = df['STREET_NME_FULL'].apply(lambda x: Paragraph(x, style=self.styles['SingleCellText']))
-
-            element_list = [title_para] + [data_df.values.tolist()]
-            tbl = Table(element_list, style=ts, repeatRows=1)
-
-            return tbl
-
-        def _header_footer(canvas, doc):
-            # Save the state of our canvas, so we can draw on it
-            canvas.saveState()
-
             # Header
             header = Paragraph(self.header_text, self.styles['header'])
             w, h = header.wrap(self.page_width - 0.4 * inch, doc.topMargin)
@@ -136,6 +84,10 @@ class BuildPDDReport:
             w, h = footer.wrap(self.page_width, doc.bottomMargin)
             footer.drawOn(canvas, doc.leftMargin, h)
 
+            table_head = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header']]]
+            tbl = Table(table_head, style=ts, colWidths=self.col_widths)
+            tbl.drawOn(canvas, doc.leftMargin, h)
+
             # Release the canvas
             canvas.restoreState()
 
@@ -145,7 +97,6 @@ class BuildPDDReport:
 
         # Add cell style changes
         self.styles.add(set_table_text_style('CellText'))
-        self.styles.add(set_single_cell_tbl_style('SingleCellText'))
 
         # Header style changes
         header_style = ParagraphStyle('header',
@@ -159,39 +110,13 @@ class BuildPDDReport:
         # Create list of elements that will go into the report using the input list of PD's dataframes
         elements = []
 
-        # Build each table based of its type and specifications
-        for pd_df in self.df_list:
+        # Column widths
+        tbl_widths = [200, 100, 100, 50, 50, 100, 50, 50]  # must = 700
 
-            # Get the header name and num then drop those columns
-            pd_num = pd_df["PD_NO_CONCAT"].values.tolist()[0]
-            pd_name = pd_df["POLL_NAME_FIXED"].values.tolist()[0]
-            pd_df.drop(labels=["PD_NO_CONCAT", "POLL_NAME_FIXED"], inplace=True, axis=1)
+        # For each street name build a table in the report
+        for str_df in self.df_list:
 
-            pd_pre = int(pd_num.split('-')[0])
-
-            # Generate the table for the pd based on the dataframes contents
-            if pd_pre <= 399: # for regular tables
-
-                reg_widths = [230, 125, 125, 50, 50, 120] # Sums to 700
-
-                elements.append(add_report_table(pd_df, reg_widths))
-                elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
-
-            if (pd_pre >= 400) and (pd_pre < 500): # for single building poll tables
-
-                if len(pd_df) > 1: # Single building poll should be a single location
-                    self.logger.error("Single Building Poll greater than 1 location")
-                    sys.exit()
-
-                elements.append(add_sbp_table(pd_df))
-                elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
-
-            if pd_pre >= 500: # for mobile polls (MOB)
-
-                mp_widths = [250, 250, 200] # Sums to 700
-
-                elements.append(add_mp_table(pd_df))
-                elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
+            elements.append(add_report_table(str_df, tbl_widths))
 
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer,
@@ -210,9 +135,12 @@ class BuildPDDReport:
         self.styles = getSampleStyleSheet()
         self.page_height = 8.5 * inch
         self.page_width = 11 * inch
+        # Column widths
+        self.col_widths = [200, 100, 100, 50, 50, 100, 50, 50]  # must = 700
+
 
         # Import special e/f headings and title parameters based on location
-        self.settings_dict = PDDSettings(self.in_dict['ed_code']).settings_dict
+        self.settings_dict = DPKSettings(self.in_dict['ed_code']).settings_dict
 
         # This is like this because we need to newline characters for the header to work properly
         self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
@@ -226,7 +154,7 @@ class BuildPDDReport:
         # Setup document
         # If things are overlapping the header / footer change the margins below
         self.logger.info("Creating PDD document")
-        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"DESCRIPTIONS_{self.in_dict['ed_code']}.pdf"),
+        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"INDCIR_{self.in_dict['ed_code']}.pdf"),
                                      leftMargin=2 * cm,
                                      rightMargin=-5 * cm,
                                      topMargin=13 * cm,
@@ -235,4 +163,5 @@ class BuildPDDReport:
 
         self.logger.info("Creating document tables")
         # Creates the document for the report and exports
-        self.pdd_report_pages()
+        self.dpk_report_pages()
+

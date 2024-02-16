@@ -1,4 +1,4 @@
-from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm, inch
 from reportlab.pdfbase.pdfmetrics import registerFont
@@ -78,4 +78,14 @@ def set_table_text_style(style_name='cell_text') -> ParagraphStyle:
     style = ParagraphStyle(name=style_name,
                            parent=styles['BodyText'],
                            alignment=TA_CENTER)
+    return style
+
+def set_single_cell_tbl_style(style_name='single_cell_text') -> ParagraphStyle:
+    """Returns the custom paragraph style for single building poll tables"""
+
+    styles = getSampleStyleSheet()
+
+    style = ParagraphStyle(name=style_name,
+                           parent=styles['BodyText'],
+                           alignment=TA_LEFT)
     return style

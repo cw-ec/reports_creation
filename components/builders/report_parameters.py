@@ -173,3 +173,41 @@ class PDDSettings:
             self.settings_dict = self.f_params_dict
         else:
             self.settings_dict = self.e_params_dict
+
+class DPKSettings:
+    """Contains all page setup components colours, margins page locations for the Polling District Descriptions Report
+        including French and English versions"""
+
+    def __init__(self, in_ed):
+
+        # Header dicts additional report specific info appended later
+        f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
+                    'report_type': "Electoral District Poll Key / Indicateur des sections de vote de la circonscription",
+                    'rep_order': f"Décret de représentation de 2013 / Representation order of 2013", }
+
+        e_header = {'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
+                    'report_type': "Indicateur des sections de vote de la circonscription / Electoral District Poll Key",
+                    'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
+
+        # Headers for main table
+        e_table_header = ["STREET NAME / NOM DE RUE", "FROM / DE", "TO / À", "FROM / DE", "TO / À", "SIDE / CÔTÉ", "PD / SV", "APD / DVA"]
+        f_table_header = ["NOM DE RUE / STREET NAME", "DE / FROM", "À / TO", "DE / FROM", "À / TO", "CÔTÉ / SIDE", "SV / PD", "DVA / APD"]
+
+        # Footer Text
+        e_footer_text = "Printed on / Imprimé le"
+        f_footer_text = "Imprimé le / Printed on"
+
+        # Create a dictionary of english first parameters to allow for easy access
+        self.e_params_dict = {"header": e_header,
+                              "table_header": e_table_header,
+                              "footer_text": e_footer_text,
+                              }
+        self.f_params_dict = {"header": f_header,
+                              "table_header_range": f_table_header,
+                              "footer_text": f_footer_text,
+                              }
+
+        if (in_ed > 24000) and (in_ed < 24999):
+            self.settings_dict = self.f_params_dict
+        else:
+            self.settings_dict = self.e_params_dict
