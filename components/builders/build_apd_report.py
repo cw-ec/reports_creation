@@ -24,7 +24,7 @@ class BuildAPDReport:
     def apd_report_pages(self):
         """Setups the template for the pdp report"""
 
-        def add_report_table() -> Table:
+        def add_report_table(col_widths: list) -> Table:
             """Sets the table"""
 
             # Defines the table style
@@ -54,13 +54,13 @@ class BuildAPDReport:
             data_summary = [data_list] + self.data_df.values.tolist()
 
             # config the widths and heights of this specific table
-            colwidths_custom = [50, 180, 220, 70]
+            colwidths_custom = col_widths
 
             tbl = Table(data_summary, style=ts, repeatRows=1, colWidths=colwidths_custom) #rowHeights=rowheights_2)
 
             return tbl
 
-        def add_summary_box() -> Table:
+        def add_summary_box(col_widths: list) -> Table:
             """Adds the summary stats box at the bottom of the main table.
             For a PDP this consists of: Total de sections de votes actives / Total of Active Polling Divisions,Nombre moyen d'électeurs par section de vote ordinaire /
             Average Number of Electors per Ordinary Polling Division"""
@@ -90,7 +90,8 @@ class BuildAPDReport:
             stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
             listb = [stats_df.columns[:, ].values.astype(str).tolist()] + stats_df.values.tolist()
 
-            table = Table(listb, style=ts, colWidths=[245,245])
+            c_widths = [(sum(col_widths) / 2)] * 2 # Make sure the summary stats table is same width as main table
+            table = Table(listb, style=ts, colWidths=c_widths)
             return table
 
 
@@ -127,8 +128,8 @@ class BuildAPDReport:
         self.styles.add(set_table_text_style('CellText'))
 
         # Create report elements
-        # elements = [add_summary_box()]
-        elements = [add_report_table(), Spacer(0 * cm, 2 * cm), add_summary_box()]
+        column_widths = [50, 180, 220, 70]
+        elements = [add_report_table(col_widths=column_widths), Spacer(0 * cm, 2 * cm), add_summary_box(col_widths=column_widths)]
 
         # Build the document from the elements we have
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)

@@ -1,9 +1,6 @@
-import numpy as np
-
 from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
 from components.builders.build_pdd_report import BuildPDDReport
 import pandas as pd
-import sys
 
 pd.options.mode.chained_assignment = None  # default='warn'
 

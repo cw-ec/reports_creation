@@ -23,7 +23,7 @@ class BuildPDPReport:
     def pdp_report_pages(self):
         """Setups the template for the pdp report"""
 
-        def add_report_table() -> Table:
+        def add_report_table(c_widths: list) -> Table:
             """Sets the table"""
             ts = [
                 ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
@@ -35,17 +35,14 @@ class BuildPDPReport:
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
-            # COMMENTED OUT UNLESS WE WANT TO APPLY SPECIFIC SIZING TO THE OUTPUT TABLE
-            # config the widths and heights of this specific table
-            colwidths_2 = [80, 180, 180,80]
-            # rowheights_2 = [50] * len(self.settings_dict['table_header'])
 
+            # Build the table
             lista = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
-            tbl = Table(lista, style=ts, repeatRows=1, colWidths=colwidths_2)
+            tbl = Table(lista, style=ts, repeatRows=1, colWidths=c_widths)
 
             return tbl
 
-        def add_summary_box() -> Table:
+        def add_summary_box(c_widths:list) -> Table:
             """Adds the summary stats box at the bottom of the main table."""
 
             # Table Style Setup
@@ -82,7 +79,11 @@ class BuildPDPReport:
             stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
             listb = [stats_df.columns[:, ].values.astype(str).tolist()] + stats_df.values.tolist()
 
-            table = Table(listb, style=ts, colWidths=[245,245])
+            # Take the column widths for the main table and make each column worth half its total width
+            col_widths = [(sum(c_widths)/2)] *2
+            print(col_widths)
+
+            table = Table(listb, style=ts, colWidths=col_widths)
             return table
 
 
@@ -120,8 +121,9 @@ class BuildPDPReport:
         # Add cell style changes
         self.styles.add(set_table_text_style('CellText'))
 
+        column_widths = [80, 180, 180,80]
         # Create report elements
-        elements = [add_report_table(), Spacer(0 * cm, 2 * cm), add_summary_box()]
+        elements = [add_report_table(column_widths), Spacer(0 * cm, 2 * cm), add_summary_box(column_widths)]
 
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfbase.pdfmetrics import registerFont
 import datetime
 import pandas as pd
@@ -129,7 +128,7 @@ class BuildPDDReport:
             # Header
             header = Paragraph(self.header_text, self.styles['header'])
             w, h = header.wrap(self.page_width - 0.4 * inch, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin - 1 * inch, (3.0 * inch) + doc.topMargin - h)
+            header.drawOn(canvas, doc.leftMargin - 0.5 * inch, (3.0 * inch) + doc.topMargin - h)
 
             # Footer
             footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])

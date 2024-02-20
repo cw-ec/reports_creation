@@ -36,7 +36,6 @@ class BuildDPKReport:
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
                 ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-                ('BACKGROUND', (0, 1), (-1, 1), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
@@ -51,8 +50,19 @@ class BuildDPKReport:
                 data_df[c].fillna('', inplace=True)  # Replace nan with '' for the features same reason as above
                 data_df[c] = data_df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText'])) # Add cell text with word wrap
 
-            element_list = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header']]] + data_df.values.tolist()
-            tbl = Table(element_list, style=ts, repeatRows=2, colWidths=col_widths)
+            # Build place name text for row header
+            name_txt_list = data_df['FULL_PLACE_NAME'].head(1).values.tolist()[0].split(',')
+            place_name_text = Paragraph(f"{name_txt_list[-1]}: {name_txt_list[0]}", style=self.styles['CellText'])
+
+            # Create row header
+            row_header = [[data_df['STREET_NME_FULL'].head(1).values.tolist()[0], place_name_text]]
+
+            # Change or drop fields for better report presentation
+            data_df.drop(columns=['FULL_PLACE_NAME'], inplace=True)
+            data_df['STREET_NME_FULL'] = ''
+
+            element_list = row_header + data_df.values.tolist()
+            tbl = Table(element_list, style=ts, repeatRows=1, colWidths=col_widths)
 
             return tbl
 
@@ -76,17 +86,18 @@ class BuildDPKReport:
 
             # Header
             header = Paragraph(self.header_text, self.styles['header'])
-            w, h = header.wrap(self.page_width - 0.4 * inch, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin - 1 * inch, (3.0 * inch) + doc.topMargin - h)
+            hw, hh = header.wrap(self.page_width - 0.4 * inch, doc.topMargin)
+            header.drawOn(canvas, doc.leftMargin - 1 * inch, (3.0 * inch) + doc.topMargin - hh - (1.5*cm))
+
+            table_head = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header']]]
+            tbl = Table(table_head, style=ts, colWidths=self.col_widths)
+            tbl.wrapOn(canvas, hw, hh)
+            tbl.drawOn(canvas, doc.leftMargin - (0.29 * cm), hh + (11.3 * cm))
 
             # Footer
             footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
             w, h = footer.wrap(self.page_width, doc.bottomMargin)
             footer.drawOn(canvas, doc.leftMargin, h)
-
-            table_head = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header']]]
-            tbl = Table(table_head, style=ts, colWidths=self.col_widths)
-            tbl.drawOn(canvas, doc.leftMargin, h)
 
             # Release the canvas
             canvas.restoreState()
@@ -157,7 +168,7 @@ class BuildDPKReport:
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"INDCIR_{self.in_dict['ed_code']}.pdf"),
                                      leftMargin=2 * cm,
                                      rightMargin=-5 * cm,
-                                     topMargin=13 * cm,
+                                     topMargin=14.5 * cm,
                                      bottomMargin=2.5 * cm,
                                      )
 
