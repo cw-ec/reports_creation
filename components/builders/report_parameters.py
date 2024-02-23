@@ -81,7 +81,7 @@ class APDSettings:
             'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
 
         # Headers for main table
-        f_table_header = ["<b>Nº / NO.</b>", "<b>NOM / NAME</b>", "<b>SECTIONS DE VOTE / LISTED POLLING</b>", "<b>TOTAL</b>"]
+        f_table_header = ["<b>Nº / NO.</b>", "<b>NOM / NAME</b>", "<b>SECTIONS DE VOTE / LISTED POLLING DIVISIONS</b>", "<b>TOTAL</b>"]
         e_table_header = ["<b>NO. / Nº</b>", "<b>NAME / NOM</b>", "<b>POLLING DIVISIONS / SECTIONS DE VOTE</b>", "<b>TOTAL</b>"]
 
         # Summary Statistics Table Header
