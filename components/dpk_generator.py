@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 
 from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
@@ -26,7 +28,7 @@ class DPKGenerator:
 
         df_list = []
         # Create a df for each pd and append it to the df list
-        for str_nme in out_df['STREET_NME_FULL'].unique().tolist(): # Iterate over list of unique pd numbers
+        for str_nme in out_df['STREET_NME_FULL'].unique().tolist(): # Iterate over list of unique street names
             str_df = out_df[out_df['STREET_NME_FULL'] == str_nme ].copy()
             df_list.append(str_df)
 

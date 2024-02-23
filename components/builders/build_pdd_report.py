@@ -57,7 +57,7 @@ class BuildPDDReport:
 
             return tbl
 
-        def add_strm_table(df) -> Table:
+        def add_strm_table(df, col_widths) -> Table:
             """Add a table containing all strms in the df with the strm custom formatting"""
 
             ts = [
@@ -65,12 +65,20 @@ class BuildPDDReport:
                 ("ALIGN", (0, 0), (-1, -1), "CENTER"),
                 ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
                 ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
                 ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
-                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                ('BACKGROUND', (0, 0), (-1, -1), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
+
+            data_df = df
+
+            element_list = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header_strm']]] + data_df.values.tolist()
+
+            tbl = Table(element_list, style=ts, repeatRows=1, colWidths=col_widths)
+
+            return tbl
 
         def add_mp_table(df) -> Table:
             """Add a table for all mobile polls with the mobile poll custom formatting"""
@@ -97,27 +105,49 @@ class BuildPDDReport:
 
             return tbl
 
-        def add_sbp_table(df) -> Table:
+        def add_sbp_table(df, col_widths) -> Table:
             """Add single building poll table with the single building poll custom formatting"""
+
+            def bilingual_text(text) -> Paragraph:
+                """Converts the text to bilingual"""
+
+                t_dict = {
+                    "ST":"RUE",
+                    "RUE":"ST",
+                    "BLVD":"BOUL",
+                    "BOUL":"BLVD",
+                    "AVE":"AV",
+                    "AV":"AVE"
+                }
+
+                to_translate = [" ST ", " RUE ", " BLVD ", " BOUL ", " BLVD ", " AV ", " AVE "]
+                if text in to_translate:
+                    for t in to_translate:
+                        t = t
+
+                return Paragraph(text, style=self.styles['SingleCellText'])
 
             ts = [
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                 ("ALIGN", (0, 0), (-1, -1), "CENTER"),
                 ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
                 ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
                 ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
-                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey), # Top row background
+                ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey), # Bottom row background
+                ('LINEABOVE', (0, -1), (-1, -1), 1, colors.black),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
-            title_para = [Paragraph(f"{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})"),]
+            title_para = [Paragraph(f"<b>{self.settings_dict['table_title']}: {pd_num}</b> <br/> <b>({pd_name})</b>"),]
+            footer_para = [Paragraph(f"<b>{self.settings_dict['table_note']}</b>")]
 
             data_df = df['STREET_NME_FULL'].apply(lambda x: Paragraph(x, style=self.styles['SingleCellText']))
+            #data_df = df['STREET_NME_FULL'].apply(lambda x: bilingual_text(x))
 
-            element_list = [title_para] + [data_df.values.tolist()]
-            tbl = Table(element_list, style=ts, repeatRows=1)
+            element_list = [title_para] + [data_df.values.tolist()] + [footer_para]
+            tbl = Table(element_list, style=ts, repeatRows=1, colWidths=col_widths)
 
             return tbl
 
@@ -161,6 +191,16 @@ class BuildPDDReport:
         # Build each table based of its type and specifications
         for pd_df in self.df_list:
 
+            # If TRM Table it will not have a pd id and should be run before that code
+            if "TWNSHIP" in pd_df.columns.tolist(): # For TRM Tables should have TWNSHIP as a field
+
+                trm_widths = [150, 150, 150, 100, 150] # Sums to 700
+
+                elements.append(add_strm_table(pd_df, trm_widths))
+                elements.append(Spacer(0 * cm, 2 * cm))
+                continue
+
+            # If not a trm then process normally
             # Get the header name and num then drop those columns
             pd_num = pd_df["PD_NO_CONCAT"].values.tolist()[0]
             pd_name = pd_df["POLL_NAME_FIXED"].values.tolist()[0]
@@ -176,16 +216,18 @@ class BuildPDDReport:
                 elements.append(add_report_table(pd_df, reg_widths))
                 elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
 
-            if (pd_pre >= 400) and (pd_pre < 500): # for single building poll tables
+            elif (pd_pre >= 400) and (pd_pre < 500): # for single building poll tables
 
                 if len(pd_df) > 1: # Single building poll should be a single location
                     self.logger.error("Single Building Poll greater than 1 location")
                     sys.exit()
 
-                elements.append(add_sbp_table(pd_df))
+                sbp_widths = [700]
+
+                elements.append(add_sbp_table(pd_df, sbp_widths))
                 elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
 
-            if pd_pre >= 500: # for mobile polls (MOB)
+            elif pd_pre >= 500: # for mobile polls (MOB)
 
                 mp_widths = [250, 250, 200] # Sums to 700
 

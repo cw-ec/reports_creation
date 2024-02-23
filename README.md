@@ -15,6 +15,11 @@ Suite of report creation tools. The following reports can be created using this 
 This project will require the installation python 3.9 or newer. Package requirements can be found in the requirements.txt
 and can be installed using pip or the package manager of your choice. 
 
+Python will need to be called from the command line to test this open a command prompt window and type the command: python
+into the box. If the command is not recognized add the folder containing your python.exe file to the path environment variable for your account.
+If the python command opens the Windows store type the following into the search bar: "Manage app execution aliases" and turn of the two python
+app installers that listed.
+
 ## Usage 
 
 In order to run the reports generation tool you will need to create a workflow. Example workflows can be found in the 
