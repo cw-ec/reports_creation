@@ -20,6 +20,16 @@ into the box. If the command is not recognized add the folder containing your py
 If the python command opens the Windows store type the following into the search bar: "Manage app execution aliases" and turn of the two python
 app installers that listed.
 
+Install required packages using pip:
+
+pip install -r requirements.txt
+
+should pip need to be updated navigate to the folder containing your python.exe and use the following command to update pip
+
+python.exe pip install --upgrade pip
+
+
+
 ## Usage 
 
 In order to run the reports generation tool you will need to create a workflow. Example workflows can be found in the 
