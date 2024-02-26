@@ -4,4 +4,5 @@ from .pdp_generator import PDPGenerator
 from .apd_generator import APDGenerator
 from .pdd_generator import PDDGenerator
 from .dpk_generator import DPKGenerator
+from .mps_generator import MPSGenerator
 from .report_factory import ReportFactory

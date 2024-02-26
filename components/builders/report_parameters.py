@@ -211,3 +211,62 @@ class DPKSettings:
             self.settings_dict = self.f_params_dict
         else:
             self.settings_dict = self.e_params_dict
+
+class MPSSettings:
+    """Contains all page setup components colours, margins page locations for the  Mobile Polls Summary (MPS) Report
+    including French and English versions"""
+
+    def __init__(self, in_ed):
+
+        # Header dicts additional report specific info appended later
+        f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
+            'report_type': "Sommaire de bureaux itinérants / Mobile Polls Summary",
+            'rep_order': f"Décret de représentation de 2013 / Representation order of 2013",}
+
+        e_header = {'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
+            'report_type': "Mobile Polls Summary / Sommaire de bureaux itinérants",
+            'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
+
+        # Headers for main table
+        f_table_header = ["<b>NUMÉRO DE LA SECTION DE VOTE / POLLING DIVISION NUMBER</b>", "<b> TOTAL DES ÉTABLISSEMENTS / TOTAL INSTITUTIONS</b>", "<b>ÉLECTEURS INSCRITS / ELECTORS LISTED</b>", "<b>BUREAUX DE VOTE PAR ANTICIPATION / ADVANCED POLLS</b>"]
+        e_table_header = ["<b>POLLING DIVISION NUMBER / NUMÉRO DE LA SECTION DE VOTE</b>", "<b>TOTAL INSTITUTIONS / TOTAL DES ÉTABLISSEMENTS</b>", "<b>ELECTORS LISTED / ÉLECTEURS INSCRITS</b>", "<b>ADVANCED POLLS / BUREAUX DE VOTE PAR ANTICIPATION</b>"]
+
+        # Summary Statistics Table Header
+        e_ss_table_header = "Summary Statistics / Statistiques récapitulatives"
+        f_ss_table_header = "Statistiques récapitulatives / Summary Statistics"
+
+        # Summary Stats Row Descriptions
+        f_total_pd = "Total de sections de votes / Total Polling Divisions"
+        e_total_pd = "Total Polling Divisions / Total de sections de votes"
+
+        f_total_noe = "Nombre total d’électeurs / Total Number of Electors"
+        e_total_noe = "Total Number of Electors / Nombre total d’électeurs"
+
+        f_total_inst = "Total Number of Institutions / Total Nombre d'établissements"
+        e_total_inst = "Total Nombre d'établissements / Total Number of Institutions"
+
+        # Footer Text
+        e_footer_text = "Printed on / Imprimé le"
+        f_footer_text = "Imprimé le / Printed on"
+
+        # Create a dictionary of english first parameters to allow for easy access
+        self.e_params_dict = {"header": e_header,
+                              "table_header": e_table_header,
+                              "ss_table_header": e_ss_table_header,
+                              "footer_text": e_footer_text,
+                              "ss_total_pd": e_total_pd,
+                              "total_noe": e_total_noe,
+                              "total_inst": e_total_inst
+                              }
+        self.f_params_dict = {"header": f_header,
+                              "table_header": f_table_header,
+                              "ss_table_header": f_ss_table_header,
+                              "footer_text": f_footer_text,
+                              "ss_total_pd": f_total_pd,
+                              "total_noe": f_total_noe,
+                              "total_inst": f_total_inst
+                              }
+        if (in_ed > 24000) and (in_ed < 24999):
+            self.settings_dict = self.f_params_dict
+        else:
+            self.settings_dict = self.e_params_dict

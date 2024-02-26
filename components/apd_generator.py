@@ -17,7 +17,7 @@ class APDGenerator:
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
         fields = ["ADV_PD_NBR", "ADV_POLL_NAME_FIXED", 'PD_NO_CONCAT']
 
-        # Create list of all PD numbers (concatenated) in each PD
+        # Create list of all PD numbers (concatenated) in each APD
         grouped = out_df[['PD_NO_CONCAT', 'ADV_PD_NBR']].groupby('ADV_PD_NBR').agg(list)
         grouped.rename(columns={'PD_NO_CONCAT': 'PD_LIST'}, inplace=True)
 

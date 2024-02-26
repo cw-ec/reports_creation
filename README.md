@@ -9,6 +9,7 @@ Suite of report creation tools. The following reports can be created using this 
 |    Mobile Polls Summary     |     MPS      | Lists all MOBs in a given FED. Shows PD #s, # of institutions, electors listed, and APD # for each MOB.                                                                                                                                                                                                                                                                                                                                                           |
 |        Descriptions         |     PDD      | Lists the PD street segments for each ORD PD, lists each SBPD and MOB in a given FED. Shows PD #, PD name, and CSD name for every PD. ORD PD: Street names, FROM-TO features, FROM-TO civic # ranges, and sides. TRMs are added at the end of affected ORD PDs in the Prairies only. SBPDs: Building name and civic address associated with it. MOBs: Institution names, institution addresses, and electors listed. There is a sub-total at the end of each MOB. |
 | Electoral District Poll Key |     DPK      | Lists every PD street segment for each ORD, SBPD and MOB in a given FED. Each PDSS shows the CSD, street name, the FROM-TO features, the FROM-TO civic # range, side, PD #, and APD #. The PDSS are grouped and ordered by street name, type, direction, and address range, and are sub-grouped by CSD name and type.                                                                                                                                             |
+|      Indigenous Lands       |     IDR      | Lists Indigenous Lands                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 ## Requirements
 
@@ -22,12 +23,11 @@ app installers that listed.
 
 Install required packages using pip:
 
-pip install -r requirements.txt
+    pip install -r requirements.txt
 
 should pip need to be updated navigate to the folder containing your python.exe and use the following command to update pip
 
-python.exe pip install --upgrade pip
-
+    python.exe pip install --upgrade pip
 
 
 ## Usage 
@@ -38,16 +38,16 @@ needed to direct the script in the creation of the desired reports.
 
 The JSON should be formatted as follows:
 
-{
-    "Report Abbreviation": [Array of ED Numbers, etc, etc]
-}
+    {
+        "Report Abbreviation": [Array of ED Numbers, etc, etc]
+    }
 
 Using the above format a valid workflow would look as follows:
 
-{
-    "PDP": [47001,48001, 24001],
-    "PDD": [24005]
-}
+    {
+        "PDP": [47001,48001, 24001],
+        "PDD": [24005]
+    }
 
 The above script would create a PDP report for each of the three ED's listed in the array and a PDD report for the single
 ED listed in its associated array. 
