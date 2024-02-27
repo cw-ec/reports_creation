@@ -242,8 +242,8 @@ class MPSSettings:
         f_total_noe = "Nombre total d’électeurs / Total Number of Electors"
         e_total_noe = "Total Number of Electors / Nombre total d’électeurs"
 
-        f_total_inst = "Total Number of Institutions / Total Nombre d'établissements"
-        e_total_inst = "Total Nombre d'établissements / Total Number of Institutions"
+        f_total_inst = "Total Nombre d'établissements / Total Number of Institutions"
+        e_total_inst = "Total Number of Institutions / Total Nombre d'établissements"
 
         # Footer Text
         e_footer_text = "Printed on / Imprimé le"
@@ -255,16 +255,16 @@ class MPSSettings:
                               "ss_table_header": e_ss_table_header,
                               "footer_text": e_footer_text,
                               "ss_total_pd": e_total_pd,
-                              "total_noe": e_total_noe,
-                              "total_inst": e_total_inst
+                              "ss_total_noe": e_total_noe,
+                              "ss_total_inst": e_total_inst
                               }
         self.f_params_dict = {"header": f_header,
                               "table_header": f_table_header,
                               "ss_table_header": f_ss_table_header,
                               "footer_text": f_footer_text,
                               "ss_total_pd": f_total_pd,
-                              "total_noe": f_total_noe,
-                              "total_inst": f_total_inst
+                              "ss_total_noe": f_total_noe,
+                              "ss_total_inst": f_total_inst
                               }
         if (in_ed > 24000) and (in_ed < 24999):
             self.settings_dict = self.f_params_dict

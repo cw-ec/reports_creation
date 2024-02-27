@@ -81,7 +81,6 @@ class BuildPDPReport:
 
             # Take the column widths for the main table and make each column worth half its total width
             col_widths = [(sum(c_widths)/2)] *2
-            print(col_widths)
 
             table = Table(listb, style=ts, colWidths=col_widths)
             return table

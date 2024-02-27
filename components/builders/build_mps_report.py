@@ -30,15 +30,14 @@ class BuildMPSReport:
                 ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
                 ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
-                ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
             # Build the table
-            lista = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
-            tbl = Table(lista, style=ts, repeatRows=1, colWidths=c_widths)
+            t_list = [[Paragraph(x, style=self.styles['colName']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
+            tbl = Table(t_list, style=ts, repeatRows=1, colWidths=c_widths)
 
             return tbl
 
@@ -58,32 +57,29 @@ class BuildMPSReport:
             ]
 
             # Apply cell text style to text based fields
-            for c in ["POLL_NAME_FIXED", 'PD_NO_CONCAT']:
+            for c in ['PD_NO_CONCAT']:
                 self.data_df[c] = self.data_df[c].apply(
                     lambda x: Paragraph(x, style=self.styles['CellText']))
 
             # Calc Stats
-            total_active_pd = len(self.data_df[self.data_df['VOID_IND']=='N'])
+            total_active_pd = len(self.data_df)
             total_electors = self.data_df['ELECTORS_LISTED'].sum()
-            avg_ele_per_pd = int(self.data_df.loc[:, 'ELECTORS_LISTED'].mean())
-            total_void = len(self.data_df[self.data_df['VOID_IND'] !='N'])
+            total_num_inst = int(self.data_df.loc[:, 'TOTAL_INST'].sum())
 
             # Setup Stats DF
             cols = [f"{self.settings_dict['ss_table_header']}", '']
-            stats = [(Paragraph(self.settings_dict['ss_total_apd'], self.styles['BodyText']), total_active_pd),
-                     (Paragraph(self.settings_dict['ss_total_noe'], self.styles['BodyText']), total_electors),
-                     (Paragraph(self.settings_dict['ss_avg_noe_per_apd'], self.styles['BodyText']), avg_ele_per_pd),
-                     (Paragraph(self.settings_dict['ss_total_vpd'], self.styles['BodyText']), total_void)]
+            stats = [(Paragraph(self.settings_dict['ss_total_pd'], self.styles['BodyText']), total_active_pd),
+                     (Paragraph(self.settings_dict['ss_total_inst'], self.styles['BodyText']), total_num_inst),
+                     (Paragraph(self.settings_dict['ss_total_noe'], self.styles['BodyText']), total_electors)]
 
             # Convert the df to a table and export
             stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
-            listb = [stats_df.columns[:, ].values.astype(str).tolist()] + stats_df.values.tolist()
+            ss_list = [stats_df.columns[:, ].values.astype(str).tolist()] + stats_df.values.tolist()
 
             # Take the column widths for the main table and make each column worth half its total width
             col_widths = [(sum(c_widths)/2)] *2
-            print(col_widths)
 
-            table = Table(listb, style=ts, colWidths=col_widths)
+            table = Table(ss_list, style=ts, colWidths=col_widths)
             return table
 
 
@@ -105,10 +101,8 @@ class BuildMPSReport:
             # Release the canvas
             canvas.restoreState()
 
-        # Setup basic styles
+        # Setup custom styles
 
-        self.styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER))
-        # Header style changes
         header_style = ParagraphStyle('header',
                                       fontName=self.font,
                                       fontSize=12,
@@ -116,12 +110,21 @@ class BuildMPSReport:
                                       alignment=TA_CENTER,
                                       spaceAfter=14,
                                       )
+        column_nme_style = ParagraphStyle('colName',
+                                          fontNAme=self.font,
+                                          fontSize=10,
+                                          parent=self.styles['BodyText'],
+                                          alignment=TA_CENTER)
+
+        # Add styles to project
         self.styles.add(header_style)
+        self.styles.add(column_nme_style)
+
 
         # Add cell style changes
         self.styles.add(set_table_text_style('CellText'))
 
-        column_widths = [80, 180, 180,80]
+        column_widths = [130, 130, 130,130]
         # Create report elements
         elements = [add_report_table(column_widths), Spacer(0 * cm, 2 * cm), add_summary_box(column_widths)]
 
@@ -159,8 +162,8 @@ class BuildMPSReport:
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.logger.info("Creating PDP document")
-        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"PD_PROF_{self.in_dict['ed_code']}.pdf"),
+        self.logger.info("Creating MPS document")
+        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"SUMINS_{self.in_dict['ed_code']}.pdf"),
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
                             rightMargin=2.2 * cm,
