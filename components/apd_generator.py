@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from components import logging_setup, to_dataframe, create_dir, add_en_dash
-from components.builders.build_apd_report import BuildAPDReport
+from .builders import BuildAPDReport
 import pandas as pd
 
 class APDGenerator:

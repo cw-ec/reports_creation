@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
-from components.builders.build_pdp_report import BuildPDPReport
+from .builders import BuildPDPReport
 import pandas as pd
 import sys
 

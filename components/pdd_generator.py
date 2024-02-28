@@ -1,10 +1,9 @@
 from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
-from components.builders.build_pdd_report import BuildPDDReport
+from .builders import BuildPDDReport
 import pandas as pd
 import os, sys
 
 pd.options.mode.chained_assignment = None  # default='warn'
-
 
 class PDDGenerator:
 

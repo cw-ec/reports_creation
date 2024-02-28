@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
-from .builders import BuildMPSReport
+from .builders import BuildIDRReport
 import pandas as pd
 import sys
 
-class MPSGenerator:
+class IDRGenerator:
 
     def gen_report_table(self) -> pd.DataFrame:
         """Generates the table that will be put into the report. Return the table with only the required fields"""
@@ -45,10 +45,10 @@ class MPSGenerator:
 
         self.out_path = out_path
         self.ed_num = ed_num
-        self.logger.info("Loading data for Mobile Polls Summary")
+        self.logger.info("Loading data for Indigenous Lands Report")
         self.df = to_dataframe(data, encoding='latin-1')
 
-        self.logger.info("Generating PDP Report Table")
+        self.logger.info("Generating IDR Report Table")
         self.report_df = self.gen_report_table()
 
         # Set a bunch of things for the report from the first line of the data and create a dict to hold them
@@ -61,6 +61,6 @@ class MPSGenerator:
         }
         create_dir(self.out_path)
         self.logger.info("Creating Report PDF")
-        self.template = BuildMPSReport(self.report_dict, self.report_df, out_dir=self.out_path)
+        self.template = BuildIDRReport(self.report_dict, self.report_df, out_dir=self.out_path)
 
         self.logger.info("Report Generated")

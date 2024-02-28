@@ -4,6 +4,9 @@ from .commons import logging_setup, create_dir
 from .apd_generator import APDGenerator
 from .pdp_generator import PDPGenerator
 from .pdd_generator import PDDGenerator
+from .dpk_generator import DPKGenerator
+from .mps_generator import MPSGenerator
+from .idr_generator import IDRGenerator
 
 class ReportFactory:
     """Class responsible for organizing the creation of reports from input json"""
@@ -28,7 +31,7 @@ class ReportFactory:
     def process_order(self):
         """Processes the order after extraction"""
 
-        for k in self.order.keys():
+        for k in self.order.keys():  # Process the data key by key
 
             # Sets data path from workflow
             if k == "NUMBERS_DATA":
@@ -41,6 +44,7 @@ class ReportFactory:
                     self.logger.info(f"Producing {k} Report for: {r}")
                     out_path = os.path.join(self.out_dir, k)
                     create_dir(out_path)
+
                     if k == 'PDP': # For Polling District Profiles
                         PDPGenerator(self.data_path, out_path, r)
 
@@ -50,6 +54,17 @@ class ReportFactory:
                     if k == "PDD": # For Polling District Descriptions
                         PDDGenerator(self.data_path, out_path, r)
 
+                    if k == "DPK": # For District Poll Key
+                        DPKGenerator(self.data_path, out_path, r)
+
+                    if k == "MPS": # For Mobile Polls Summary
+                        MPSGenerator(self.data_path, out_path, r)
+
+                    if k == "IDR": # For Indigenous Lands Report
+                        IDRGenerator(self.data_path, out_path, r)
+
+                    else:  # For those cases where the input key does not match any of the valid report types
+                        self.logger.warning(f"{k} does not match a valid report type. Check the project documentation and edit your workflow")
 
     def __init__(self, workflow, data_path):
 
