@@ -41,48 +41,6 @@ class BuildIDRReport:
 
             return tbl
 
-        def add_summary_box(c_widths:list) -> Table:
-            """Adds the summary stats box at the bottom of the main table."""
-
-            # Table Style Setup
-            ts = [
-                ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
-                ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
-                ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
-                ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
-                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-                ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
-                ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
-            ]
-
-            # Apply cell text style to text based fields
-            for c in ['PD_NO_CONCAT']:
-                self.data_df[c] = self.data_df[c].apply(
-                    lambda x: Paragraph(x, style=self.styles['CellText']))
-
-            # Calc Stats
-            total_active_pd = len(self.data_df)
-            total_electors = self.data_df['ELECTORS_LISTED'].sum()
-            total_num_inst = int(self.data_df.loc[:, 'TOTAL_INST'].sum())
-
-            # Setup Stats DF
-            cols = [f"{self.settings_dict['ss_table_header']}", '']
-            stats = [(Paragraph(self.settings_dict['ss_total_pd'], self.styles['BodyText']), total_active_pd),
-                     (Paragraph(self.settings_dict['ss_total_inst'], self.styles['BodyText']), total_num_inst),
-                     (Paragraph(self.settings_dict['ss_total_noe'], self.styles['BodyText']), total_electors)]
-
-            # Convert the df to a table and export
-            stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
-            ss_list = [stats_df.columns[:, ].values.astype(str).tolist()] + stats_df.values.tolist()
-
-            # Take the column widths for the main table and make each column worth half its total width
-            col_widths = [(sum(c_widths)/2)] *2
-
-            table = Table(ss_list, style=ts, colWidths=col_widths)
-            return table
-
-
         def _header_footer(canvas, doc):
             # Save the state of our canvas, so we can draw on it
             canvas.saveState()
@@ -124,9 +82,9 @@ class BuildIDRReport:
         # Add cell style changes
         self.styles.add(set_table_text_style('CellText'))
 
-        column_widths = [130, 130, 130,130]
+        column_widths = [300, 110, 110]
         # Create report elements
-        elements = [add_report_table(column_widths), Spacer(0 * cm, 2 * cm), add_summary_box(column_widths)]
+        elements = [add_report_table(column_widths)]
 
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
@@ -163,7 +121,7 @@ class BuildIDRReport:
         # Setup document
         # If things are overlapping the header / footer change the margins below
         self.logger.info("Creating MPS document")
-        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"SUMINS_{self.in_dict['ed_code']}.pdf"),
+        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"INDIAN_{self.in_dict['ed_code']}.pdf"),
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
                             rightMargin=2.2 * cm,
