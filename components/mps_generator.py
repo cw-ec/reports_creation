@@ -61,6 +61,6 @@ class MPSGenerator:
         }
         create_dir(self.out_path)
         self.logger.info("Creating Report PDF")
-        self.template = BuildMPSReport(self.report_dict, self.report_df, out_dir=self.out_path)
+        BuildMPSReport(self.report_dict, self.report_df, out_dir=self.out_path)
 
         self.logger.info("Report Generated")

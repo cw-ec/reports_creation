@@ -28,6 +28,7 @@ The required additional packages for this tool:
 
     - Pandas
     - Reportlab
+    - oracledb
 
 Install required packages using the provided requirements.txt using pip:
 
@@ -46,18 +47,45 @@ needed to direct the script in the creation of the desired reports.
 The JSON should be formatted as follows:
 
     {
-        "Report Abbreviation": [Array of FED Numbers, etc, etc]
+        "reports": [{
+            "type": report appreviation,
+            "feds": an array of all fed numbers to create reports for
+            "data": the path to the local csv or xlsx containing the data
+        }]
     }
 
-Using the above format a valid workflow would look as follows:
+Using the above format a valid workflow creating all reports for three feds would look as follows:
 
-    {
-        "PDP": [47001,48001, 24001],
-        "PDD": [24005]
-    }
+    {"reports":[{
+          "type": "PDP",
+          "feds": [47001, 48001, 24001],
+          "data":".\\data\\pd_nums.csv"
+          },{
+          "type": "APD",
+          "feds": [47001, 48001, 24001],
+          "data": ".\\data\\pd_nums.csv"
+          },{
+          "type": "PDD",
+          "feds": [47001, 48001, 24001],
+          "data": ".\\data\\pd_desc.csv"
+          }, {
+          "type": "DPK",
+          "feds": [47001, 48001, 24001],
+          "data": ".\\data\\pd_desc.csv"
+          }, {
+          "type": "MPS",
+          "feds": [47001, 48001, 24001],
+          "data": ".\\data\\pd_nums.csv"
+          }, {
+          "type": "IDR",
+          "feds": [47001, 48001, 24001],
+          "data": ".\\data\\PDs and Indigenous Communities.xlsx"
+      }]}
 
-The above script would create a PDP report for each of the three FED's listed in the array and a PDD report for the single
-FED listed in its associated array. Only the report types being generated need an array unneeded report types can be removed 
-from the workflow. 
+The above file can be found in workflows folder at the root of this repository and is meant to serve as a reference when 
+creating other workflows.
+
+The above script would create reports of every type for each of the three FED's listed in the array (47001, 48001, and 24001) 
+Only the report types being generated need an array unneeded report types can be removed from the workflow. 
 
 ## More to come

@@ -14,6 +14,9 @@ class PDDGenerator:
         out_df = self.df[self.df["ED_CODE"] == self.ed_num].copy()
         ed_strm_df = self.strm_df[self.strm_df['ED_CODE'] == self.ed_num].copy()
 
+        if len(out_df) == 0:  # If no data available return empty list
+            return []
+
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
         out_df = out_df.sort_values(by='PD_NBR') # Sort ascending
@@ -52,16 +55,21 @@ class PDDGenerator:
         self.logger.info("Generating PDP Report Table")
         self.report_dfs = self.gen_report_tables()
 
-        # Set a bunch of things for the report from the first line of the data and create a dict to hold them
-        self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
+        if len(self.report_dfs) == 0:
+            self.logger.warning(f"No data available for {self.ed_num}. Check input data or workflow")
+            self.logger.info(f"No PDD report generated for {self.ed_num}")
 
-        self.report_dict = {
-            'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
-            'ed_code': self.row1['ED_CODE'].to_list()[0],
-            'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
-        }
-        create_dir(self.out_path)
-        self.logger.info("Creating Report PDF")
-        BuildPDDReport(self.report_dict, self.report_dfs, out_dir=self.out_path)
+        else:
+            # Set a bunch of things for the report from the first line of the data and create a dict to hold them
+            self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
-        self.logger.info("Report Generated")
+            self.report_dict = {
+                'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
+                'ed_code': self.row1['ED_CODE'].to_list()[0],
+                'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
+            }
+            create_dir(self.out_path)
+            self.logger.info("Creating Report PDF")
+            BuildPDDReport(self.report_dict, self.report_dfs, out_dir=self.out_path)
+
+            self.logger.info("Report Generated")

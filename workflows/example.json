@@ -1,0 +1,25 @@
+{"reports":[{
+  "type": "PDP",
+  "feds": [47001, 48001, 24001],
+  "data":".\\data\\pd_nums.csv"
+  },{
+  "type": "APD",
+  "feds": [47001, 48001, 24001],
+  "data": ".\\data\\pd_nums.csv"
+  },{
+  "type": "PDD",
+  "feds": [47001, 48001, 24001],
+  "data": ".\\data\\pd_desc.csv"
+  }, {
+  "type": "DPK",
+  "feds": [47001, 48001, 24001],
+  "data": ".\\data\\pd_desc.csv"
+  }, {
+  "type": "MPS",
+  "feds": [47001, 48001, 24001],
+  "data": ".\\data\\pd_nums.csv"
+  }, {
+  "type": "IDR",
+  "feds": [47001, 48001, 24001],
+  "data": ".\\data\\PDs and Indigenous Communities.xlsx"
+  }]}

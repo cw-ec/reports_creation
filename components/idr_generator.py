@@ -17,18 +17,19 @@ class IDRGenerator:
         if len(out_df) == 0:
             return out_df
 
-        print(out_df.head())
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NUM', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
 
         # Fields are different when in English or French provinces this logic returns the correct fields for that
         if (self.ed_num >= 24000) and (self.ed_num < 25000): # Quebec
 
-            return out_df[["Name_2","Community_Type_E", "PD_NO_CONCAT"]]
+            out_df.rename(columns={"NAME_2": "C_NAME"}, inplace=True)
+            return out_df[["C_NAME","COMMUNITY_TYPE_E", "PD_NO_CONCAT"]]
 
         else: # RoC
 
-            return out_df[[ "Name_1", "Community_Type_E", "PD_NO_CONCAT"]]
+            out_df.rename(columns={"NAME_1": "C_NAME"}, inplace=True)
+            return out_df[["C_NAME", "COMMUNITY_TYPE_E", "PD_NO_CONCAT"]]
 
     def __init__(self, idr_data, out_path, ed_num):
 
@@ -42,9 +43,8 @@ class IDRGenerator:
 
         self.logger.info("Generating IDR Report Table")
         self.report_df = self.gen_report_table()
-        self.logger.info("Importing supporting data")
 
-        if len(self.report_df == 0):
+        if len(self.report_df) == 0:
             self.logger.info(f"No Communities with Indigenous Peoples found in {self.ed_num}. No report generated.")
 
         else:
@@ -58,6 +58,7 @@ class IDRGenerator:
             }
             create_dir(self.out_path)
             self.logger.info("Creating Report PDF")
-            self.template = BuildIDRReport(self.report_dict, self.report_df, out_dir=self.out_path)
+
+            BuildIDRReport(self.report_dict, self.report_df, out_dir=self.out_path)
 
             self.logger.info("Report Generated")

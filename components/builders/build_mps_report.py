@@ -88,7 +88,7 @@ class BuildMPSReport:
             canvas.saveState()
 
             # Header
-            #header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
+            # header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
             header = Paragraph(self.header_text, self.styles['header'])
             w, h = header.wrap(doc.width, doc.topMargin)
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)

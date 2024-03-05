@@ -20,7 +20,7 @@ registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 class BuildIDRReport:
     """Builds the report pdf with a header and footer"""
 
-    def pdp_report_pages(self):
+    def idr_report_pages(self):
         """Setups the template for the pdp report"""
 
         def add_report_table(c_widths: list) -> Table:
@@ -35,6 +35,9 @@ class BuildIDRReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
+            # Fix table text
+            self.data_df['C_NAME'] = self.data_df['C_NAME'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
+
             # Build the table
             t_list = [[Paragraph(x, style=self.styles['colName']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
             tbl = Table(t_list, style=ts, repeatRows=1, colWidths=c_widths)
@@ -46,7 +49,7 @@ class BuildIDRReport:
             canvas.saveState()
 
             # Header
-            #header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
+            # header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
             header = Paragraph(self.header_text, self.styles['header'])
             w, h = header.wrap(doc.width, doc.topMargin)
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
@@ -130,4 +133,4 @@ class BuildIDRReport:
         )
         self.logger.info("Creating document tables")
         # Creates the document for the report and exports
-        self.pdp_report_pages()
+        self.idr_report_pages()

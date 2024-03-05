@@ -24,53 +24,47 @@ class ReportFactory:
 
             return oc
 
-    def order_sums(self):
-        """Creates sums table for the input order"""
-
 
     def process_order(self):
         """Processes the order after extraction"""
 
-        for k in self.order.keys():  # Process the data key by key
+        for report in self.order['reports']:  # Process the data key by key
 
             # Sets data path from workflow
-            if k == "NUMBERS_DATA":
-                self.data_path = self.order[k]
+            data_path = report['data']
 
-            else:
-                # Handles all the reports
-                self.logger.info(f"Producing Reports: {k}")
-                for r in self.order[k]:
-                    self.logger.info(f"Producing {k} Report for: {r}")
-                    out_path = os.path.join(self.out_dir, k)
-                    create_dir(out_path)
+            # Handles all the reports
+            self.logger.info(f"Producing {len(report['feds'])} {report['type']} reports")
+            for r in report['feds']:
+                self.logger.info(f"Producing {report['type']} Report for: {r}")
+                out_path = os.path.join(self.out_dir, report['type'])
+                create_dir(out_path)
 
-                    if k == 'PDP': # For Polling District Profiles
-                        PDPGenerator(self.data_path, out_path, r)
+                if report['type'] == 'PDP': # For Polling District Profiles
+                    PDPGenerator(data_path, out_path, r)
 
-                    if k == 'APD': # For Advance Polling Districts
-                        APDGenerator(self.data_path, out_path, r)
+                elif report['type'] == 'APD': # For Advance Polling Districts
+                    APDGenerator(data_path, out_path, r)
 
-                    if k == "PDD": # For Polling District Descriptions
-                        PDDGenerator(self.data_path, out_path, r)
+                elif report['type'] == "PDD": # For Polling District Descriptions
+                    PDDGenerator(data_path, out_path, r)
 
-                    if k == "DPK": # For District Poll Key
-                        DPKGenerator(self.data_path, out_path, r)
+                elif report['type'] == "DPK": # For District Poll Key
+                    DPKGenerator(data_path, out_path, r)
 
-                    if k == "MPS": # For Mobile Polls Summary
-                        MPSGenerator(self.data_path, out_path, r)
+                elif report['type'] == "MPS": # For Mobile Polls Summary
+                    MPSGenerator(data_path, out_path, r)
 
-                    if k == "IDR": # For Indigenous Lands Report
-                        IDRGenerator(self.data_path, out_path, r)
+                elif report['type'] == "IDR": # For Indigenous Lands Report
+                    IDRGenerator(data_path, out_path, r)
 
-                    else:  # For those cases where the input key does not match any of the valid report types
-                        self.logger.warning(f"{k} does not match a valid report type. Check the project documentation and edit your workflow")
+                else:  # For those cases where the input key does not match any of the valid report types
+                    self.logger.warning(f"{report['type']} does not match a valid report type. Check the project documentation for all valid report types")
 
-    def __init__(self, workflow, data_path):
+    def __init__(self, workflow):
 
         self.logger = logging_setup()
 
-        self.data_path = data_path
         self.out_dir = ".\\out"
 
         self.workflow = workflow # Path to json workflow
