@@ -1,4 +1,4 @@
-from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm, inch
 from reportlab.pdfbase.pdfmetrics import registerFont
@@ -8,8 +8,11 @@ from reportlab.platypus import Paragraph
 from reportlab.lib.pagesizes import letter, landscape
 import sys
 
+# Non-standard for in reportlab needs to be registered (both bold and non-bold versions
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
+
+# Custom objects and functions for use in the building of reports
 
 class NumberedCanvas(canvas.Canvas):
     """ Adds page numbers to the canvas.
@@ -70,7 +73,9 @@ class NumberedCanvasLandscape(canvas.Canvas):
                              f"Page {self._pageNumber} / {page_count}")
 
 
-def set_table_text_style(style_name='cell_text') -> ParagraphStyle:
+# Additional custom text styles for specific pieces of various reports
+
+def set_table_text_style(style_name='CellText') -> ParagraphStyle:
     """Returns custom paragraph style for table cell text"""
 
     styles = getSampleStyleSheet()
@@ -80,7 +85,7 @@ def set_table_text_style(style_name='cell_text') -> ParagraphStyle:
                            alignment=TA_CENTER)
     return style
 
-def set_single_cell_tbl_style(style_name='single_cell_text') -> ParagraphStyle:
+def set_single_cell_tbl_style(style_name='SingleCellText') -> ParagraphStyle:
     """Returns the custom paragraph style for single building poll tables"""
 
     styles = getSampleStyleSheet()
@@ -88,4 +93,41 @@ def set_single_cell_tbl_style(style_name='single_cell_text') -> ParagraphStyle:
     style = ParagraphStyle(name=style_name,
                            parent=styles['BodyText'],
                            alignment=TA_LEFT)
+    return style
+
+def set_place_nme_tbl_style(style_name='place_nme_text') -> ParagraphStyle:
+    """Returns the paragraph style for place name text boxes (top right of table title)"""
+
+    styles = getSampleStyleSheet()
+
+    style = ParagraphStyle(name=style_name,
+                           parent=styles['BodyText'],
+                           alignment=TA_RIGHT)
+
+    return style
+
+def set_col_header_txt_style(style_name='ColHeaderTxt'):
+    """Sets the custom style for the Column Names"""
+
+    styles = getSampleStyleSheet()
+
+    style = ParagraphStyle(name=style_name,
+                           parent=styles['BodyText'],
+                           alignment=TA_CENTER,
+                           font= 'Arial-Bold')
+
+    return style
+
+def set_header_custom_style(style_name="HeaderTxt"):
+    """Sets custom text style for the header"""
+
+    styles = getSampleStyleSheet()
+
+    style = ParagraphStyle(name=style_name,
+                           parent=styles['BodyText'],
+                           alignment=TA_CENTER,
+                           font='Arial',
+                           fontSize=14
+                           )
+
     return style

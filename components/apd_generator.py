@@ -50,19 +50,23 @@ class APDGenerator:
         self.logger.info("Generating PDP Report Table")
         self.report_df = self.gen_report_table()
 
-        # Set a bunch of things for the report from the first line of the data and create a dict to hold them
-        self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
+        if len(self.report_df) == 0:
+            self.logger.info(f"No APD report generated for {self.ed_num} as no data was available. Check data or workflow and try again.")
 
-        self.report_dict = {
-            'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
-            'report_type': "Advance Polling Districts / Districts de vote par anticipation",
-            'rep_order': f"Representation order of 2013 / Décret de représentation de 2013",
-            'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
-            'ed_code': self.row1['ED_CODE'].to_list()[0],
-            'prov': add_en_dash(self.row1['PRVNC_NAME_BIL'].to_list()[0])
-        }
+        else:
+            # Set a bunch of things for the report from the first line of the data and create a dict to hold them
+            self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
-        self.logger.info("Creating Report PDF")
-        BuildAPDReport(self.report_dict, self.report_df, out_dir=self.out_path)
+            self.report_dict = {
+                'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
+                'report_type': "Advance Polling Districts / Districts de vote par anticipation",
+                'rep_order': f"Representation order of 2013 / Décret de représentation de 2013",
+                'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
+                'ed_code': self.row1['ED_CODE'].to_list()[0],
+                'prov': add_en_dash(self.row1['PRVNC_NAME_BIL'].to_list()[0])
+            }
 
-        self.logger.info("Report Generated")
+            self.logger.info("Creating Report PDF")
+            BuildAPDReport(self.report_dict, self.report_df, out_dir=self.out_path)
+
+            self.logger.info("Report Generated")

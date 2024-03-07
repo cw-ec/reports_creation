@@ -46,17 +46,14 @@ class BuildAPDReport:
             self.data_df["ADV_POLL_NAME_FIXED"] = self.data_df["ADV_POLL_NAME_FIXED"].apply(
                 lambda x: Paragraph(x, style=self.styles['CellText']))
 
-            data_list = []
-            for h in self.settings_dict['table_header']:
-                data_list.append(Paragraph(h,style=self.styles['BodyText']))
-
             # Prep data for table conversion
-            data_summary = [data_list] + self.data_df.values.tolist()
+            data_summary = [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]]  + self.data_df.values.tolist()
 
-            # config the widths and heights of this specific table
+            # config the widths of this specific table
             colwidths_custom = col_widths
+            # col heights are calculated dynamically because the data can have varying lengths. Word wrap means that this translates to varying heights.
 
-            tbl = Table(data_summary, style=ts, repeatRows=1, colWidths=colwidths_custom) #rowHeights=rowheights_2)
+            tbl = Table(data_summary, style=ts, repeatRows=1, colWidths=colwidths_custom)
 
             return tbl
 
@@ -82,7 +79,7 @@ class BuildAPDReport:
 
             # Setup Stats DF
             cols = [f"{self.settings_dict['ss_table_header']}", '']
-            stats = [(Paragraph(self.settings_dict['ss_total_apd'], self.styles['CellText']),
+            stats = [(Paragraph(self.settings_dict['ss_total_apd'], self.styles['SingleCellText']),
                       total_apd),
                      ]
 
@@ -100,7 +97,7 @@ class BuildAPDReport:
             canvas.saveState()
 
             # Header
-            header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
+            header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['HeaderTxt'])
             w, h = header.wrap(doc.width, doc.topMargin)
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
 
@@ -112,20 +109,11 @@ class BuildAPDReport:
             # Release the canvas
             canvas.restoreState()
 
-        # Setup basic styles
-        self.styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER))
-
-        # Header style changes
-        header_style = ParagraphStyle('header',
-                                      fontName=f"{self.font}",
-                                      fontSize=12,
-                                      parent=self.styles['Heading2'],
-                                      alignment=1,
-                                      spaceAfter=14)
-        self.styles.add(header_style)
-
-        # Add cell text style
+        # Add custom text styles
         self.styles.add(set_table_text_style('CellText'))
+        self.styles.add(set_col_header_txt_style('ColHeaderTxt'))
+        self.styles.add(set_header_custom_style("HeaderTxt"))
+        self.styles.add(set_single_cell_tbl_style('SingleCellText'))
 
         # Create report elements
         column_widths = [50, 180, 220, 70]

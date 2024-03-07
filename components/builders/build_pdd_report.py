@@ -41,8 +41,11 @@ class BuildPDDReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
-            title_para = [Paragraph(f"{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})"), '', '', '', '', '']
             data_df = df.copy()
+            fpn_split = data_df['FULL_PLACE_NAME'].head(1).values.tolist()[0].split(',')
+            title_para = [Paragraph(f"<b>{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})</b>"), '','','','', Paragraph(f"<b>{fpn_split[1]}: {fpn_split[0]}</b>")]
+
+            data_df.drop(columns=['FULL_PLACE_NAME'], inplace=True)
 
             # Replace the nan's in the columns as needed to make the report table prettier
             for c in ['FROM_CIV_NUM', 'TO_CIV_NUM']:
@@ -52,7 +55,7 @@ class BuildPDDReport:
                 data_df[c].fillna('', inplace=True)  # Replace nan with '' for the features same reason as above
                 data_df[c] = data_df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText'])) # Add cell text with word wrap
 
-            element_list = [title_para] + [ [Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header_range']]] + data_df.values.tolist()
+            element_list = [title_para] + [ [Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header_range']]] + data_df.values.tolist()
             tbl = Table(element_list, style=ts, repeatRows=2, colWidths=col_widths)
 
             return tbl
@@ -74,7 +77,7 @@ class BuildPDDReport:
 
             data_df = df
 
-            element_list = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header_strm']]] + data_df.values.tolist()
+            element_list = [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header_strm']]] + data_df.values.tolist()
 
             tbl = Table(element_list, style=ts, repeatRows=1, colWidths=col_widths)
 
@@ -96,36 +99,20 @@ class BuildPDDReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
-            title_para = [Paragraph(f"{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})"), '', '']
-            data_df = df[['FROM_CROSS_FEAT', 'STREET_NME_FULL']].copy() # Copy the df so prevent warnings
+            title_para = [Paragraph(f"<b>{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})</b>"), '', '']
+            data_df = df[['FROM_CROSS_FEAT', 'STREET_NME_FULL']].copy()  # Copy the df so prevent warnings
 
+            # Load and filter the ps add dataframe and create the full address field with the correct paragraph style
+            ps_add = self.ps_add[self.ps_add['FULL_PD_NBR'] == pd_num]
+            ps_add['mp_add_full'] = self.ps_add[['FINAL_SITE_ADDRESS', 'SITE_PLACE_NAME', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE']].apply(lambda x: Paragraph(f"{x[0]}<br/> {x[1]} {x[2]} {x[3]}", style=self.styles['SingleCellText']),axis=1)
 
-            element_list = [title_para] + [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header_mp']]] + data_df.values.tolist()
+            element_list = [title_para] + [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header_mp']]] + ps_add[["SITE_NAME_BIL", 'mp_add_full', 'ELECTORS_LISTED']].values.tolist()
             tbl = Table(element_list, style=ts, repeatRows=2, colWidths=mp_widths)
 
             return tbl
 
         def add_sbp_table(df, col_widths) -> Table:
             """Add single building poll table with the single building poll custom formatting"""
-
-            def bilingual_text(text) -> Paragraph:
-                """Converts the text to bilingual"""
-
-                t_dict = {
-                    "ST":"RUE",
-                    "RUE":"ST",
-                    "BLVD":"BOUL",
-                    "BOUL":"BLVD",
-                    "AVE":"AV",
-                    "AV":"AVE"
-                }
-
-                to_translate = [" ST ", " RUE ", " BLVD ", " BOUL ", " BLVD ", " AV ", " AVE "]
-                if text in to_translate:
-                    for t in to_translate:
-                        t = t
-
-                return Paragraph(text, style=self.styles['SingleCellText'])
 
             ts = [
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
@@ -140,13 +127,18 @@ class BuildPDDReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
-            title_para = [Paragraph(f"<b>{self.settings_dict['table_title']}: {pd_num}</b> <br/> <b>({pd_name})</b>"),]
-            footer_para = [Paragraph(f"<b>{self.settings_dict['table_note']}</b>")]
 
-            data_df = df['STREET_NME_FULL'].apply(lambda x: Paragraph(x, style=self.styles['SingleCellText']))
-            #data_df = df['STREET_NME_FULL'].apply(lambda x: bilingual_text(x))
+            place_nme_list = self.ps_add[self.ps_add['FULL_PD_NBR'] == pd_num]['FULL_SBPD_PLACE'].values.tolist()[0].split(',')
+            place_nme = Paragraph(f"{place_nme_list[-1]}: {place_nme_list[1]}", style=self.styles['PlaceNmeText'])
 
-            element_list = [title_para] + [data_df.values.tolist()] + [footer_para]
+            title_para = [Paragraph(f"<b>{self.settings_dict['table_title']}: {pd_num}</b> <br/> <b>({pd_name})</b>"),
+                          place_nme]
+            footer_para = [Paragraph(f"<b>{self.settings_dict['table_note']}</b>", style=self.styles['SingleCellText'])]
+
+            # Text for the main cell of the table
+            site_add = Paragraph(f"{df['FROM_CROSS_FEAT'].values.tolist()[0]}<br/>{int(df['FROM_CIV_NUM'].values.tolist()[0])} {df['STREET_NME_FULL'].values.tolist()[0]} / {int(df['FROM_CIV_NUM'].values.tolist()[0])} {df['STREET_NME_FULL'].values.tolist()[0]}", style=self.styles['SingleCellText'])
+
+            element_list = [title_para] + [[site_add]] + [footer_para]
             tbl = Table(element_list, style=ts, repeatRows=1, colWidths=col_widths)
 
             return tbl
@@ -156,7 +148,7 @@ class BuildPDDReport:
             canvas.saveState()
 
             # Header
-            header = Paragraph(self.header_text, self.styles['header'])
+            header = Paragraph(self.header_text, self.styles['HeaderTxt'])
             w, h = header.wrap(self.page_width - 0.4 * inch, doc.topMargin)
             header.drawOn(canvas, doc.leftMargin - 0.5 * inch, (3.0 * inch) + doc.topMargin - h)
 
@@ -172,18 +164,12 @@ class BuildPDDReport:
 
         self.styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER))
 
-        # Add cell style changes
+        # Add custom text styles
         self.styles.add(set_table_text_style('CellText'))
         self.styles.add(set_single_cell_tbl_style('SingleCellText'))
-
-        # Header style changes
-        header_style = ParagraphStyle('header',
-                                      fontName=self.font,
-                                      fontSize=12,
-                                      parent=self.styles['Heading2'],
-                                      alignment=TA_CENTER,
-                                      spaceAfter=14)
-        self.styles.add(header_style)
+        self.styles.add(set_place_nme_tbl_style('PlaceNmeText'))
+        self.styles.add(set_col_header_txt_style('ColHeaderTxt'))
+        self.styles.add(set_header_custom_style("HeaderTxt"))
 
         # Create list of elements that will go into the report using the input list of PD's dataframes
         elements = []
@@ -211,7 +197,7 @@ class BuildPDDReport:
             # Generate the table for the pd based on the dataframes contents
             if pd_pre <= 399: # for regular tables
 
-                reg_widths = [230, 125, 125, 50, 50, 120] # Sums to 700
+                reg_widths = [220, 120, 120, 50, 50, 140] # Sums to 700
 
                 elements.append(add_report_table(pd_df, reg_widths))
                 elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
@@ -222,7 +208,7 @@ class BuildPDDReport:
                     self.logger.error("Single Building Poll greater than 1 location")
                     sys.exit()
 
-                sbp_widths = [700]
+                sbp_widths = [500, 200]  # Sums to 700
 
                 elements.append(add_sbp_table(pd_df, sbp_widths))
                 elements.append(Spacer(0 * cm, 2 * cm)) # Spacer is needed to create a gap between the tables
@@ -238,15 +224,16 @@ class BuildPDDReport:
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer,
                        canvasmaker=NumberedCanvasLandscape)
 
-    def __init__(self,in_dict, df_list, out_dir):
+    def __init__(self,in_dict, df_list, ps_add_df, out_dir):
         self.logger = logging_setup()
 
         # Parameters sets from inputs
-        self.in_dict = in_dict
-        self.out_dir = out_dir
-        self.df_list = df_list
+        self.in_dict = in_dict  # Dictionary of text for important page elements
+        self.out_dir = out_dir  # The directory where the pdf will be placed
+        self.df_list = df_list  # List of the dataframes to be put in the document
+        self.ps_add = ps_add_df  # Dataframe containing the complete address information for sbp and mobile polls
 
-        # Setup other parameters
+        # Setup other parameters for the page and element styles
         self.font = 'Arial'
         self.styles = getSampleStyleSheet()
         self.page_height = 8.5 * inch

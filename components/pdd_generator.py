@@ -22,7 +22,7 @@ class PDDGenerator:
         out_df = out_df.sort_values(by='PD_NBR') # Sort ascending
 
         # Set dataframes field order and keep only essential fields
-        out_df = out_df[['PD_NO_CONCAT', 'STREET_NME_FULL', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL', 'POLL_NAME_FIXED']]
+        out_df = out_df[['PD_NO_CONCAT', 'STREET_NME_FULL', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL', 'POLL_NAME_FIXED', "FULL_PLACE_NAME"]]
         ed_strm_df = ed_strm_df[['FULL_PD_NBR', 'TWNSHIP', 'RNGE', 'MRDN', 'SECTION']]
 
         # Add en dashes to text
@@ -50,9 +50,10 @@ class PDDGenerator:
         self.ed_num = ed_num
         self.logger.info("Loading data for Polling District Description")
         self.df = to_dataframe(data, encoding='latin-1')
-        self.strm_df = to_dataframe(os.path.join(os.path.split(data)[0], 'strm.csv'), encoding='latin-1')
+        self.strm_df = to_dataframe(os.path.join(os.path.split(data)[0], 'strm.csv'), encoding='latin-1')  # STRM Data
+        self.ps_add = to_dataframe(os.path.join(os.path.split(data)[0], 'psadd.csv'), encoding='latin-1')  # PD Address full data
 
-        self.logger.info("Generating PDP Report Table")
+        self.logger.info("Generating PDD Report Table")
         self.report_dfs = self.gen_report_tables()
 
         if len(self.report_dfs) == 0:
@@ -63,6 +64,9 @@ class PDDGenerator:
             # Set a bunch of things for the report from the first line of the data and create a dict to hold them
             self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
+            self.ps_add = self.ps_add[(self.ps_add['PD_NBR'] >= 400) & (self.ps_add['ED_CODE'] == self.ed_num)]  # We only need the records for single building and mobile polls for the ed we're working with
+            self.ps_add = self.ps_add[['FULL_PD_NBR', 'SITE_NAME_BIL', 'FINAL_SITE_ADDRESS', 'FULL_SBPD_PLACE', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE', 'SITE_PLACE_NAME', 'ELECTORS_LISTED']]
+
             self.report_dict = {
                 'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
@@ -70,6 +74,6 @@ class PDDGenerator:
             }
             create_dir(self.out_path)
             self.logger.info("Creating Report PDF")
-            BuildPDDReport(self.report_dict, self.report_dfs, out_dir=self.out_path)
+            BuildPDDReport(self.report_dict, self.report_dfs, self.ps_add, out_dir=self.out_path)
 
             self.logger.info("Report Generated")

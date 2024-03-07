@@ -51,16 +51,20 @@ class MPSGenerator:
         self.logger.info("Generating PDP Report Table")
         self.report_df = self.gen_report_table()
 
-        # Set a bunch of things for the report from the first line of the data and create a dict to hold them
-        self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
+        if len(self.report_df) == 0:
+            self.logger.warning(f"No MPS report generated for {self.ed_num} as no data was available. Check data or workflow and try again.")
 
-        self.report_dict = {
-            'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
-            'ed_code': self.row1['ED_CODE'].to_list()[0],
-            'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
-        }
-        create_dir(self.out_path)
-        self.logger.info("Creating Report PDF")
-        BuildMPSReport(self.report_dict, self.report_df, out_dir=self.out_path)
+        else:
+            # Set a bunch of things for the report from the first line of the data and create a dict to hold them
+            self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
-        self.logger.info("Report Generated")
+            self.report_dict = {
+                'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
+                'ed_code': self.row1['ED_CODE'].to_list()[0],
+                'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
+            }
+            create_dir(self.out_path)
+            self.logger.info("Creating Report PDF")
+            BuildMPSReport(self.report_dict, self.report_df, out_dir=self.out_path)
+
+            self.logger.info("Report Generated")

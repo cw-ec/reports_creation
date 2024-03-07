@@ -37,7 +37,7 @@ class BuildPDPReport:
             ]
 
             # Build the table
-            lista = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
+            lista = [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
             tbl = Table(lista, style=ts, repeatRows=1, colWidths=c_widths)
 
             return tbl
@@ -69,11 +69,11 @@ class BuildPDPReport:
             total_void = len(self.data_df[self.data_df['VOID_IND'] !='N'])
 
             # Setup Stats DF
-            cols = [f"{self.settings_dict['ss_table_header']}", '']
-            stats = [(Paragraph(self.settings_dict['ss_total_apd'], self.styles['BodyText']), total_active_pd),
-                     (Paragraph(self.settings_dict['ss_total_noe'], self.styles['BodyText']), total_electors),
-                     (Paragraph(self.settings_dict['ss_avg_noe_per_apd'], self.styles['BodyText']), avg_ele_per_pd),
-                     (Paragraph(self.settings_dict['ss_total_vpd'], self.styles['BodyText']), total_void)]
+            cols = [self.settings_dict['ss_table_header'], '']
+            stats = [(Paragraph(self.settings_dict['ss_total_apd'], self.styles['SingleCellText']), total_active_pd),
+                     (Paragraph(self.settings_dict['ss_total_noe'], self.styles['SingleCellText']), total_electors),
+                     (Paragraph(self.settings_dict['ss_avg_noe_per_apd'], self.styles['SingleCellText']), avg_ele_per_pd),
+                     (Paragraph(self.settings_dict['ss_total_vpd'], self.styles['SingleCellText']), total_void)]
 
             # Convert the df to a table and export
             stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
@@ -91,8 +91,7 @@ class BuildPDPReport:
             canvas.saveState()
 
             # Header
-            #header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
-            header = Paragraph(self.header_text, self.styles['header'])
+            header = Paragraph(self.header_text, self.styles['HeaderTxt'])
             w, h = header.wrap(doc.width, doc.topMargin)
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
 
@@ -104,21 +103,11 @@ class BuildPDPReport:
             # Release the canvas
             canvas.restoreState()
 
-        # Setup basic styles
-
-        self.styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER))
-        # Header style changes
-        header_style = ParagraphStyle('header',
-                                      fontName=self.font,
-                                      fontSize=12,
-                                      parent=self.styles['Heading2'],
-                                      alignment=TA_CENTER,
-                                      spaceAfter=14,
-                                      )
-        self.styles.add(header_style)
-
-        # Add cell style changes
+        # Add custom text styles
         self.styles.add(set_table_text_style('CellText'))
+        self.styles.add(set_col_header_txt_style('ColHeaderTxt'))
+        self.styles.add(set_header_custom_style("HeaderTxt"))
+        self.styles.add(set_single_cell_tbl_style('SingleCellText'))
 
         column_widths = [80, 180, 180,80]
         # Create report elements

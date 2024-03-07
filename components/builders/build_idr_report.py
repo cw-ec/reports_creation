@@ -39,7 +39,7 @@ class BuildIDRReport:
             self.data_df['C_NAME'] = self.data_df['C_NAME'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
 
             # Build the table
-            t_list = [[Paragraph(x, style=self.styles['colName']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
+            t_list = [[Paragraph(x, style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
             tbl = Table(t_list, style=ts, repeatRows=1, colWidths=c_widths)
 
             return tbl
@@ -49,8 +49,7 @@ class BuildIDRReport:
             canvas.saveState()
 
             # Header
-            # header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
-            header = Paragraph(self.header_text, self.styles['header'])
+            header = Paragraph(self.header_text, self.styles['HeaderTxt'])
             w, h = header.wrap(doc.width, doc.topMargin)
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
 
@@ -62,28 +61,12 @@ class BuildIDRReport:
             # Release the canvas
             canvas.restoreState()
 
-        # Setup custom styles
-
-        header_style = ParagraphStyle('header',
-                                      fontName=self.font,
-                                      fontSize=12,
-                                      parent=self.styles['Heading2'],
-                                      alignment=TA_CENTER,
-                                      spaceAfter=14,
-                                      )
-        column_nme_style = ParagraphStyle('colName',
-                                          fontNAme=self.font,
-                                          fontSize=10,
-                                          parent=self.styles['BodyText'],
-                                          alignment=TA_CENTER)
-
-        # Add styles to project
-        self.styles.add(header_style)
-        self.styles.add(column_nme_style)
-
-
-        # Add cell style changes
+        # Add custom text styles
         self.styles.add(set_table_text_style('CellText'))
+        self.styles.add(set_single_cell_tbl_style('SingleCellText'))
+        self.styles.add(set_place_nme_tbl_style('PlaceNmeText'))
+        self.styles.add(set_col_header_txt_style('ColHeaderTxt'))
+        self.styles.add(set_header_custom_style("HeaderTxt"))
 
         column_widths = [300, 110, 110]
         # Create report elements
@@ -123,7 +106,7 @@ class BuildIDRReport:
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.logger.info("Creating MPS document")
+        self.logger.info("Creating IDR document")
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"INDIAN_{self.in_dict['ed_code']}.pdf"),
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,

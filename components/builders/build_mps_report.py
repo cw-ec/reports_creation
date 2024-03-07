@@ -35,8 +35,11 @@ class BuildMPSReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
+            df = self.data_df.copy()
+            df['PD_NO_CONCAT'] = df['PD_NO_CONCAT'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
+
             # Build the table
-            t_list = [[Paragraph(x, style=self.styles['colName']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
+            t_list = [[Paragraph(x, style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]] + df.values.tolist()
             tbl = Table(t_list, style=ts, repeatRows=1, colWidths=c_widths)
 
             return tbl
@@ -68,9 +71,9 @@ class BuildMPSReport:
 
             # Setup Stats DF
             cols = [f"{self.settings_dict['ss_table_header']}", '']
-            stats = [(Paragraph(self.settings_dict['ss_total_pd'], self.styles['BodyText']), total_active_pd),
-                     (Paragraph(self.settings_dict['ss_total_inst'], self.styles['BodyText']), total_num_inst),
-                     (Paragraph(self.settings_dict['ss_total_noe'], self.styles['BodyText']), total_electors)]
+            stats = [(Paragraph(self.settings_dict['ss_total_pd'], self.styles['SingleCellText']), total_active_pd),
+                     (Paragraph(self.settings_dict['ss_total_inst'], self.styles['SingleCellText']), total_num_inst),
+                     (Paragraph(self.settings_dict['ss_total_noe'], self.styles['SingleCellText']), total_electors)]
 
             # Convert the df to a table and export
             stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
@@ -88,8 +91,7 @@ class BuildMPSReport:
             canvas.saveState()
 
             # Header
-            # header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['header'])
-            header = Paragraph(self.header_text, self.styles['header'])
+            header = Paragraph(self.header_text, self.styles['HeaderTxt'])
             w, h = header.wrap(doc.width, doc.topMargin)
             header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
 
@@ -101,28 +103,12 @@ class BuildMPSReport:
             # Release the canvas
             canvas.restoreState()
 
-        # Setup custom styles
-
-        header_style = ParagraphStyle('header',
-                                      fontName=self.font,
-                                      fontSize=12,
-                                      parent=self.styles['Heading2'],
-                                      alignment=TA_CENTER,
-                                      spaceAfter=14,
-                                      )
-        column_nme_style = ParagraphStyle('colName',
-                                          fontNAme=self.font,
-                                          fontSize=10,
-                                          parent=self.styles['BodyText'],
-                                          alignment=TA_CENTER)
-
-        # Add styles to project
-        self.styles.add(header_style)
-        self.styles.add(column_nme_style)
-
-
-        # Add cell style changes
+        # Add custom text styles
         self.styles.add(set_table_text_style('CellText'))
+        self.styles.add(set_single_cell_tbl_style('SingleCellText'))
+        self.styles.add(set_place_nme_tbl_style('PlaceNmeText'))
+        self.styles.add(set_col_header_txt_style('ColHeaderTxt'))
+        self.styles.add(set_header_custom_style("HeaderTxt"))
 
         column_widths = [130, 130, 130,130]
         # Create report elements
