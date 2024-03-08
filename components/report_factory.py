@@ -1,4 +1,5 @@
 import json, sys, os
+from pathlib import Path
 from collections import OrderedDict
 from .commons import logging_setup, create_dir
 from .apd_generator import APDGenerator
@@ -68,8 +69,7 @@ class ReportFactory:
         self.logger = logging_setup()
 
         self.out_dir = ".\\out"
-
-        self.workflow = workflow # Path to json workflow
+        self.workflow = Path(workflow) # Path to json workflow
 
         self.logger.info("Extracting order from the input workflow")
         self.order = self.extract_order() # Get the order from the json as a dictionary
