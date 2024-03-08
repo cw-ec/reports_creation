@@ -127,7 +127,8 @@ def set_header_custom_style(style_name="HeaderTxt"):
                            parent=styles['BodyText'],
                            alignment=TA_CENTER,
                            font='Arial',
-                           fontSize=14
+                           fontSize=14,
+                           leading=18
                            )
 
     return style

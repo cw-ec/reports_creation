@@ -203,7 +203,7 @@ class DPKSettings:
                               "footer_text": e_footer_text,
                               }
         self.f_params_dict = {"header": f_header,
-                              "table_header_range": f_table_header,
+                              "table_header": f_table_header,
                               "footer_text": f_footer_text,
                               }
 

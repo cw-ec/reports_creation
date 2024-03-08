@@ -39,15 +39,18 @@ class BuildAPDReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
+            df = self.data_df.copy()
+            df['ADV_PD_NBR'] = df['ADV_PD_NBR'].apply(lambda x: Paragraph(str(x), style=self.styles['CellText']))
+
             # Convert the strings in the PD_LIST field into Paragraph objects to allow us to apply styling (esp word wrap)
-            self.data_df['PD_LIST'] = self.data_df['PD_LIST'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
+            df['PD_LIST'] = df['PD_LIST'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
 
             # Convert certain types of text to body text to ensure no cell overruns with longer strings
-            self.data_df["ADV_POLL_NAME_FIXED"] = self.data_df["ADV_POLL_NAME_FIXED"].apply(
+            df["ADV_POLL_NAME_FIXED"] = df["ADV_POLL_NAME_FIXED"].apply(
                 lambda x: Paragraph(x, style=self.styles['CellText']))
 
             # Prep data for table conversion
-            data_summary = [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]]  + self.data_df.values.tolist()
+            data_summary = [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]]  + df.values.tolist()
 
             # config the widths of this specific table
             colwidths_custom = col_widths

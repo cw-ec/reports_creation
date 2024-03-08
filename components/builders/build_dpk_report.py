@@ -48,8 +48,13 @@ class BuildDPKReport:
                 data_df[c] = data_df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText'])) # Add cell text with word wrap
 
             # Build place name text for row header
-            name_txt_list = data_df['FULL_PLACE_NAME'].head(1).values.tolist()[0].split(',')
-            place_name_text = Paragraph(f"{name_txt_list[-1]}: {name_txt_list[0]}", style=self.styles['CellText'])
+            name_txt_list = data_df['FULL_PLACE_NAME'].dropna()
+            if len(name_txt_list) >= 1:
+                name_txt_list = data_df['FULL_PLACE_NAME'].dropna().head(1).values.tolist()[0].split(',')
+                place_name_text = Paragraph(f"<b>{name_txt_list[-1]}: {name_txt_list[0]}</b>", style=self.styles['SingleCellText'])
+
+            else:  # Some full place names are blank prevent this error by returning an empty list
+                place_name_text = Paragraph(f"", style=self.styles['CellText'])
 
             # Create row header
             row_header = [[data_df['STREET_NME_FULL'].head(1).values.tolist()[0], place_name_text]]
@@ -82,13 +87,12 @@ class BuildDPKReport:
             ]
 
             # Header
-            header = Paragraph(self.header_text, self.styles['header'])
+            header = Paragraph(self.header_text, self.styles['HeaderTxt'])
             hw, hh = header.wrap(self.page_width - 0.4 * inch, doc.topMargin)
             header.drawOn(canvas, doc.leftMargin - 1 * inch, (3.0 * inch) + doc.topMargin - hh - (1.5*cm))
-            table_head = [[Paragraph(x, style=self.styles['BodyText']) for x in self.settings_dict['table_header']]]
+            table_head = [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]]
             tbl = Table(table_head, style=ts, colWidths=self.col_widths)
             tbl.wrapOn(canvas, hw, hh)
-            #tbl.drawOn(canvas, doc.leftMargin - (0.29 * cm), hh + (11.3 * cm))
             tbl.drawOn(canvas, (self.page_width/2) -(hw/2) +(doc.leftMargin/2) + (0.2*cm), hh + (11.3 * cm))
 
             # Footer
@@ -99,21 +103,12 @@ class BuildDPKReport:
             # Release the canvas
             canvas.restoreState()
 
-            # Setup basic styles
-
-        self.styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER))
-
-        # Add cell style changes
+        # Add custom text styles
         self.styles.add(set_table_text_style('CellText'))
-
-        # Header style changes
-        header_style = ParagraphStyle('header',
-                                      fontName=self.font,
-                                      fontSize=12,
-                                      parent=self.styles['Heading2'],
-                                      alignment=TA_CENTER,
-                                      spaceAfter=14)
-        self.styles.add(header_style)
+        self.styles.add(set_single_cell_tbl_style('SingleCellText'))
+        self.styles.add(set_place_nme_tbl_style('PlaceNmeText'))
+        self.styles.add(set_col_header_txt_style('ColHeaderTxt'))
+        self.styles.add(set_header_custom_style("HeaderTxt"))
 
         # Create list of elements that will go into the report using the input list of PD's dataframes
         elements = []

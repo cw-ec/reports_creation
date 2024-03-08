@@ -30,6 +30,10 @@ class ReportFactory:
 
         for report in self.order['reports']:  # Process the data key by key
 
+            # Set out directory and check it exists
+            out_path = os.path.join(self.out_dir, report['type'])
+            create_dir(out_path)
+
             # Sets data path from workflow
             data_path = report['data']
 
@@ -37,8 +41,6 @@ class ReportFactory:
             self.logger.info(f"Producing {len(report['feds'])} {report['type']} reports")
             for r in report['feds']:
                 self.logger.info(f"Producing {report['type']} Report for: {r}")
-                out_path = os.path.join(self.out_dir, report['type'])
-                create_dir(out_path)
 
                 if report['type'] == 'PDP': # For Polling District Profiles
                     PDPGenerator(data_path, out_path, r)

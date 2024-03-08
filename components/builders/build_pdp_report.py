@@ -2,6 +2,7 @@
 import datetime
 import pandas as pd
 from components.commons import logging_setup
+from reportlab.platypus.flowables import TopPadder
 import os
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 from reportlab.lib.units import cm
@@ -36,8 +37,12 @@ class BuildPDPReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
+            # Copy the dataframe and style the pd number column
+            df = self.data_df.copy()
+            df['PD_NO_CONCAT'] = df['PD_NO_CONCAT'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
+
             # Build the table
-            lista = [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
+            lista = [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]] + df.values.tolist()
             tbl = Table(lista, style=ts, repeatRows=1, colWidths=c_widths)
 
             return tbl
@@ -48,6 +53,7 @@ class BuildPDPReport:
             # Table Style Setup
             ts = [
                 ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
+                ('VALIGN', (0,0), (-1,-1), "BOTTOM"),
                 ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
                 ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
@@ -68,7 +74,7 @@ class BuildPDPReport:
             avg_ele_per_pd = int(self.data_df.loc[:, 'ELECTORS_LISTED'].mean())
             total_void = len(self.data_df[self.data_df['VOID_IND'] !='N'])
 
-            # Setup Stats DF
+            # Setup Summary Stats DF
             cols = [self.settings_dict['ss_table_header'], '']
             stats = [(Paragraph(self.settings_dict['ss_total_apd'], self.styles['SingleCellText']), total_active_pd),
                      (Paragraph(self.settings_dict['ss_total_noe'], self.styles['SingleCellText']), total_electors),
@@ -111,7 +117,7 @@ class BuildPDPReport:
 
         column_widths = [80, 180, 180,80]
         # Create report elements
-        elements = [add_report_table(column_widths), Spacer(0 * cm, 2 * cm), add_summary_box(column_widths)]
+        elements = [add_report_table(column_widths), TopPadder(add_summary_box(column_widths))]
 
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)

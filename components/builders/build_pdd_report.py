@@ -42,8 +42,17 @@ class BuildPDDReport:
             ]
 
             data_df = df.copy()
-            fpn_split = data_df['FULL_PLACE_NAME'].head(1).values.tolist()[0].split(',')
-            title_para = [Paragraph(f"<b>{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})</b>"), '','','','', Paragraph(f"<b>{fpn_split[1]}: {fpn_split[0]}</b>")]
+
+            # Build place name text for row header
+            name_txt_list = data_df['FULL_PLACE_NAME'].dropna()
+            if len(name_txt_list) >= 1:
+                name_txt_list = data_df['FULL_PLACE_NAME'].dropna().head(1).values.tolist()[0].split(',')
+                place_name_text = Paragraph(f"{name_txt_list[-1]}: {name_txt_list[0]}", style=self.styles['CellText'])
+
+            else:  # Some full place names are blank prevent this error by returning an empty list
+                place_name_text = Paragraph(f"", style=self.styles['CellText'])
+
+            title_para = [Paragraph(f"<b>{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})</b>"), '','','','', place_name_text]
 
             data_df.drop(columns=['FULL_PLACE_NAME'], inplace=True)
 
@@ -127,9 +136,14 @@ class BuildPDDReport:
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
             ]
 
+            # Set the place name box text. Leave blank if no placename is listed
+            place_nme_list = self.ps_add[self.ps_add['FULL_PD_NBR'] == pd_num]['FULL_SBPD_PLACE']
+            if len(place_nme_list) >= 1:
+                place_nme_list = place_nme_list.values.tolist()[0].split(',')
+                place_nme = Paragraph(f"{place_nme_list[-1]}: {place_nme_list[1]}", style=self.styles['PlaceNmeText'])
 
-            place_nme_list = self.ps_add[self.ps_add['FULL_PD_NBR'] == pd_num]['FULL_SBPD_PLACE'].values.tolist()[0].split(',')
-            place_nme = Paragraph(f"{place_nme_list[-1]}: {place_nme_list[1]}", style=self.styles['PlaceNmeText'])
+            else:  # for cases where there is no placename set the place_nme to nothing
+                place_nme =  Paragraph(f"", style=self.styles['PlaceNmeText'])
 
             title_para = [Paragraph(f"<b>{self.settings_dict['table_title']}: {pd_num}</b> <br/> <b>({pd_name})</b>"),
                           place_nme]

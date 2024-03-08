@@ -12,7 +12,7 @@
   "data": ".\\data\\pd_desc.csv"
   }, {
   "type": "DPK",
-  "feds": [47001, 48001, 24001],
+  "feds": [24001, 47001, 48001],
   "data": ".\\data\\pd_desc.csv"
   }, {
   "type": "MPS",
