@@ -5,7 +5,7 @@ import os, sys
 import sqlalchemy
 import pandas as pd
 from collections import OrderedDict
-from commons import logging_setup, create_dir
+from .commons import logging_setup, create_dir
 
 
 class DataDownloader:
@@ -17,7 +17,7 @@ class DataDownloader:
 
         oc = OrderedDict()
 
-        with open(self.settings_json, mode='r') as j:
+        with open(self.settings, mode='r') as j:
             content = json.load(j)
 
             for k in content.keys():
@@ -57,12 +57,12 @@ class DataDownloader:
         #         writer = csv.writer(out_file)
         #         writer.writerows(rows)
 
-    def __init__(self, settings_json) -> None:
+    def __init__(self, settings) -> None:
         # setup logging
         self.logger = logging_setup()
 
         # Get the paraeters from the setting json
-        self.settings_json = settings_json
+        self.settings = settings
 
         # Set output directory and create the directory
         self.out_path = ".\\data"

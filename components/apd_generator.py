@@ -13,28 +13,33 @@ class APDGenerator:
 
         out_df = out_df[out_df["ED_CODE"] == self.ed_num]
 
-        # Create Poll Number field be concatenating the poll num and suffix
-        out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
-        fields = ["ADV_PD_NBR", "ADV_POLL_NAME_FIXED", 'PD_NO_CONCAT']
+        if len(out_df) == 0:
+            return out_df
 
-        # Create list of all PD numbers (concatenated) in each APD
-        grouped = out_df[['PD_NO_CONCAT', 'ADV_PD_NBR']].groupby('ADV_PD_NBR').agg(list)
-        grouped.rename(columns={'PD_NO_CONCAT': 'PD_LIST'}, inplace=True)
+        else:
 
-        # Join the tables together so that ADV_PD_NBR and ADV POLL name are with the list of pds
-        out_df = out_df[["ADV_PD_NBR", "ADV_POLL_NAME_FIXED"]].drop_duplicates(subset='ADV_PD_NBR', keep='first').join(grouped, on="ADV_PD_NBR")
+            # Create Poll Number field be concatenating the poll num and suffix
+            out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
+            fields = ["ADV_PD_NBR", "ADV_POLL_NAME_FIXED", 'PD_NO_CONCAT']
 
-        # Drop NAN rows if any
-        out_df = out_df[~out_df['ADV_PD_NBR'].isnull()]
-        out_df['ADV_PD_NBR'] = out_df['ADV_PD_NBR'].astype(int)
+            # Create list of all PD numbers (concatenated) in each APD
+            grouped = out_df[['PD_NO_CONCAT', 'ADV_PD_NBR']].groupby('ADV_PD_NBR').agg(list)
+            grouped.rename(columns={'PD_NO_CONCAT': 'PD_LIST'}, inplace=True)
 
-        # Fix en dashes in the adv poll name
-        out_df["ADV_POLL_NAME_FIXED"] = out_df["ADV_POLL_NAME_FIXED"].apply(lambda x: add_en_dash(x))
+            # Join the tables together so that ADV_PD_NBR and ADV POLL name are with the list of pds
+            out_df = out_df[["ADV_PD_NBR", "ADV_POLL_NAME_FIXED"]].drop_duplicates(subset='ADV_PD_NBR', keep='first').join(grouped, on="ADV_PD_NBR")
 
-        out_df['TOTAL'] = out_df['PD_LIST'].apply(lambda x: len(x) if isinstance(x, list) else 0 ) # Create a field that gives us how many pds are in the apd
-        out_df['PD_LIST'] = out_df['PD_LIST'].apply(lambda  x: ', '.join(x) if isinstance(x,list) else '')  # Convert from list to string (list breaks reportlab)
+            # Drop NAN rows if any
+            out_df = out_df[~out_df['ADV_PD_NBR'].isnull()]
+            out_df['ADV_PD_NBR'] = out_df['ADV_PD_NBR'].astype(int)
 
-        return out_df
+            # Fix en dashes in the adv poll name
+            out_df["ADV_POLL_NAME_FIXED"] = out_df["ADV_POLL_NAME_FIXED"].apply(lambda x: add_en_dash(x))
+
+            out_df['TOTAL'] = out_df['PD_LIST'].apply(lambda x: len(x) if isinstance(x, list) else 0 ) # Create a field that gives us how many pds are in the apd
+            out_df['PD_LIST'] = out_df['PD_LIST'].apply(lambda  x: ', '.join(x) if isinstance(x,list) else '')  # Convert from list to string (list breaks reportlab)
+
+            return out_df
 
 
     def __init__(self, data, out_path, ed_num):
@@ -47,7 +52,7 @@ class APDGenerator:
         self.logger.info("Loading data for Advanced Polling Districts")
         self.df = to_dataframe(data, encoding='latin-1')
 
-        self.logger.info("Generating PDP Report Table")
+        self.logger.info("Generating ADP Report Table")
         self.report_df = self.gen_report_table()
 
         if len(self.report_df) == 0:

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
+from .commons import logging_setup, to_dataframe, create_dir, add_en_dash, get_ed_name_from_code
 from .builders import BuildPDPReport
 import pandas as pd
 import sys
@@ -13,17 +13,21 @@ class PDPGenerator:
         out_df = self.df.copy()
         out_df = out_df[out_df["ED_CODE"] == self.ed_num]
 
-        # Create Poll Number field be concatenating the poll num and suffix
-        out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
+        if len(out_df) == 0:  #If no data return the empty dataframe
+            return out_df
 
-        # Fix en dashes if needed
-        out_df['POLL_NAME_FIXED'] = out_df['POLL_NAME_FIXED'].apply(lambda x: add_en_dash(x))
+        else:
+            # Create Poll Number field be concatenating the poll num and suffix
+            out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
 
-        out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
-        out_df["VOID_IND"] = 'N' # This field is missing in most recent version of the data placeholder until fixed
+            # Fix en dashes if needed
+            out_df['POLL_NAME_FIXED'] = out_df['POLL_NAME_FIXED'].apply(lambda x: add_en_dash(x))
 
-        out_df["VOID_IND"] = out_df["VOID_IND"].replace('N', '') # No need to show N's replace with nothing
-        return out_df[['PD_NO_CONCAT', 'POLL_NAME_FIXED', 'ELECTORS_LISTED', 'VOID_IND']]
+            out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
+            out_df["VOID_IND"] = 'N' # This field is missing in most recent version of the data placeholder until fixed
+
+            out_df["VOID_IND"] = out_df["VOID_IND"].replace('N', '') # No need to show N's replace with nothing
+            return out_df[['PD_NO_CONCAT', 'POLL_NAME_FIXED', 'ELECTORS_LISTED', 'VOID_IND']]
 
 
     def __init__(self, data, out_path, ed_num):
@@ -47,7 +51,7 @@ class PDPGenerator:
             self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
             self.report_dict = {
-                'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
+                'ed_name': get_ed_name_from_code(self.ed_num),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
             }
