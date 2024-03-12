@@ -41,10 +41,12 @@ class BuildDPKReport:
 
             # Replace the nan's in the columns as needed to make the report table prettier
             for c in ['FROM_CIV_NUM', 'TO_CIV_NUM']:
-                data_df[c].fillna('----', inplace=True)  # Replace nan with '----' to make the report prettier
+                data_df[c] = data_df[c].astype(str)
+                data_df[c] = data_df[c].fillna('----')  # Replace nan with '----' to make the report prettier
                 data_df[c] = data_df[c].apply(lambda x: str(int(x) if isinstance(x, float) else x))
             for c in ['FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'ST_SIDE_DESC_BIL']:
-                data_df[c].fillna('', inplace=True)  # Replace nan with '' for the features same reason as above
+                data_df[c] = data_df[c].astype(str)
+                data_df[c] = data_df[c].fillna('')  # Replace nan with '' for the features same reason as above
                 data_df[c] = data_df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText'])) # Add cell text with word wrap
 
             # Build place name text for row header
