@@ -153,7 +153,7 @@ class BuildDPKReport:
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.logger.info("Creating PDD document")
+        self.logger.info("Creating DPK document")
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"INDCIR_{self.in_dict['ed_code']}.pdf"),
                                      leftMargin=2 * cm,
                                      rightMargin=-5 * cm,

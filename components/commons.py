@@ -46,11 +46,12 @@ def to_dataframe(to_import: str, sheet_name=0, encoding='UTF-8') -> pd.DataFrame
 
 def add_en_dash(text:str) -> str:
     """Adds en dashes to text"""
-    if u'\u0097' in text:
-        # Replace hyphens with em dashes
-        return text.replace(u"\u0097", u"\u2014")
-    else:
-        return text
+    for c in [u'\u0097', "â€”", "â■■", "--"] :
+        if c in text:
+            # Replace hyphens with em dashes
+            return text.replace(c, u"\u2014")
+        else:
+            return text
 
 def get_prov_from_code(prov_code: int) -> str:
     """Input an ed_code and get the province name in return"""

@@ -55,7 +55,7 @@ class DPKGenerator:
             self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
             self.report_dict = {
-                'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
+                'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
             }

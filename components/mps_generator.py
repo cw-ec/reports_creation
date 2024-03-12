@@ -2,6 +2,7 @@
 from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
 from .builders import BuildMPSReport
 import pandas as pd
+from math import isnan
 import sys
 
 class MPSGenerator:
@@ -13,11 +14,13 @@ class MPSGenerator:
         out_df = self.df.copy()
         out_df = out_df[(out_df["ED_CODE"] == self.ed_num) & (out_df["PD_NBR"] >= 500)]  # Get only mobile poll records for the ed of interest
 
+        if len(out_df) == 0:
+            return out_df
+
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
         out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
         out_df["VOID_IND"] = 'N'  # This field is missing in most recent version of the data placeholder until fixed
-
 
         # Add the institution count to the report table
         inst_count = out_df.groupby('PD_NO_CONCAT')['MOBILE_POLL_STN_ID'].nunique().rename('TOTAL_INST')
@@ -31,7 +34,7 @@ class MPSGenerator:
         apd_grouped = out_df[['PD_NO_CONCAT', 'ADV_PD_NBR']].groupby('PD_NO_CONCAT').agg(list)
         apd_grouped.rename(columns={'ADV_PD_NBR':'APD_LIST'}, inplace=True)
         out_df = out_df.join(apd_grouped, on=['PD_NO_CONCAT'])
-        out_df['APD_LIST'] = out_df['APD_LIST'].apply(lambda x: str([int(y) for y in x])[1:-1] if isinstance(x, list) else '')
+        out_df['APD_LIST'] = out_df['APD_LIST'].apply(lambda x: str([int(y) for y in x])[1:-1] if (isinstance(x, list)) and (not isnan(x[0])) else '')
 
         # Drop Duplicates before sending to builder
         out_df = out_df.drop_duplicates(subset='PD_NO_CONCAT', keep='first')
@@ -48,7 +51,7 @@ class MPSGenerator:
         self.logger.info("Loading data for Mobile Polls Summary")
         self.df = to_dataframe(data, encoding='latin-1')
 
-        self.logger.info("Generating PDP Report Table")
+        self.logger.info("Generating MPS Report Table")
         self.report_df = self.gen_report_table()
 
         if len(self.report_df) == 0:
@@ -59,7 +62,7 @@ class MPSGenerator:
             self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
             self.report_dict = {
-                'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
+                'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
             }

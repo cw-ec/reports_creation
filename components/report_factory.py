@@ -26,7 +26,7 @@ class ReportFactory:
             return oc
 
 
-    def process_order(self):
+    def process_order(self) -> None:
         """Processes the order after extraction"""
 
         for report in self.order['reports']:  # Process the data key by key

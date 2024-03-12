@@ -52,7 +52,7 @@ class IDRGenerator:
             self.row1 = self.df[self.df['FED_NUM'] == self.ed_num].head(1)
 
             self.report_dict = {
-                'ed_name': add_en_dash(get_ed_name_from_code(int(self.ed_num))), # No need to join made dict get match via function
+                'ed_name': get_ed_name_from_code(int(self.ed_num)), # No need to join made dict get match via function
                 'ed_code': self.ed_num,
                 'prov': get_prov_from_code(int(self.ed_num)) # No prov in indigenous data. Get from ED_NUM
             }

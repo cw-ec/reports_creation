@@ -25,43 +25,38 @@ class DataDownloader:
 
             return oc
 
-    def download_data(self):
+    def download_data(self) -> None:
         """Downloads the data into the data folder"""
 
-        # Read the required SQL file(s) into a variable
-        with open(self.params['sql_path'], mode='r') as f:
-            sql_file = f.read()
+        for dataset in self.params['data']:
 
-        # connect_string = f"oracle://{self.params['username']}:{self.params['password']}@{self.params['database']}"
+            out_csv_nme = os.path.split(dataset['sql_path'])[-1].split('.')[0]
 
-        # Create db connection
-        connection = oracledb.connect(user=self.params['username'],
-                                      password=self.params['password'],
-                                      dsn=f"{self.params['database']}")
+            self.logger.info(f"Running query to extract {out_csv_nme}.csv")
 
-        out_csv_nme = os.path.split(self.params['sql_path'])[-1].split('.')[0]
+            # Read the required SQL file(s) into a variable
+            with open(dataset['sql_path'], mode='r') as f:
+                sql_file = f.read()
 
-        self.logger.info(f"Getting data for {out_csv_nme}")
-        df = pd.read_sql(sql_file, connection)
-        df.to_csv(os.path.join(self.out_path, f"{out_csv_nme}.csv"), encoding='ANSI', index=False)
+            # connect_string = f"oracle://{dataset['username']}:{dataset['password']}@{dataset['database']}"
 
-        # Create cursor to extract data using the provided sql
-        # with connection.cursor() as cursor:
+            # Add FED Array to SQL file
+            sql_file = sql_file.replace('ED_LIST_HERE', str(tuple(dataset['ed_list'])))
 
-        #     cursor.execute(sql_file)
+            # Create db connection
+            connection = oracledb.connect(user=dataset['username'],
+                                          password=dataset['password'],
+                                          dsn=f"{dataset['database']}")
 
-        #     rows = cursor.fetchall()
-
-        #     # Write to out csv
-        #     with open(os.path.join(self.out_path, f"{out_csv_nme}.csv"), 'w', encoding='ANSI') as out_file:
-        #         writer = csv.writer(out_file)
-        #         writer.writerows(rows)
+            self.logger.info(f"Getting data for {out_csv_nme}")
+            df = pd.read_sql(sql_file, connection)
+            df.to_csv(os.path.join(self.out_path, f"{out_csv_nme}.csv"), encoding='mbcs', index=False)  # mbcs == ANSI driver name (ANSI was the encoding available when using golden)
 
     def __init__(self, settings) -> None:
         # setup logging
         self.logger = logging_setup()
 
-        # Get the paraeters from the setting json
+        # Get the parameters from the setting json
         self.settings = settings
 
         # Set output directory and create the directory
@@ -71,7 +66,7 @@ class DataDownloader:
         self.logger.info("Extracting connection parameters")
         self.params = self.extract_params()
 
-        data = self.download_data()
+        self.download_data()
 
         self.logger.info("DONE!")
 

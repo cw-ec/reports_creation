@@ -113,7 +113,7 @@ class BuildPDDReport:
 
             # Load and filter the ps add dataframe and create the full address field with the correct paragraph style
             ps_add = self.ps_add[self.ps_add['FULL_PD_NBR'] == pd_num]
-            ps_add['mp_add_full'] = self.ps_add[['FINAL_SITE_ADDRESS', 'SITE_PLACE_NAME', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE']].apply(lambda x: Paragraph(f"{x[0]}<br/> {x[1]} {x[2]} {x[3]}", style=self.styles['SingleCellText']),axis=1)
+            ps_add['mp_add_full'] = self.ps_add[['FINAL_SITE_ADDRESS', 'SITE_PLACE_NAME', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE']].apply(lambda x: Paragraph(f"{x[0]}<br/> {x.iloc[1]} {x.iloc[2]} {x.iloc[3]}", style=self.styles['SingleCellText']),axis=1)
 
             element_list = [title_para] + [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header_mp']]] + ps_add[["SITE_NAME_BIL", 'mp_add_full', 'ELECTORS_LISTED']].values.tolist()
             tbl = Table(element_list, style=ts, repeatRows=2, colWidths=mp_widths)

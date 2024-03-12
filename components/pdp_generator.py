@@ -21,7 +21,7 @@ class PDPGenerator:
             out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
 
             # Fix en dashes if needed
-            out_df['POLL_NAME_FIXED'] = out_df['POLL_NAME_FIXED'].apply(lambda x: add_en_dash(x))
+            out_df['POLL_NAME_FIXED'] = out_df['POLL_NAME_FIXED'].apply(lambda x: x.replace('--', '—'))
 
             out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
             out_df["VOID_IND"] = 'N' # This field is missing in most recent version of the data placeholder until fixed
@@ -51,7 +51,7 @@ class PDPGenerator:
             self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
             self.report_dict = {
-                'ed_name': get_ed_name_from_code(self.ed_num),
+                'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
             }

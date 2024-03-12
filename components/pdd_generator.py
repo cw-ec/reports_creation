@@ -26,7 +26,7 @@ class PDDGenerator:
         ed_strm_df = ed_strm_df[['FULL_PD_NBR', 'TWNSHIP', 'RNGE', 'MRDN', 'SECTION']]
 
         # Add en dashes to text
-        out_df['POLL_NAME_FIXED'] = out_df['POLL_NAME_FIXED'].apply(lambda x: add_en_dash(x))
+        out_df['POLL_NAME_FIXED'] = out_df['POLL_NAME_FIXED'].apply(lambda x: x.replace('--', '—'))
 
         df_list = []
         # Create a df for each pd and append it to the df list
@@ -51,7 +51,7 @@ class PDDGenerator:
         self.logger.info("Loading data for Polling District Description")
         self.df = to_dataframe(data, encoding='latin-1')
         self.strm_df = to_dataframe(os.path.join(os.path.split(data)[0], 'strm.csv'), encoding='latin-1')  # STRM Data
-        self.ps_add = to_dataframe(os.path.join(os.path.split(data)[0], 'psadd.csv'), encoding='latin-1')  # PD Address full data
+        self.ps_add = to_dataframe(os.path.join(os.path.split(data)[0], 'ps_add.csv'), encoding='latin-1')  # PD Address full data
 
         self.logger.info("Generating PDD Report Table")
         self.report_dfs = self.gen_report_tables()
@@ -68,7 +68,7 @@ class PDDGenerator:
             self.ps_add = self.ps_add[['FULL_PD_NBR', 'SITE_NAME_BIL', 'FINAL_SITE_ADDRESS', 'FULL_SBPD_PLACE', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE', 'SITE_PLACE_NAME', 'ELECTORS_LISTED']]
 
             self.report_dict = {
-                'ed_name': add_en_dash(self.row1["ED_NAME_BIL"].to_list()[0]),
+                'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
             }
