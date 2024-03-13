@@ -261,7 +261,7 @@ class BuildPDDReport:
         # This is like this because we need to newline characters for the header to work properly
         self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
         {self.settings_dict['header']['report_type']}<br/>
-        {self.settings_dict['header']['rep_order']}<br/>
+        {self.in_dict['rep_order']}<br/>
         {self.in_dict['prov']}<br/>
         <b>{self.in_dict['ed_name']}</b><br/>
         <b>{self.in_dict['ed_code']}</b><br/>
