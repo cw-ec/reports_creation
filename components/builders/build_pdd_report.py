@@ -47,7 +47,7 @@ class BuildPDDReport:
             name_txt_list = data_df['FULL_PLACE_NAME'].dropna()
             if len(name_txt_list) >= 1:
                 name_txt_list = data_df['FULL_PLACE_NAME'].dropna().head(1).values.tolist()[0].split(',')
-                place_name_text = Paragraph(f"{name_txt_list[-1]}: {name_txt_list[0]}", style=self.styles['CellText'])
+                place_name_text = Paragraph(f"<b>{name_txt_list[-1]}: {name_txt_list[0]}</b>", style=self.styles['CellText'])
 
             else:  # Some full place names are blank prevent this error by returning an empty list
                 place_name_text = Paragraph(f"", style=self.styles['CellText'])
@@ -58,11 +58,11 @@ class BuildPDDReport:
 
             # Replace the nan's in the columns as needed to make the report table prettier
             for c in ['FROM_CIV_NUM', 'TO_CIV_NUM']:
-                data_df[c] = data_df[c].astype(str)
+                data_df[c] = data_df[c].astype("string")
                 data_df[c] = data_df[c].fillna('----')  # Replace nan with '----' to make the report prettier
-                data_df[c] = data_df[c].apply(lambda x: str(int(x) if isinstance(x, float) else x))
+                data_df[c] = data_df[c].apply(lambda x: str(int(float(x)) if x[0].isdigit() else x))
             for c in ['FROM_CROSS_FEAT', 'TO_CROSS_FEAT']:
-                data_df[c] = data_df[c].astype(str)
+                data_df[c] = data_df[c].astype("string")
                 data_df[c] = data_df[c].fillna('')  # Replace nan with '' for the features same reason as above
                 data_df[c] = data_df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText'])) # Add cell text with word wrap
 

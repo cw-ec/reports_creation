@@ -41,11 +41,11 @@ class BuildDPKReport:
 
             # Replace the nan's in the columns as needed to make the report table prettier
             for c in ['FROM_CIV_NUM', 'TO_CIV_NUM']:
-                data_df[c] = data_df[c].astype(str)
+                data_df[c] = data_df[c].astype("string")
                 data_df[c] = data_df[c].fillna('----')  # Replace nan with '----' to make the report prettier
-                data_df[c] = data_df[c].apply(lambda x: str(int(x) if isinstance(x, float) else x))
+                data_df[c] = data_df[c].apply(lambda x: str(int(float(x)) if x.isdigit() else x))
             for c in ['FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'ST_SIDE_DESC_BIL']:
-                data_df[c] = data_df[c].astype(str)
+                data_df[c] = data_df[c].astype("string")
                 data_df[c] = data_df[c].fillna('')  # Replace nan with '' for the features same reason as above
                 data_df[c] = data_df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText'])) # Add cell text with word wrap
 
@@ -147,7 +147,7 @@ class BuildDPKReport:
         # This is like this because we need to newline characters for the header to work properly
         self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
         {self.settings_dict['header']['report_type']}<br/>
-        {self.settings_dict['header']['rep_order']}<br/>
+        {self.in_dict['rep_order']}<br/>
         {self.in_dict['prov']}<br/>
         <b>{self.in_dict['ed_name']}</b><br/>
         <b>{self.in_dict['ed_code']}</b><br/>

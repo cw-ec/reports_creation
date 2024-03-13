@@ -65,7 +65,7 @@ class APDGenerator:
             self.report_dict = {
                 'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
                 'report_type': "Advance Polling Districts / Districts de vote par anticipation",
-                'rep_order': f"Representation order of 2013 / Décret de représentation de 2013",
+                'rep_order': f"Representation order of {self.row1['RDSTRBTN_YEAR'].to_list()[0]} / Décret de représentation de {self.row1['RDSTRBTN_YEAR'].to_list()[0]} ",
                 'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]

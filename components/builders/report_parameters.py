@@ -284,7 +284,7 @@ class IDRSettings:
 
         e_header = {'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
             'report_type': "Communities with Indigenous Peoples / Communautés avec des peuples autochtones",
-            'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
+            'rep_order': f"Representation order of 2023 / Décret de représentation de 2023"}
 
         # Headers for main table
         f_table_header = ["<b>NOM DE COMMUNAUTÉ / COMMUNITY NAME</b>", "<b>DESCRIPTION</b>", "<b>NUMÉRO DE SV / PD NO.</b>"]
