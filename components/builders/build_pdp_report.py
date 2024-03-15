@@ -99,7 +99,7 @@ class BuildPDPReport:
             # Header
             header = Paragraph(self.header_text, self.styles['HeaderTxt'])
             w, h = header.wrap(doc.width, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
+            header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - (h -0.9*cm))
 
             # Footer
             footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
@@ -121,6 +121,7 @@ class BuildPDPReport:
 
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
+
 
     def __init__(self,in_dict, data_df, out_dir, pagesize='Letter', orientation='Portrait'):
         self.logger = logging_setup()
@@ -158,8 +159,8 @@ class BuildPDPReport:
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
                             rightMargin=2.2 * cm,
-                            topMargin=7 * cm,
-                            bottomMargin=2.5 * cm
+                            topMargin=4.5 * cm,
+                            bottomMargin=1 * cm
         )
         self.logger.info("Creating document tables")
         # Creates the document for the report and exports

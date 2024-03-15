@@ -81,6 +81,14 @@ def get_prov_from_code(prov_code: int) -> str:
     else:
         raise Exception(f"ED_Code {prov_code} not in province when reduced to {pr_code} not in province dict. Check input")
 
+def to_excel(df: pd.DataFrame, out_dir: str, out_nme: str, header: list[str]) -> None:
+    """Exports input dataframe to excel"""
+    df.to_excel(os.path.join(out_dir, f"{out_nme}.xlsx"),
+                index=False,  # No need for the index column to be included
+                sheet_name=out_nme,  # Give the sheet the same name as the excel name
+                header=header  # We want to use the column names given not the ones that come with the data
+                )
+
 def get_ed_name_from_code(code: int) -> str:
     """Returns the Fed 343 name for a given ed number"""
 
@@ -299,3 +307,28 @@ def get_ed_name_from_code(code: int) -> str:
         return ed_dict[code]
     else:
         raise Exception(f"ED Code {code} does not exist in the 343 dictionary.")
+
+def get_excel_header(fed_num: int, report_type: str) -> list[str]:
+    """Returns the excel header for the given report type and fed num"""
+
+    if report_type == 'PDP':
+        if int(str(fed_num)[:2]) != 24:
+            return  ["Electoral District Number / Numéro de circonscription",
+                    "English Electoral Distict Name / Nom de circonscription anglais",
+                    "French Electoral Distict Name / Nom de circonscription français",
+                    "Polling Division Number / Numéro de section de vote",
+                    "Prefix / Préfixe",
+                    "Suffix / Suffixe",
+                    "Polling Division Name / Nom de section de vote",
+                    "Electors Listed / Électeurs inscrits",
+                     "Void / Nul"]
+        else:
+            return ["Numéro de circonscription / Electoral District Number",
+                    "Nom de circonscription anglais / English Electoral Distict Name",
+                    "Nom de circonscription français / French Electoral Distict Name ",
+                    "Numéro de section de vote / Polling Division Number",
+                    "Préfixe / Prefix",
+                    "Suffixe / Suffix",
+                    "Nom de section de vote / Polling Division Name",
+                    "Électeurs inscrits / Electors Listed",
+                    "Nul / Void"]

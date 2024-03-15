@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from .commons import logging_setup, to_dataframe, create_dir, add_en_dash, get_ed_name_from_code
+from .commons import logging_setup, to_dataframe, create_dir, get_ed_name_from_code, to_excel, get_excel_header
 from .builders import BuildPDPReport
+from .builders.report_parameters import PDPSettings
 import pandas as pd
-import sys
+import sys, os
 
 class PDPGenerator:
 
@@ -24,11 +25,18 @@ class PDPGenerator:
             out_df['POLL_NAME_FIXED'] = out_df['POLL_NAME_FIXED'].apply(lambda x: x.replace('--', '—'))
 
             out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
-            out_df["VOID_IND"] = 'N' # This field is missing in most recent version of the data placeholder until fixed
+
+            # Send the table to be exported to the out directory
+
+
+            to_excel(out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "POLL_NAME_FIXED", "ELECTORS_LISTED", "VOID_IND"]],
+                     out_dir= self.out_path,
+                     out_nme=f"PD_PROF_{self.ed_num}",
+                     header= get_excel_header(self.ed_num, 'PDP')
+                     )
 
             out_df["VOID_IND"] = out_df["VOID_IND"].replace('N', '') # No need to show N's replace with nothing
             return out_df[['PD_NO_CONCAT', 'POLL_NAME_FIXED', 'ELECTORS_LISTED', 'VOID_IND']]
-
 
     def __init__(self, data, out_path, ed_num):
 
@@ -53,7 +61,8 @@ class PDPGenerator:
             self.report_dict = {
                 'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
-                'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0],'rep_order': f"Representation order of {self.row1['RDSTRBTN_YEAR'].to_list()[0]} / Décret de représentation de {self.row1['RDSTRBTN_YEAR'].to_list()[0]}"
+                'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0],
+                'rep_order': f"Representation order of {self.row1['RDSTRBTN_YEAR'].to_list()[0]} / Décret de représentation de {self.row1['RDSTRBTN_YEAR'].to_list()[0]}"
             }
 
             create_dir(self.out_path)

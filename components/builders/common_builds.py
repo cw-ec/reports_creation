@@ -1,3 +1,4 @@
+import pandas as pd
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm, inch
@@ -6,7 +7,6 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph
 from reportlab.lib.pagesizes import letter, landscape
-import sys
 
 # Non-standard for in reportlab needs to be registered (both bold and non-bold versions
 registerFont(TTFont('Arial','ARIAL.ttf'))
