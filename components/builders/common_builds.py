@@ -91,7 +91,6 @@ def set_single_cell_tbl_style(style_name='SingleCellText') -> ParagraphStyle:
     styles = getSampleStyleSheet()
 
     style = ParagraphStyle(name=style_name,
-                           parent=styles['BodyText'],
                            alignment=TA_LEFT)
     return style
 

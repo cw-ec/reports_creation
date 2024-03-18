@@ -20,8 +20,8 @@ class PDPSettings:
         e_table_header = ["<b>NO. /<br/>Nº</b>", "<b>NAME /<br/>NOM</b>", "<b>ELECTORS LISTED /<br/>ÉLECTEURS INSCRITS</b>", "<b>VOID /<br/>NUL</b>"]
 
         # Summary Statistics Table Header
-        e_ss_table_header = "Summary Statistics /<br/>Statistiques récapitulatives"
-        f_ss_table_header = "Statistiques récapitulatives /<br/>Summary Statistics"
+        e_ss_table_header = "<b>Summary Statistics /<br/>Statistiques récapitulatives</b>"
+        f_ss_table_header = "<b>Statistiques récapitulatives /<br/>Summary Statistics</b>"
 
         # Summary Stats Row Descriptions
         f_total_apd = "Total de sections de votes actives /<br/>Total of Active Polling Divisions"
@@ -34,7 +34,7 @@ class PDPSettings:
         e_avg_noe_per_apd = "Average Number of Electors per Ordinary Polling Division /<br/>Nombre moyen d'électeurs par section de vote ordinaire"
 
         f_total_vpd = "Nombre total de sections de vote nulles /<br/>Total Void Polling Divisions"
-        e_total_vpd = "Total Void Polling Divisions /<br/>Nombre total de sections de vote nulles"
+        e_total_vpd = "Total Void Polling Divisions / <br/> Nombre total de sections de vote nulles"
 
         # Footer Text
         e_footer_text = "Printed on / Imprimé le"
@@ -84,8 +84,8 @@ class APDSettings:
         e_table_header = ["<b>NO. /<br/>Nº</b>", "<b>NAME /<br/>NOM</b>", "<b>POLLING DIVISIONS /<br/>SECTIONS DE VOTE</b>", "<b>TOTAL</b>"]
 
         # Summary Statistics Table Header
-        e_ss_table_header = "Summary Statistics / Statistiques récapitulatives"
-        f_ss_table_header = "Statistiques récapitulatives / Summary Statistics"
+        e_ss_table_header = "<b>Summary Statistics /<br/>Statistiques récapitulatives</b>"
+        f_ss_table_header = "<b>Statistiques récapitulatives /<br/>Summary Statistics</b>"
 
         # Summary Stats Row Descriptions
         f_total_apd = "Nombre total de districts de vote par anticipation / Total number of advanced polling districts"
@@ -231,8 +231,8 @@ class MPSSettings:
         e_table_header = ["<b>POLLING DIVISION NUMBER /<br/>NUMÉRO DE LA SECTION DE VOTE</b>", "<b>TOTAL INSTITUTIONS /<br/>TOTAL DES ÉTABLISSEMENTS</b>", "<b>ELECTORS LISTED /<br/>ÉLECTEURS INSCRITS</b>", "<b>ADVANCED POLLS /<br/>BUREAUX DE VOTE PAR ANTICIPATION</b>"]
 
         # Summary Statistics Table Header
-        e_ss_table_header = "Summary Statistics /<br/>Statistiques récapitulatives"
-        f_ss_table_header = "Statistiques récapitulatives /<br/>Summary Statistics"
+        e_ss_table_header = "<b>Summary Statistics /<br/>Statistiques récapitulatives</b>"
+        f_ss_table_header = "<b>Statistiques récapitulatives /<br/>Summary Statistics</b>"
 
         # Summary Stats Row Descriptions
         f_total_pd = "Total de sections de votes /<br/>Total Polling Divisions"

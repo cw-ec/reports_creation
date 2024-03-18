@@ -5,6 +5,7 @@ from components.commons import logging_setup
 import os
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
 from reportlab.lib.units import cm
+from reportlab.platypus.flowables import TopPadder
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.enums import TA_CENTER
@@ -33,6 +34,7 @@ class BuildMPSReport:
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
             ]
 
             df = self.data_df.copy()
@@ -57,6 +59,7 @@ class BuildMPSReport:
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
             ]
 
             # Apply cell text style to text based fields
@@ -77,7 +80,7 @@ class BuildMPSReport:
 
             # Convert the df to a table and export
             stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
-            ss_list = [stats_df.columns[:, ].values.astype(str).tolist()] + stats_df.values.tolist()
+            ss_list = [[Paragraph(c, self.styles['ColHeaderTxt']) for c in cols]] + stats_df.values.tolist()
 
             # Take the column widths for the main table and make each column worth half its total width
             col_widths = [(sum(c_widths)/2)] *2
@@ -93,7 +96,7 @@ class BuildMPSReport:
             # Header
             header = Paragraph(self.header_text, self.styles['HeaderTxt'])
             w, h = header.wrap(doc.width, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
+            header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - (h - self.header_margin))
 
             # Footer
             footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
@@ -112,7 +115,7 @@ class BuildMPSReport:
 
         column_widths = [130, 130, 130,130]
         # Create report elements
-        elements = [add_report_table(column_widths), Spacer(0 * cm, 2 * cm), add_summary_box(column_widths)]
+        elements = [add_report_table(column_widths), Spacer(0 * cm, 2 * cm), TopPadder(add_summary_box(column_widths))]
 
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
@@ -153,9 +156,12 @@ class BuildMPSReport:
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
                             rightMargin=2.2 * cm,
-                            topMargin=7 * cm,
+                            topMargin=4.5 * cm,
                             bottomMargin=2.5 * cm
         )
+
+        self.header_margin = 2* cm
+
         self.logger.info("Creating document tables")
         # Creates the document for the report and exports
         self.pdp_report_pages()

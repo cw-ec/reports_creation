@@ -33,6 +33,7 @@ class BuildIDRReport:
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
             ]
 
             # Fix table text
@@ -51,7 +52,7 @@ class BuildIDRReport:
             # Header
             header = Paragraph(self.header_text, self.styles['HeaderTxt'])
             w, h = header.wrap(doc.width, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
+            header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - (h - self.header_margin))
 
             # Footer
             footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
@@ -111,9 +112,10 @@ class BuildIDRReport:
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
                             rightMargin=2.2 * cm,
-                            topMargin=7 * cm,
+                            topMargin=5.0 * cm,
                             bottomMargin=2.5 * cm
         )
+        self.header_margin =  2* cm  # Modifies the distance the top of the header is from the top of the page
         self.logger.info("Creating document tables")
         # Creates the document for the report and exports
         self.idr_report_pages()

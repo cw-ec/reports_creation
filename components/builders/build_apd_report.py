@@ -6,6 +6,7 @@ import pandas as pd
 from components.commons import logging_setup
 import os
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
+from reportlab.platypus.flowables import TopPadder
 from reportlab.lib.units import cm, mm, inch
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib import colors
@@ -37,6 +38,7 @@ class BuildAPDReport:
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
             ]
 
             df = self.data_df.copy()
@@ -75,6 +77,7 @@ class BuildAPDReport:
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
             ]
 
             # Calculate Summary Statistics
@@ -88,7 +91,7 @@ class BuildAPDReport:
 
             # Convert the df to a table and export
             stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
-            listb = [stats_df.columns[:, ].values.astype(str).tolist()] + stats_df.values.tolist()
+            listb = [[Paragraph(c, self.styles['ColHeaderTxt']) for c in cols]] + stats_df.values.tolist()
 
             c_widths = [(sum(col_widths) / 2)] * 2 # Make sure the summary stats table is same width as main table
             table = Table(listb, style=ts, colWidths=c_widths)
@@ -102,7 +105,7 @@ class BuildAPDReport:
             # Header
             header = Paragraph(self.header_text.replace("\n", "<br/>"), self.styles['HeaderTxt'])
             w, h = header.wrap(doc.width, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - h)
+            header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - (h -self.header_margin))
 
             # Footer
             footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'], encoding=self.encoding)
@@ -120,7 +123,7 @@ class BuildAPDReport:
 
         # Create report elements
         column_widths = [50, 180, 220, 70]
-        elements = [add_report_table(col_widths=column_widths), Spacer(0 * cm, 2 * cm), add_summary_box(col_widths=column_widths)]
+        elements = [add_report_table(col_widths=column_widths), Spacer(0 * cm, 2 * cm), TopPadder(add_summary_box(col_widths=column_widths))]
 
         # Build the document from the elements we have
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
@@ -161,9 +164,11 @@ class BuildAPDReport:
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
                             rightMargin=2.2 * cm,
-                            topMargin=7 * cm,
+                            topMargin=4.5 * cm,
                             bottomMargin=2.5 * cm
         )
+        self.header_margin =  2* cm  # Modifies the distance the top of the header is from the top of the page
+
         self.logger.info("Creating document tables")
         # Creates the document for the report and exports
         self.apd_report_pages()

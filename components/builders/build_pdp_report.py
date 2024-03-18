@@ -35,6 +35,7 @@ class BuildPDPReport:
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
             ]
 
             # Copy the dataframe and style the pd number column
@@ -61,6 +62,7 @@ class BuildPDPReport:
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
             ]
 
             # Apply cell text style to text based fields
@@ -69,7 +71,7 @@ class BuildPDPReport:
                     lambda x: Paragraph(x, style=self.styles['CellText']))
 
             # Calc Stats
-            total_active_pd = len(self.data_df[self.data_df['VOID_IND']=='N'])
+            total_active_pd = len(self.data_df[self.data_df['VOID_IND']!='N'])  # Total # of pd's with VOID_IND == 'N'
             total_electors = self.data_df['ELECTORS_LISTED'].sum()
             avg_ele_per_pd = int(self.data_df.loc[:, 'ELECTORS_LISTED'].mean())
             total_void = len(self.data_df[self.data_df['VOID_IND'] !='N'])
@@ -83,7 +85,7 @@ class BuildPDPReport:
 
             # Convert the df to a table and export
             stats_df = pd.DataFrame(stats,index=range(len(stats)), columns=cols)
-            ss_list = [stats_df.columns[:, ].values.astype(str).tolist()] + stats_df.values.tolist()
+            ss_list = [[Paragraph(c, self.styles['ColHeaderTxt']) for c in cols]] + stats_df.values.tolist()
 
             # Take the column widths for the main table and make each column worth half its total width
             col_widths = [(sum(c_widths)/2)] *2
@@ -99,7 +101,7 @@ class BuildPDPReport:
             # Header
             header = Paragraph(self.header_text, self.styles['HeaderTxt'])
             w, h = header.wrap(doc.width, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - (h -0.9*cm))
+            header.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - (h -self.header_margin))
 
             # Footer
             footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
@@ -162,6 +164,8 @@ class BuildPDPReport:
                             topMargin=4.5 * cm,
                             bottomMargin=1 * cm
         )
+        self.header_margin = 0.9 * cm
+
         self.logger.info("Creating document tables")
         # Creates the document for the report and exports
         self.pdp_report_pages()
