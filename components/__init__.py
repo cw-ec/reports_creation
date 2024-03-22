@@ -1,4 +1,4 @@
-from .commons import logging_setup, create_dir, to_dataframe, add_en_dash
+from .commons import logging_setup, create_dir, to_dataframe, add_en_dash, to_excel
 from .builders import *
 from .data_downloader import DataDownloader
 from .pdp_generator import PDPGenerator

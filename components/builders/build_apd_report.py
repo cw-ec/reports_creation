@@ -5,7 +5,7 @@ import sys
 import pandas as pd
 from components.commons import logging_setup
 import os
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer, PageBreak
 from reportlab.platypus.flowables import TopPadder
 from reportlab.lib.units import cm, mm, inch
 from reportlab.lib.enums import TA_CENTER
@@ -123,7 +123,7 @@ class BuildAPDReport:
 
         # Create report elements
         column_widths = [50, 180, 220, 70]
-        elements = [add_report_table(col_widths=column_widths), Spacer(0 * cm, 2 * cm), TopPadder(add_summary_box(col_widths=column_widths))]
+        elements = [add_report_table(col_widths=column_widths), PageBreak(), add_summary_box(col_widths=column_widths)]
 
         # Build the document from the elements we have
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
@@ -152,7 +152,7 @@ class BuildAPDReport:
         # This is like this because we need to newline characters for the header to work properly
         self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b>
 {self.settings_dict['header']['report_type']}
-{self.in_dict['rep_order']}
+{self.settings_dict['header']['rep_order'].replace('YR', str(self.in_dict['rep_yr']))}
 {self.in_dict['prov']}
 <b>{self.in_dict['ed_name']}</b>
 <b>{self.in_dict['ed_code']}</b> 

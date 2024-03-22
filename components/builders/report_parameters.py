@@ -9,11 +9,11 @@ class PDPSettings:
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
             'report_type': "Profil de Section de Vote / Polling District Profile ",
-            'rep_order': f"Décret de représentation de 2013 / Representation order of 2013",}
+            'rep_order': f"Décret de représentation de YR / Representation order of YR",}
 
         e_header = {'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
             'report_type': "Polling District Profile / Profil de Section de Vote",
-            'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
+            'rep_order': f"Representation order of YR / Décret de représentation de YR"}
 
         # Headers for main table
         f_table_header = ["<b>Nº /<br/>NO.</b>", "<b>NOM /<br/>NAME</b>", "<b>ÉLECTEURS INSCRITS /<br/>ELECTORS LISTED</b>", "<b>NUL /<br/>VOID</b>"]
@@ -73,11 +73,11 @@ class APDSettings:
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
             'report_type': "Districts de vote par anticipation / Advance Polling Districts",
-            'rep_order': f"Décret de représentation de 2013 / Representation order of 2013",}
+            'rep_order': f"Décret de représentation de YR / Representation order of YR",}
 
         e_header = {'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
             'report_type': "Advance Polling Districts / Districts de vote par anticipation",
-            'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
+            'rep_order': f"Representation order of YR / Décret de représentation de YR"}
 
         # Headers for main table
         f_table_header = ["<b>Nº /<br/>NO.</b>", "<b>NOM /<br/>NAME</b>", "<b>SECTIONS DE VOTE /<br/>LISTED POLLING DIVISIONS</b>", "<b>TOTAL</b>"]
@@ -122,21 +122,21 @@ class PDDSettings:
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
                     'report_type': "Descriptions",
-                    'rep_order': f"Décret de représentation de 2013 / Representation order of 2013", }
+                    'rep_order': f"Décret de représentation de YR / Representation order of YR", }
 
         e_header = {'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
                     'report_type': "Descriptions",
-                    'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
+                    'rep_order': f"Representation order of YR / Décret de représentation de YR"}
 
         # Headers for main table
         e_table_header_range = ["STREET NAME /<br/>NOM DE RUE", "FROM /<br/>DE", "TO /<br/>À", "FROM /<br/>DE", "TO /<br/>À", "SIDE /<br/>CÔTÉ"]
         f_table_header_range = ["NOM DE RUE /<br/>STREET NAME", "DE /<br/>FROM", "À /<br/>TO", "DE /<br/>FROM", "À /<br/>TO", "CÔTÉ /<br/>SIDE"]
 
-        e_table_header_mp = ["INSTITUTION /<br/>ÉTABLISSEMENT", "ADDRESS /<br/>ADRESSE", "ELECTORS_LISTED /<br/>ÉLECTEURS INSCRITS"]
+        e_table_header_mp = ["INSTITUTION /<br/>ÉTABLISSEMENT", "ADDRESS /<br/>ADRESSE", "ELECTORS LISTED /<br/>ÉLECTEURS INSCRITS"]
         f_table_header_mp = ["ÉTABLISSEMENT /<br/>INSTITUTION", "ADRESSE /<br/>ADDRESS", "ÉLECTEURS INSCRITS /<br/>ELECTORS_LISTED"]
 
-        e_table_header_strm = ["TOWNSHIP /<br/>CANTON", "RANGE /<br/>RANG", "MERIDIAN /<br/>MÉRIDIEN", "SECTION NUMBER /<br/>NUMÉRO DE SECTION", "SPECIFICATIONS /<br/>SPÉCIFICATION"]
-        f_table_header_strm = ["CANTON /<br/>TOWNSHIP", "RANG /<br/>RANGE", "MÉRIDIEN /<br/>MERIDIAN", "NUMÉRO DE SECTION /<br/>SECTION NUMBER", "SPÉCIFICATION /<br/>SPECIFICATIONS"]
+        e_table_header_strm = ["TOWNSHIP /<br/>CANTON", "RANGE /<br/>RANG", "MERIDIAN /<br/>MÉRIDIEN", "SECTION NUMBER /<br/>NUMÉRO DE SECTION"]
+        f_table_header_strm = ["CANTON /<br/>TOWNSHIP", "RANG /<br/>RANGE", "MÉRIDIEN /<br/>MERIDIAN", "NUMÉRO DE SECTION /<br/>SECTION NUMBER"]
 
         e_table_title = "Polling Division / Section de Vote"
         f_table_title = "Section de Vote / Polling Division"
@@ -168,7 +168,7 @@ class PDDSettings:
                               "footer_text": f_footer_text,
                               }
 
-        if (in_ed > 24000) and (in_ed < 24999):
+        if (in_ed >= 24000) and (in_ed < 25000):
             self.settings_dict = self.f_params_dict
         else:
             self.settings_dict = self.e_params_dict
@@ -182,11 +182,11 @@ class DPKSettings:
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
                     'report_type': "Electoral District Poll Key / Indicateur des sections de vote de la circonscription",
-                    'rep_order': f"Décret de représentation de 2013 / Representation order of 2013", }
+                    'rep_order': f"Décret de représentation de YR / Representation order of YR", }
 
         e_header = {'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
                     'report_type': "Indicateur des sections de vote de la circonscription / Electoral District Poll Key",
-                    'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
+                    'rep_order': f"Representation order of YR / Décret de représentation de YR"}
 
         # Headers for main table
         e_table_header = ["STREET NAME /<br/>NOM DE RUE", "FROM /<br/>DE", "TO /<br/>À", "FROM /<br/>DE", "TO /<br/>À", "SIDE /<br/>CÔTÉ", "PD /<br/>SV", "APD /<br/>DVA"]
@@ -220,11 +220,11 @@ class MPSSettings:
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
             'report_type': "Sommaire de bureaux itinérants / Mobile Polls Summary",
-            'rep_order': f"Décret de représentation de 2013 / Representation order of 2013",}
+            'rep_order': f"Décret de représentation de YR / Representation order of YR",}
 
         e_header = {'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
             'report_type': "Mobile Polls Summary / Sommaire de bureaux itinérants",
-            'rep_order': f"Representation order of 2013 / Décret de représentation de 2013"}
+            'rep_order': f"Representation order of YR / Décret de représentation de YR"}
 
         # Headers for main table
         f_table_header = ["<b>NUMÉRO DE LA SECTION DE VOTE /<br/>POLLING DIVISION NUMBER</b>", "<b> TOTAL DES ÉTABLISSEMENTS /<br/>TOTAL INSTITUTIONS</b>", "<b>ÉLECTEURS INSCRITS /<br/>ELECTORS LISTED</b>", "<b>BUREAUX DE VOTE PAR ANTICIPATION /<br/>ADVANCED POLLS</b>"]

@@ -65,7 +65,7 @@ class MPSGenerator:
                 'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0],
-                'rep_order': f"Representation order of {self.row1['RDSTRBTN_YEAR'].to_list()[0]} / Décret de représentation de {self.row1['RDSTRBTN_YEAR'].to_list()[0]}"
+                'rep_yr': self.row1['RDSTRBTN_YEAR'].to_list()[0]
             }
             create_dir(self.out_path)
             self.logger.info("Creating Report PDF")

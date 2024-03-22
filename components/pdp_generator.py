@@ -52,7 +52,7 @@ class PDPGenerator:
         self.report_df = self.gen_report_table()
 
         if len(self.report_df) == 0:
-            self.logger.warning(f"No data available for PDD on {self.ed_num}. Check input data or workflow")
+            self.logger.warning(f"No data available for PDP on {self.ed_num}. Check input data or workflow")
 
         else:
             # Set a bunch of things for the report from the first line of the data and create a dict to hold them
@@ -62,7 +62,7 @@ class PDPGenerator:
                 'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0],
-                'rep_order': f"Representation order of {self.row1['RDSTRBTN_YEAR'].to_list()[0]} / Décret de représentation de {self.row1['RDSTRBTN_YEAR'].to_list()[0]}"
+                'rep_yr':self.row1['RDSTRBTN_YEAR'].to_list()[0]
             }
 
             create_dir(self.out_path)

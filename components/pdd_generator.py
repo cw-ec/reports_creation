@@ -19,11 +19,12 @@ class PDDGenerator:
 
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
-        out_df = out_df.sort_values(by='PD_NBR') # Sort ascending
+        out_df = out_df.sort_values(by=['PD_NBR', 'PD_NBR_SFX', 'ST_NME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT'], na_position='first') # Sort ascending
 
         # Set dataframes field order and keep only essential fields
-        out_df = out_df[['PD_NO_CONCAT', 'STREET_NME_FULL', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL', 'POLL_NAME_FIXED', "FULL_PLACE_NAME"]]
+        out_df = out_df[['PD_NO_CONCAT', 'STREET_NME_FULL','STREET_NME_FULL_ENG', 'STREET_NME_FULL_FRE', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL', 'POLL_NAME_FIXED', "FULL_PLACE_NAME"]]
         ed_strm_df = ed_strm_df[['FULL_PD_NBR', 'TWNSHIP', 'RNGE', 'MRDN', 'SECTION']]
+        ed_strm_df = ed_strm_df.sort_values(by=['FULL_PD_NBR', 'MRDN', 'TWNSHIP','RNGE'], na_position='first')
 
         # Add en dashes to text
         out_df['POLL_NAME_FIXED'] = out_df['POLL_NAME_FIXED'].apply(lambda x: x.replace('--', '—'))
@@ -32,11 +33,13 @@ class PDDGenerator:
         # Create a df for each pd and append it to the df list
         for pd in out_df['PD_NO_CONCAT'].unique().tolist(): # Iterate over list of unique pd numbers
             pd_df = out_df[out_df['PD_NO_CONCAT'] == pd ].copy()
+            pd_df.sort_values('STREET_NME_FULL')
             df_list.append(pd_df)
 
             # if the ed contains strms then add that to the list of tables check to make sure the records are populated
             pd_strms = ed_strm_df[ed_strm_df['FULL_PD_NBR'] == pd]
             if (len(pd_strms['TWNSHIP'].unique().tolist()) > 1) or len(pd_strms[~pd_strms['TWNSHIP'].isna()].values.tolist()) > 1:
+                pd_strms.drop(columns=['FULL_PD_NBR'], inplace=True)
                 df_list.append(pd_strms)
 
         return df_list
@@ -71,7 +74,7 @@ class PDDGenerator:
                 'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0],
-                'rep_order': f"Representation order of {self.row1['RDSTRBTN_YEAR'].to_list()[0]} / Décret de représentation de {self.row1['RDSTRBTN_YEAR'].to_list()[0]}"
+                'rep_yr': self.row1['RDSTRBTN_YEAR'].to_list()[0]
             }
             create_dir(self.out_path)
             self.logger.info("Creating Report PDF")

@@ -4,7 +4,7 @@ import pandas as pd
 from components.commons import logging_setup
 from reportlab.platypus.flowables import TopPadder
 import os
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer, PageBreak
 from reportlab.lib.units import cm
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
@@ -119,7 +119,7 @@ class BuildPDPReport:
 
         column_widths = [80, 180, 180,80]
         # Create report elements
-        elements = [add_report_table(column_widths), TopPadder(add_summary_box(column_widths))]
+        elements = [add_report_table(column_widths), PageBreak(), add_summary_box(column_widths)]
 
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
@@ -148,7 +148,7 @@ class BuildPDPReport:
         # This is like this because we need to newline characters for the header to work properly
         self.header_text =  f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
         {self.settings_dict['header']['report_type']}<br/>
-        {self.in_dict['rep_order']}<br/>
+        {self.settings_dict['header']['rep_order'].replace('YR', str(self.in_dict['rep_yr']))}<br/>
         {self.in_dict['prov']}<br/>
         <b>{self.in_dict['ed_name']}</b><br/>
         <b>{self.in_dict['ed_code']}</b> 
@@ -164,7 +164,7 @@ class BuildPDPReport:
                             topMargin=4.5 * cm,
                             bottomMargin=1 * cm
         )
-        self.header_margin = 0.9 * cm
+        self.header_margin = 0.5 * cm
 
         self.logger.info("Creating document tables")
         # Creates the document for the report and exports
