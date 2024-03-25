@@ -181,11 +181,11 @@ class DPKSettings:
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
-                    'report_type': "Electoral District Poll Key / Indicateur des sections de vote de la circonscription",
+                    'report_type': "Indicateur des sections de vote de la circonscription / Electoral District Poll Key",
                     'rep_order': f"Décret de représentation de YR / Representation order of YR", }
 
         e_header = {'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
-                    'report_type': "Indicateur des sections de vote de la circonscription / Electoral District Poll Key",
+                    'report_type': "Electoral District Poll Key / Indicateur des sections de vote de la circonscription",
                     'rep_order': f"Representation order of YR / Décret de représentation de YR"}
 
         # Headers for main table

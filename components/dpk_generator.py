@@ -21,6 +21,11 @@ class DPKGenerator:
         if len(out_df) == 0:
             return []
 
+        # Sort the input data (fields ordered as requested)
+        out_df = out_df.sort_values(
+            by=['ED_CODE', 'ST_NME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FULL_PLACE_NAME', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT'],
+            na_position='first')  # Sort ascending
+
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
 
@@ -58,7 +63,7 @@ class DPKGenerator:
                 'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),
                 'ed_code': self.row1['ED_CODE'].to_list()[0],
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0],
-                'rep_order': f"Representation order of {self.row1['RDSTRBTN_YEAR'].to_list()[0]} / Décret de représentation de {self.row1['RDSTRBTN_YEAR'].to_list()[0]}"
+                'rep_yr': self.row1['RDSTRBTN_YEAR'].to_list()[0]
             }
             create_dir(self.out_path)
             self.logger.info("Creating Report PDF")

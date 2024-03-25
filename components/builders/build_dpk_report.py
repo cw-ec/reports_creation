@@ -5,8 +5,9 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfbase.pdfmetrics import registerFont
 import datetime
 import pandas as pd
+import numpy as np
 from components.commons import logging_setup
-import os
+import os,sys
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer, Frame
 from reportlab.lib.units import cm
 from reportlab.pdfbase.pdfmetrics import registerFont
@@ -35,6 +36,7 @@ class BuildDPKReport:
                 ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
             ]
 
             data_df = df.copy()
@@ -43,7 +45,7 @@ class BuildDPKReport:
             for c in ['FROM_CIV_NUM', 'TO_CIV_NUM']:
                 data_df[c] = data_df[c].astype("string")
                 data_df[c] = data_df[c].fillna('----')  # Replace nan with '----' to make the report prettier
-                data_df[c] = data_df[c].apply(lambda x: str(int(float(x)) if x.isdigit() else x))
+                data_df[c] = data_df[c].apply(lambda x: str(int(float(x)) if x[0].isdigit() else x))
             for c in ['FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'ST_SIDE_DESC_BIL']:
                 data_df[c] = data_df[c].astype("string")
                 data_df[c] = data_df[c].fillna('')  # Replace nan with '' for the features same reason as above
@@ -59,7 +61,7 @@ class BuildDPKReport:
                 place_name_text = Paragraph(f"", style=self.styles['CellText'])
 
             # Create row header
-            row_header = [[data_df['STREET_NME_FULL'].head(1).values.tolist()[0], place_name_text]]
+            row_header = [[Paragraph(f"<b>{data_df['STREET_NME_FULL'].head(1).values.tolist()[0]}</b>", style=self.styles['CellText']), place_name_text]]
 
             # Change or drop fields for better report presentation
             data_df.drop(columns=['FULL_PLACE_NAME'], inplace=True)
@@ -86,16 +88,17 @@ class BuildDPKReport:
                 ('BACKGROUND', (0, 1), (-1, 1), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
             ]
 
             # Header
             header = Paragraph(self.header_text, self.styles['HeaderTxt'])
             hw, hh = header.wrap(self.page_width - 0.4 * inch, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin - 1 * inch, (3.0 * inch) + doc.topMargin - hh - (1.5*cm))
+            header.drawOn(canvas, TA_CENTER, (3.0 * inch) + doc.topMargin - hh - (1*cm))
             table_head = [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]]
             tbl = Table(table_head, style=ts, colWidths=self.col_widths)
             tbl.wrapOn(canvas, hw, hh)
-            tbl.drawOn(canvas, (self.page_width/2) -(hw/2) +(doc.leftMargin/2) + (0.2*cm), hh + (11.3 * cm))
+            tbl.drawOn(canvas, (self.page_width/2) -(hw/2) +(doc.leftMargin/2) + (0.15*cm), hh + (11.7 * cm))
 
             # Footer
             footer = Paragraph(f"{self.settings_dict['footer_text']}: {datetime.date.today()}", self.styles['Normal'])
@@ -138,7 +141,7 @@ class BuildDPKReport:
         self.page_height = 8.5 * inch
         self.page_width = 11 * inch
         # Column widths
-        self.col_widths = [150, 125, 125, 50, 50, 100, 50, 50]  # must = 700
+        self.col_widths = [90, 185, 120, 50, 50, 120, 45, 40]  # must sum to 700
 
 
         # Import special e/f headings and title parameters based on location
@@ -147,7 +150,7 @@ class BuildDPKReport:
         # This is like this because we need to newline characters for the header to work properly
         self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
         {self.settings_dict['header']['report_type']}<br/>
-        {self.in_dict['rep_order']}<br/>
+        {self.settings_dict['header']['rep_order'].replace('YR', str(self.in_dict['rep_yr']))}<br/>
         {self.in_dict['prov']}<br/>
         <b>{self.in_dict['ed_name']}</b><br/>
         <b>{self.in_dict['ed_code']}</b><br/>
@@ -159,8 +162,8 @@ class BuildDPKReport:
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"INDCIR_{self.in_dict['ed_code']}.pdf"),
                                      leftMargin=2 * cm,
                                      rightMargin=-5 * cm,
-                                     topMargin=14.5 * cm,
-                                     bottomMargin=2.5 * cm,
+                                     topMargin=14 * cm,
+                                     bottomMargin=1 * cm,
                                      )
 
         self.logger.info("Creating document tables")
