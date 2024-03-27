@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
+from .commons import logging_setup, to_dataframe, create_dir, to_excel, get_excel_header
 from .builders import BuildMPSReport
 import pandas as pd
 from math import isnan
@@ -38,6 +38,11 @@ class MPSGenerator:
 
         # Drop Duplicates before sending to builder
         out_df = out_df.drop_duplicates(subset='PD_NO_CONCAT', keep='first')
+
+        to_excel(df=out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "MOBILE_POLL_STN_ID", "ELECTORS_LISTED", "ADV_PD_NBR"]],
+                 out_dir=self.out_path,
+                 out_nme=f"SUMINS_{self.ed_num}",
+                 header=get_excel_header(self.ed_num, "MPS"))
 
         return out_df[['PD_NO_CONCAT', 'TOTAL_INST', 'ELECTORS_LISTED', 'APD_LIST']]
 

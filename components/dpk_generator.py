@@ -1,8 +1,6 @@
 import os.path
-
 import numpy as np
-
-from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
+from .commons import logging_setup, to_dataframe, create_dir
 from .builders import BuildDPKReport
 import pandas as pd
 import sys

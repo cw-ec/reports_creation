@@ -24,7 +24,7 @@ class IDRGenerator:
         if (self.ed_num >= 24000) and (self.ed_num < 25000): # Quebec
 
             out_df.rename(columns={"NAME_2": "C_NAME"}, inplace=True)
-            return out_df[["C_NAME","COMMUNITY_TYPE_E", "PD_NO_CONCAT"]]
+            return out_df[["C_NAME","COMMUNITY_TYPE_F", "PD_NO_CONCAT"]]
 
         else: # RoC
 

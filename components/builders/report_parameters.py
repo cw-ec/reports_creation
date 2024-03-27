@@ -88,8 +88,8 @@ class APDSettings:
         f_ss_table_header = "<b>Statistiques récapitulatives /<br/>Summary Statistics</b>"
 
         # Summary Stats Row Descriptions
-        f_total_apd = "Nombre total de districts de vote par anticipation / Total number of advanced polling districts"
-        e_total_apd = "Total number of advanced polling districts / Nombre total de districts de vote par anticipation"
+        f_total_apd = "Nombre total de districts de vote par anticipation /<br/>Total number of advanced polling districts"
+        e_total_apd = "Total number of advanced polling districts /<br/>Nombre total de districts de vote par anticipation"
 
         # Footer Text
         e_footer_text = "Printed on / Imprimé le"

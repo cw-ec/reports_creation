@@ -70,11 +70,13 @@ class BuildPDPReport:
                 self.data_df[c] = self.data_df[c].apply(
                     lambda x: Paragraph(x, style=self.styles['CellText']))
 
+
+            stats_df = self.data_df[self.data_df['VOID_IND']=='']  # '' because 'N' get removed in the generator
             # Calc Stats
-            total_active_pd = len(self.data_df[self.data_df['VOID_IND']!='N'])  # Total # of pd's with VOID_IND == 'N'
-            total_electors = self.data_df['ELECTORS_LISTED'].sum()
-            avg_ele_per_pd = int(self.data_df.loc[:, 'ELECTORS_LISTED'].mean())
-            total_void = len(self.data_df[self.data_df['VOID_IND'] !='N'])
+            total_active_pd = len(stats_df)  # Total # of pd's with VOID_IND == 'N'
+            total_electors = stats_df['ELECTORS_LISTED'].sum()
+            avg_ele_per_pd = int(stats_df['ELECTORS_LISTED'].mean())
+            total_void = len(self.data_df[self.data_df['VOID_IND'] =='Y'])
 
             # Setup Summary Stats DF
             cols = [self.settings_dict['ss_table_header'], '']
