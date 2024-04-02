@@ -13,6 +13,7 @@ class PDDGenerator:
         # Create data copy because we may need the orig later
         out_df = self.df[self.df["ED_CODE"] == self.ed_num].copy()
         ed_strm_df = self.strm_df[self.strm_df['ED_CODE'] == self.ed_num].copy()
+        ed_strm_df.dropna(subset=['TWNSHIP'], inplace=True)
 
         if len(out_df) == 0:  # If no data available return empty list
             return []
@@ -38,7 +39,7 @@ class PDDGenerator:
 
             # if the ed contains strms then add that to the list of tables check to make sure the records are populated
             pd_strms = ed_strm_df[ed_strm_df['FULL_PD_NBR'] == pd]
-            if (len(pd_strms['TWNSHIP'].unique().tolist()) > 1) or len(pd_strms[~pd_strms['TWNSHIP'].isna()].values.tolist()) > 1:
+            if (len(pd_strms['TWNSHIP'].unique().tolist()) >= 1):
                 pd_strms.drop(columns=['FULL_PD_NBR'], inplace=True)
                 df_list.append(pd_strms)
 

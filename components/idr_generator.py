@@ -9,6 +9,18 @@ class IDRGenerator:
     def gen_report_table(self) -> pd.DataFrame:
         """Generates the table that will be put into the report. Return the table with only the required fields"""
 
+        def drop_multipart(df: pd.DataFrame, community_fld: str, desc_fld:str, pd_num_fld:str) -> pd.DataFrame:
+            """Finds multipart communities and drops duplicate records when they have the same pd number"""
+
+            multi = df[df.duplicated(subset=[community_fld,desc_fld, pd_num_fld], keep='first')]
+
+            if len(multi) == 0:  # if there are no multipart features return the original data
+                return df
+            else:  # Where multipart features are present check for and remove those with matching pd_nums
+                out = df[~df.index.isin(multi.index.values.tolist())]
+                return out
+
+
         # Create data copy because we may need the orig later
         out_df = self.df.copy()
         out_df = out_df[out_df["FED_NUM"] == self.ed_num]
@@ -24,11 +36,13 @@ class IDRGenerator:
         if (self.ed_num >= 24000) and (self.ed_num < 25000): # Quebec
 
             out_df.rename(columns={"NAME_2": "C_NAME"}, inplace=True)
+            out_df = drop_multipart(out_df, "C_NAME","COMMUNITY_TYPE_F", "PD_NO_CONCAT")
             return out_df[["C_NAME","COMMUNITY_TYPE_F", "PD_NO_CONCAT"]]
 
         else: # RoC
 
             out_df.rename(columns={"NAME_1": "C_NAME"}, inplace=True)
+            out_df = drop_multipart(out_df, "C_NAME","COMMUNITY_TYPE_E", "PD_NO_CONCAT")
             return out_df[["C_NAME", "COMMUNITY_TYPE_E", "PD_NO_CONCAT"]]
 
     def __init__(self, idr_data, out_path, ed_num):

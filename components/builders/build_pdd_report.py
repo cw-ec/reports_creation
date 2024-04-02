@@ -104,12 +104,12 @@ class BuildPDDReport:
                 if c in ["SECTION", 'MRDN']:  # Just text cells convert to paragraph objects directly
                     df[c] = df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
                 else:  # Cells that should be integers convert to integers first then text
-                    df[c] = df[c].astype(int).astype(str).str.zfill(3)  # Make sure these fields are of length 3. Pad wit zeros if not
+                    df[c] = df[c].astype(int).astype(str).str.zfill(3)  # Make sure these fields are of length 3. Pad with zeros if not
                     df[c] = df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
 
             element_list = [title_para] + [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header_strm']]] + df.values.tolist()
 
-            tbl = Table(element_list, style=ts, repeatRows=1, colWidths=col_widths)
+            tbl = Table(element_list, style=ts, repeatRows=2, colWidths=col_widths)
 
             return tbl
 
@@ -254,7 +254,7 @@ class BuildPDDReport:
 
                 # If the next table is in the strm list then add a spacer if not then add a pagebreak
                 if index + 1 in strm_list:
-                    elements.append(Spacer(height=1*cm, width=0*cm))
+                    elements.append(Spacer(height=0.5*cm, width=0*cm))
                 else:
                     elements.append(PageBreak()) # PageBreak is needed to create a gap between the tables
 

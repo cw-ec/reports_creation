@@ -279,7 +279,7 @@ class IDRSettings:
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
             'report_type': "Communautés avec des peuples autochtones / Communities with Indigenous Peoples",
-            'rep_order': f"Décret de représentation de 2013 / Representation order of 2013",}
+            'rep_order': f"Décret de représentation de 2023 / Representation order of 2023",}
 
         e_header = {'dept_nme': "ELECTIONS CANADA / ÉLECTIONS CANADA",
             'report_type': "Communities with Indigenous Peoples / Communautés avec des peuples autochtones",
