@@ -85,7 +85,8 @@ class BuildPDDReport:
                 ('GRID', (0, 1), (-1, -1), 0.5, colors.grey),
                 ('GRID', (0, 0), (-1, 0), 0.5, colors.lightgrey),
                 ('FONT', (0, 0), (-1, 0), f'{self.font}-Bold'),
-                ('BACKGROUND', (0, 0), (-1, -1), colors.lightgrey),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                ('BACKGROUND', (0, 1), (-1, 1), colors.lightgrey),
                 ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
                 ('TEXTCOLOR', (0, 0), (1, -1), colors.black),
                 ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
@@ -131,9 +132,25 @@ class BuildPDDReport:
 
             title_para = [Paragraph(f"<b>{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})</b>"), '', '']
 
+            # Grab the elements from the pd desc data so that the full addresses can be built
+            fr_civ = str(int(df['FROM_CIV_NUM'].tolist()[0]))  # From civic number
+            str_nme_eng = df['STREET_NME_FULL_ENG'].tolist()[0]   # Street name eng
+            str_nme_fre = df['STREET_NME_FULL_FRE'].tolist()[0]   # Street name fre
+
+            # Addresses from the desc data as we're using the site addresses table as the base for the mp table.
+            add_fre = f"{fr_civ} {str_nme_fre} / {fr_civ} {str_nme_eng}"
+            add_eng = f"{fr_civ} {str_nme_eng} / {fr_civ} {str_nme_fre}"
+
             # Load and filter the ps add dataframe and create the full address field with the correct paragraph style
             ps_add = self.ps_add[self.ps_add['FULL_PD_NBR'] == pd_num]
-            ps_add['mp_add_full'] = self.ps_add[['FINAL_SITE_ADDRESS', 'SITE_PLACE_NAME', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE']].apply(lambda x: Paragraph(f"{x.iloc[0]}<br/> {x.iloc[1]}, {x.iloc[2]} {x.iloc[3]}", style=self.styles['SingleCellText']),axis=1)
+
+            # Build the mp full address field in an order based on the province QC vs RoC
+            if int(self.in_dict['ed_code']) >= 24000 and int(self.in_dict['ed_code']) <= 24999:  # Addresses in QC
+                ps_add['mp_add_full'] = self.ps_add[['SITE_PLACE_NAME', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE']].apply(lambda x: Paragraph(f"{add_fre}<br/>{x.iloc[0]}, {x.iloc[1]} {x.iloc[2]} /<br/> {add_eng}<br/>{x.iloc[0]}, {x.iloc[1]} {x.iloc[2]}", style=self.styles['SingleCellText']),axis=1)
+
+            else:  # RoC
+                ps_add['mp_add_full'] = self.ps_add[['SITE_PLACE_NAME', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE']].apply(lambda x: Paragraph(f"{add_eng}<br/>{x.iloc[0]}, {x.iloc[1]} {x.iloc[2]} /<br/> {add_fre}<br/>{x.iloc[0]}, {x.iloc[1]} {x.iloc[2]}", style=self.styles['SingleCellText']),axis=1)
+
             ps_add["SITE_NAME_BIL"] = ps_add["SITE_NAME_BIL"].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
 
             element_list = [title_para] + [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header_mp']]] + ps_add[["SITE_NAME_BIL", 'mp_add_full', 'ELECTORS_LISTED']].values.tolist()
@@ -178,7 +195,7 @@ class BuildPDDReport:
                 df['FROM_CIV_NUM'] = df['FROM_CIV_NUM'].astype(int)
 
             # Text for the main cell of the table eng or french first depending on the province
-            if (self.in_dict['ed_code']>= 24000) and (self.in_dict['ed_code'] < 25000):  # Quebec
+            if (self.in_dict['ed_code']>= 24000) and (self.in_dict['ed_code'] <= 24999):  # Quebec
                 site_add = Paragraph(
                     f"{df['FROM_CROSS_FEAT'].values.tolist()[0]}<br/>{df['FROM_CIV_NUM'].values.tolist()[0]} {df['STREET_NME_FULL_FRE'].values.tolist()[0]} / {df['FROM_CIV_NUM'].values.tolist()[0]} {df['STREET_NME_FULL_ENG'].values.tolist()[0]}",
                     style=self.styles['SingleCellText'])

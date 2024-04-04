@@ -1,4 +1,6 @@
 import os.path
+import re
+
 import numpy as np
 from .commons import logging_setup, to_dataframe, create_dir
 from .builders import BuildDPKReport
@@ -19,10 +21,14 @@ class DPKGenerator:
         if len(out_df) == 0:
             return []
 
+        out_df['sort_int'] = out_df['STREET_NME_FULL'].str.extract(r'(\d+)').astype(float)
         # Sort the input data (fields ordered as requested)
         out_df = out_df.sort_values(
-            by=['ED_CODE', 'ST_NME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FULL_PLACE_NAME', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT'],
-            na_position='first')  # Sort ascending
+            by=['ED_CODE', 'ST_NME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FULL_PLACE_NAME', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT', 'PD_NBR', 'PD_NBR_SFX', 'ST_SIDE_DESC_BIL'],
+            na_position='last')  # Sort ascending
+
+        # out_df = out_df.sort_values(by=['ED_CODE', 'ST_NME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FULL_PLACE_NAME', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT', 'PD_NBR', 'PD_NBR_SFX', 'ST_SIDE_DESC_BIL'],
+        #                             key= lambda col: col.map(lambda x: int(re.split('(\d+)',x))))
 
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
@@ -30,10 +36,16 @@ class DPKGenerator:
         out_df = out_df[['STREET_NME_FULL', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL', 'PD_NO_CONCAT', 'ADV_PD_NBR', 'FULL_PLACE_NAME']]
 
         df_list = []
+
         # Create a df for each pd and append it to the df list
         for str_nme in out_df['STREET_NME_FULL'].unique().tolist(): # Iterate over list of unique street names
-            str_df = out_df[out_df['STREET_NME_FULL'] == str_nme ].copy()
-            df_list.append(str_df)
+            str_df = out_df[out_df['STREET_NME_FULL'] == str_nme].copy()
+
+            for pl_nme in str_df['FULL_PLACE_NAME'].unique().tolist():  # iterate over each place name as the same street name can be in multiple places
+                pl_df = str_df[str_df['FULL_PLACE_NAME'] == pl_nme]
+
+                if len(pl_df) >= 1:  # Make sure there are records in the table before adding it to the table list
+                    df_list.append(pl_df)
 
         return df_list
 

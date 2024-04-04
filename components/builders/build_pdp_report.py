@@ -158,7 +158,6 @@ class BuildPDPReport:
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.logger.info("Creating PDP document")
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"PD_PROF_{self.in_dict['ed_code']}.pdf"),
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,

@@ -1,8 +1,10 @@
 import logging
 import sys
 import os
+import shutil
 import pandas as pd
 from datetime import datetime
+from pathlib import Path
 
 
 def logging_setup(log_dir=".\\") -> logging.getLogger():
@@ -23,6 +25,13 @@ def create_dir(path: str) -> None:
     """Check if directory exists and if it doesn't create it."""
     if not os.path.exists(path):
         os.makedirs(path)
+
+def delete_dir(in_path: str) -> None:
+    """Checks to see if the given directory exists if it does then delete it and all its contents"""
+
+    in_path = Path(in_path)
+    if in_path.exists() and in_path.is_dir():
+        shutil.rmtree(in_path)
 
 
 def to_dataframe(to_import: str, sheet_name=0, encoding='UTF-8') -> pd.DataFrame:
@@ -53,11 +62,11 @@ def add_en_dash(text:str) -> str:
         else:
             return text
 
-def get_prov_from_code(prov_code: int) -> str:
+def get_prov_from_code(prov_code: int, type='full') -> str:
     """Input an ed_code and get the province name in return"""
 
     # Corrected translations eng/ fre or fre / eng where needed with prov code associations
-    prov_dict = {
+    prov_dict_full = {
         10 : 'NEWFOUNDLAND AND LABRADOR / TERRE-NEUVE-ET-LABRADOR',
         11 : 'PRINCE EDWARD ISLAND / ÎLE-DU-PRINCE-ÉDOUARD',
         12 : 'NOVA SCOTIA / NOUVELLE-ÉCOSSE',
@@ -73,21 +82,49 @@ def get_prov_from_code(prov_code: int) -> str:
         62 : 'NUNAVUT'
     }
 
+    prov_dict_abv = {
+        10 : 'NL',
+        11 : 'PE',
+        12 : 'NS',
+        13 : 'NB',
+        24 : 'QC',
+        35 : 'ON',
+        46 : 'MB',
+        47 : 'SK',
+        48 : 'AB',
+        59 : 'BC',
+        60 : 'YT',
+        61 : 'NT',
+        62 : 'NU'
+
+    }
+
     # Extract the first two numbers of the input ed code to get the prov code
     pr_code = int(str(prov_code)[:2])
 
-    if pr_code in prov_dict:
-        return prov_dict[pr_code]
+    if pr_code in prov_dict_full:
+
+        if type == 'full':  # To return full bilingual names
+            return prov_dict_full[pr_code]
+
+        if type == 'abv':  # To return abbreviations
+            return prov_dict_abv[pr_code]
+
     else:
         raise Exception(f"ED_Code {prov_code} not in province when reduced to {pr_code} not in province dict. Check input")
 
 def to_excel(df: pd.DataFrame, out_dir: str, out_nme: str, header: list[str]) -> None:
     """Exports input dataframe to excel"""
-    df.to_excel(os.path.join(out_dir, f"{out_nme}.xlsx"),
-                index=False,  # No need for the index column to be included
-                sheet_name=out_nme,  # Give the sheet the same name as the excel name
-                header=header  # We want to use the column names given not the ones that come with the data
-                )
+
+    if len(df.columns) != len(header):
+        print('header and column count do not match no excel produced')
+
+    else:
+        df.to_excel(os.path.join(out_dir, f"{out_nme}.xlsx"),
+                    index=False,  # No need for the index column to be included
+                    sheet_name=out_nme,  # Give the sheet the same name as the excel name
+                    header=header  # We want to use the column names given not the ones that come with the data
+                    )
 
 def get_ed_name_from_code(code: int) -> str:
     """Returns the Fed 343 name for a given ed number"""
@@ -332,3 +369,52 @@ def get_excel_header(fed_num: int, report_type: str) -> list[str]:
                     "Nom de section de vote / Polling Division Name",
                     "Électeurs inscrits / Electors Listed",
                     "Nul / Void"]
+    if report_type == "APD":
+        if int(str(fed_num)[:2]) != 24:
+            return [ "Electoral Distict Number / Numéro de circonscription",
+                     "English Electoral Distict Name / Nom de circonscription anglais",
+                     "French Electoral Distict Name / Nom de circonscription français",
+                     "Advance Polling District Number / Numéro de bureau de vote par anticipation",
+                     "Prefix / Préfixe",
+                     "Suffix / Suffixe",
+                     "Advance Polling District Name / Nom de bureau de vote par anticipation",
+                     "Polling Division Groupings / Groupements des sections de vote",
+                     "Total Polling Divisions / Total de sections de vote"
+            ]
+
+        else:
+            return ["Numéro de circonscription / Electoral Distict Number",
+                   "Nom de circonscription anglais / English Electoral Distict Name",
+                   "Nom de circonscription français / French Electoral Distict Name",
+                   "Numéro de bureau de vote par anticipation / Advance Polling District Number",
+                   "Préfixe/ Prefix",
+                   "Suffixe/ Suffix",
+                   "Nom de bureau de vote par anticipation / Advance Polling District Name",
+                   "Groupements des sections de vote / Polling Division Groupings",
+                   "Total de sections de vote / Total Polling Divisions"
+                   ]
+    if report_type == 'MPS':
+        if int(str(fed_num)[:2]) != 24:
+            return [
+                "Electoral District Number / Numéro de circonscription",
+                "English Electoral Distict Name / Nom de circonscription anglais",
+                "French Electoral Distict Name / Nom de circonscription français",
+                "Polling Division Number / Numéro de section de vote",
+                "Prefix / Préfixe",
+                "Suffix / Suffixe",
+                "Total Institutions / Total d'Établissements",
+                "Electors Listed / Électeurs inscrits",
+                "Advance Polling District Number / Numéro de bureau de vote par anticipation"
+            ]
+        else:
+            return [
+                "Numéro de circonscription / Electoral District Number",
+                "Nom de circonscription anglais / English Electoral Distict Name",
+                "Nom de circonscription français / French Electoral Distict Name",
+                "Numéro de section de vote / Polling Division Number",
+                "Préfixe / Prefix",
+                "Suffixe / Suffix",
+                "Total d'Établissements / Total Institutions",
+                "Électeurs inscrits / Electors Listed",
+                "Numéro de bureau de vote par anticipation / Advance Polling District Number"
+        ]

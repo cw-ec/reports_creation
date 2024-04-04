@@ -20,7 +20,6 @@ class MPSGenerator:
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
         out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
-        out_df["VOID_IND"] = 'N'  # This field is missing in most recent version of the data placeholder until fixed
 
         # Add the institution count to the report table
         inst_count = out_df.groupby('PD_NO_CONCAT')['MOBILE_POLL_STN_ID'].nunique().rename('TOTAL_INST')
@@ -38,6 +37,7 @@ class MPSGenerator:
 
         # Drop Duplicates before sending to builder
         out_df = out_df.drop_duplicates(subset='PD_NO_CONCAT', keep='first')
+        out_df = out_df[out_df["VOID_IND"]=='N']
 
         to_excel(df=out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "MOBILE_POLL_STN_ID", "ELECTORS_LISTED", "ADV_PD_NBR"]],
                  out_dir=self.out_path,

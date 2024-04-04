@@ -45,10 +45,8 @@ class PDPGenerator:
 
         self.out_path = out_path
         self.ed_num = ed_num
-        self.logger.info("Loading data for Polling District Profile")
         self.df = to_dataframe(data, encoding='latin-1')
 
-        self.logger.info("Generating PDP Report Table")
         self.report_df = self.gen_report_table()
 
         if len(self.report_df) == 0:

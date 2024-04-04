@@ -61,7 +61,7 @@ class BuildDPKReport:
                 place_name_text = Paragraph(f"", style=self.styles['CellText'])
 
             # Create row header
-            row_header = [[Paragraph(f"<b>{data_df['STREET_NME_FULL'].head(1).values.tolist()[0]}</b>", style=self.styles['CellText']), place_name_text]]
+            row_header = [[Paragraph(f"<b>{data_df['STREET_NME_FULL'].values.tolist()[0]}</b>", style=self.styles['CellText']), place_name_text]]
 
             # Change or drop fields for better report presentation
             data_df.drop(columns=['FULL_PLACE_NAME'], inplace=True)
