@@ -1,7 +1,7 @@
-import json, sys, os
+import json, sys, os, shutil
 from pathlib import Path
 from collections import OrderedDict
-from .commons import logging_setup, create_dir
+from .commons import logging_setup, create_dir, delete_dir , get_prov_from_code
 from .apd_generator import APDGenerator
 from .pdp_generator import PDPGenerator
 from .pdd_generator import PDDGenerator
@@ -24,7 +24,6 @@ class ReportFactory:
                 oc[k] = content[k]
 
             return oc
-
 
     def process_order(self) -> None:
         """Processes the order after extraction"""
@@ -64,15 +63,40 @@ class ReportFactory:
                 else:  # For those cases where the input key does not match any of the valid report types
                     self.logger.warning(f"{report['type']} does not match a valid report type. Check the project documentation for all valid report types")
 
+    def export_order(self):
+        """Exports the order to the given export directory"""
+
+        export_dir = self.order['export_directory']
+        temp_dir = Path(self.out_dir)
+
+        self.logger.info(f"Exporting reports to: {export_dir}")
+
+        for f in temp_dir.glob("**/*.pdf"):
+
+            f_name = os.path.split(f)[-1]
+            self.logger.info(f"Exporting {f_name}")
+
+            fed_num = f_name.split("_")[-1].split(".")[0]  # Extract the fed number from the file name
+            prov_abv = get_prov_from_code(int(fed_num), type='abv')
+
+            fed_dir = os.path.join(export_dir, prov_abv, fed_num)  # Build the fed dir from the component parts
+            create_dir(fed_dir)  # Ensure that the directory exists
+            shutil.copy(f, os.path.join(fed_dir, f_name)) # Copy the file to the export subdirectory
+
     def __init__(self, workflow):
 
         self.logger = logging_setup()
 
-        self.out_dir = ".\\out"
+        self.out_dir = ".\\scratch"
+        delete_dir(self.out_dir)  # If the out_directory (scratch) exists from a prior run delete it and its contents
+
         self.workflow = Path(workflow) # Path to json workflow
 
         self.logger.info("Extracting order from the input workflow")
         self.order = self.extract_order() # Get the order from the json as a dictionary
         self.process_order()
+
+        create_dir(self.order['export_directory'])  # Check to make sure the export directory exists before exporting
+        self.export_order()
 
         self.logger.info("DONE!")
