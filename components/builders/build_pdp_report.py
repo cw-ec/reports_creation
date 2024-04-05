@@ -167,6 +167,5 @@ class BuildPDPReport:
         )
         self.header_margin = 0.5 * cm
 
-        self.logger.info("Creating document tables")
         # Creates the document for the report and exports
         self.pdp_report_pages()

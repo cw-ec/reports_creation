@@ -33,7 +33,8 @@ class MPSGenerator:
         apd_grouped = out_df[['PD_NO_CONCAT', 'ADV_PD_NBR']].groupby('PD_NO_CONCAT').agg(list)
         apd_grouped.rename(columns={'ADV_PD_NBR':'APD_LIST'}, inplace=True)
         out_df = out_df.join(apd_grouped, on=['PD_NO_CONCAT'])
-        out_df['APD_LIST'] = out_df['APD_LIST'].apply(lambda x: str([int(y) for y in x])[1:-1] if (isinstance(x, list)) and (not isnan(x[0])) else '')
+        out_df['APD_LIST'] = out_df['APD_LIST'].apply(lambda x: [y for y in x if not isnan(y)])  # Remove all nulls from the list
+        out_df['APD_LIST'] = out_df['APD_LIST'].apply(lambda x: str([int(y) for y in x])[1:-1] if (isinstance(x, list)) and (len(x)!=0) else '')
 
         # Drop Duplicates before sending to builder
         out_df = out_df.drop_duplicates(subset='PD_NO_CONCAT', keep='first')
@@ -53,10 +54,8 @@ class MPSGenerator:
 
         self.out_path = out_path
         self.ed_num = ed_num
-        self.logger.info("Loading data for Mobile Polls Summary")
         self.df = to_dataframe(data, encoding='latin-1')
 
-        self.logger.info("Generating MPS Report Table")
         self.report_df = self.gen_report_table()
 
         if len(self.report_df) == 0:
@@ -73,7 +72,6 @@ class MPSGenerator:
                 'rep_yr': self.row1['RDSTRBTN_YEAR'].to_list()[0]
             }
             create_dir(self.out_path)
-            self.logger.info("Creating Report PDF")
             BuildMPSReport(self.report_dict, self.report_df, out_dir=self.out_path)
 
             self.logger.info("Report Generated")

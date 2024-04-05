@@ -107,7 +107,6 @@ class BuildIDRReport:
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.logger.info("Creating IDR document")
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"INDIAN_{self.in_dict['ed_code']}.pdf"),
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
@@ -116,6 +115,6 @@ class BuildIDRReport:
                             bottomMargin=2.5 * cm
         )
         self.header_margin =  2* cm  # Modifies the distance the top of the header is from the top of the page
-        self.logger.info("Creating document tables")
+
         # Creates the document for the report and exports
         self.idr_report_pages()

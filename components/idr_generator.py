@@ -52,7 +52,6 @@ class IDRGenerator:
 
         self.out_path = out_path
         self.ed_num = ed_num
-        self.logger.info("Loading data for Indigenous Lands Report")
         self.df = to_dataframe(idr_data, encoding='latin-1', sheet_name="PDs and Indigenous Communities")
 
         self.logger.info("Generating IDR Report Table")
@@ -71,7 +70,6 @@ class IDRGenerator:
                 'prov': get_prov_from_code(int(self.ed_num)) # No prov in indigenous data. Get from ED_NUM
             }
             create_dir(self.out_path)
-            self.logger.info("Creating Report PDF")
 
             BuildIDRReport(self.report_dict, self.report_df, out_dir=self.out_path)
 

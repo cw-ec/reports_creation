@@ -169,6 +169,5 @@ class BuildAPDReport:
         )
         self.header_margin =  2* cm  # Modifies the distance the top of the header is from the top of the page
 
-        self.logger.info("Creating document tables")
         # Creates the document for the report and exports
         self.apd_report_pages()

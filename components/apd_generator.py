@@ -57,7 +57,6 @@ class APDGenerator:
 
         self.out_path = out_path
         self.ed_num = ed_num
-        self.logger.info("Loading data for Advanced Polling Districts")
         self.df = to_dataframe(data, encoding='latin-1')
 
         self.logger.info("Generating ADP Report Table")
@@ -80,7 +79,6 @@ class APDGenerator:
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
             }
 
-            self.logger.info("Creating Report PDF")
             BuildAPDReport(self.report_dict, self.report_df, out_dir=self.out_path)
 
             self.logger.info("Report Generated")

@@ -15,6 +15,7 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from math import isnan
 from .common_builds import *
 from .report_parameters import PDDSettings
 
@@ -133,13 +134,19 @@ class BuildPDDReport:
             title_para = [Paragraph(f"<b>{self.settings_dict['table_title']}: {pd_num} <br/> ({pd_name})</b>"), '', '']
 
             # Grab the elements from the pd desc data so that the full addresses can be built
-            fr_civ = str(int(df['FROM_CIV_NUM'].tolist()[0]))  # From civic number
+            # For the civic number ensure that the number isn't nan before converting it to an integer. Else use an empty string
+            fr_civ = df['FROM_CIV_NUM'].tolist()[0]  # From civic number
+            if isnan(fr_civ):
+                fr_civ = ''
+            else:
+                fr_civ = str(int(fr_civ))
+
             str_nme_eng = df['STREET_NME_FULL_ENG'].tolist()[0]   # Street name eng
             str_nme_fre = df['STREET_NME_FULL_FRE'].tolist()[0]   # Street name fre
 
             # Addresses from the desc data as we're using the site addresses table as the base for the mp table.
-            add_fre = f"{fr_civ} {str_nme_fre} / {fr_civ} {str_nme_eng}"
-            add_eng = f"{fr_civ} {str_nme_eng} / {fr_civ} {str_nme_fre}"
+            add_fre = f"{fr_civ} {str_nme_fre}"
+            add_eng = f"{fr_civ} {str_nme_eng}"
 
             # Load and filter the ps add dataframe and create the full address field with the correct paragraph style
             ps_add = self.ps_add[self.ps_add['FULL_PD_NBR'] == pd_num]
@@ -151,7 +158,7 @@ class BuildPDDReport:
             else:  # RoC
                 ps_add['mp_add_full'] = self.ps_add[['SITE_PLACE_NAME', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE']].apply(lambda x: Paragraph(f"{add_eng}<br/>{x.iloc[0]}, {x.iloc[1]} {x.iloc[2]} /<br/> {add_fre}<br/>{x.iloc[0]}, {x.iloc[1]} {x.iloc[2]}", style=self.styles['SingleCellText']),axis=1)
 
-            ps_add["SITE_NAME_BIL"] = ps_add["SITE_NAME_BIL"].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
+            ps_add["SITE_NAME_BIL"] = ps_add["SITE_NAME_BIL"].apply(lambda x: Paragraph(x, style=self.styles['CellText']) if isinstance(x, str) else '')
 
             element_list = [title_para] + [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header_mp']]] + ps_add[["SITE_NAME_BIL", 'mp_add_full', 'ELECTORS_LISTED']].values.tolist()
             tbl = Table(element_list, style=ts, repeatRows=2, colWidths=mp_widths)
@@ -327,7 +334,6 @@ class BuildPDDReport:
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.logger.info("Creating PDD document")
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"DESCRIPTIONS_{self.in_dict['ed_code']}.pdf"),
                                      leftMargin=2 * cm,
                                      rightMargin=-5 * cm,
@@ -335,6 +341,5 @@ class BuildPDDReport:
                                      bottomMargin=1* cm,
                                      )
 
-        self.logger.info("Creating document tables")
         # Creates the document for the report and exports
         self.pdd_report_pages()

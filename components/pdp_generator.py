@@ -64,7 +64,6 @@ class PDPGenerator:
             }
 
             create_dir(self.out_path)
-            self.logger.info("Creating Report PDF")
             BuildPDPReport(self.report_dict, self.report_df, out_dir=self.out_path)
 
             self.logger.info("Report Generated")

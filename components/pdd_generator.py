@@ -20,7 +20,7 @@ class PDDGenerator:
 
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
-        out_df = out_df.sort_values(by=['PD_NBR', 'PD_NBR_SFX', 'ST_NME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT'], na_position='first') # Sort ascending
+        out_df = out_df.sort_values(by=['PD_NBR', 'PD_NBR_SFX', 'ST_PARSED_NAME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT'], na_position='first') # Sort ascending
 
         # Set dataframes field order and keep only essential fields
         out_df = out_df[['PD_NO_CONCAT', 'STREET_NME_FULL','STREET_NME_FULL_ENG', 'STREET_NME_FULL_FRE', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL', 'POLL_NAME_FIXED', "FULL_PLACE_NAME"]]
@@ -52,12 +52,10 @@ class PDDGenerator:
 
         self.out_path = out_path
         self.ed_num = ed_num
-        self.logger.info("Loading data for Polling District Description")
         self.df = to_dataframe(data, encoding='latin-1')
         self.strm_df = to_dataframe(os.path.join(os.path.split(data)[0], 'strm.csv'), encoding='latin-1')  # STRM Data
         self.ps_add = to_dataframe(os.path.join(os.path.split(data)[0], 'ps_add.csv'), encoding='latin-1')  # PD Address full data
 
-        self.logger.info("Generating PDD Report Table")
         self.report_dfs = self.gen_report_tables()
 
         if len(self.report_dfs) == 0:
@@ -78,7 +76,6 @@ class PDDGenerator:
                 'rep_yr': self.row1['RDSTRBTN_YEAR'].to_list()[0]
             }
             create_dir(self.out_path)
-            self.logger.info("Creating Report PDF")
             BuildPDDReport(self.report_dict, self.report_dfs, self.ps_add, out_dir=self.out_path)
 
             self.logger.info("Report Generated")

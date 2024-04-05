@@ -115,7 +115,7 @@ class BuildMPSReport:
 
         column_widths = [130, 130, 130,130]
         # Create report elements
-        elements = [add_report_table(column_widths), Spacer(0 * cm, 2 * cm), add_summary_box(column_widths)]
+        elements = [add_report_table(column_widths), Spacer(0 * cm, 0.5 * cm), add_summary_box(column_widths)]
 
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
@@ -151,7 +151,6 @@ class BuildMPSReport:
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.logger.info("Creating MPS document")
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"SUMINS_{self.in_dict['ed_code']}.pdf"),
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
@@ -162,6 +161,5 @@ class BuildMPSReport:
 
         self.header_margin = 2* cm
 
-        self.logger.info("Creating document tables")
         # Creates the document for the report and exports
         self.pdp_report_pages()

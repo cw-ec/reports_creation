@@ -1,7 +1,4 @@
-import os.path
-import re
-
-import numpy as np
+from math import isnan
 from .commons import logging_setup, to_dataframe, create_dir
 from .builders import BuildDPKReport
 import pandas as pd
@@ -24,14 +21,16 @@ class DPKGenerator:
         out_df['sort_int'] = out_df['STREET_NME_FULL'].str.extract(r'(\d+)').astype(float)
         # Sort the input data (fields ordered as requested)
         out_df = out_df.sort_values(
-            by=['ED_CODE', 'ST_NME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FULL_PLACE_NAME', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT', 'PD_NBR', 'PD_NBR_SFX', 'ST_SIDE_DESC_BIL'],
-            na_position='last')  # Sort ascending
+            by=['ED_CODE', 'ST_PARSED_NAME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FULL_PLACE_NAME', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT', 'PD_NBR', 'PD_NBR_SFX', 'ST_SIDE_DESC_BIL'],
+            na_position='first')  # Sort ascending with NAN first
 
         # out_df = out_df.sort_values(by=['ED_CODE', 'ST_NME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FULL_PLACE_NAME', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT', 'PD_NBR', 'PD_NBR_SFX', 'ST_SIDE_DESC_BIL'],
         #                             key= lambda col: col.map(lambda x: int(re.split('(\d+)',x))))
 
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
+
+        out_df["ADV_PD_NBR"] = out_df["ADV_PD_NBR"].apply(lambda x: str(int(x)) if not isnan(x) else '')  # Make sure these are integers if nan make it an empty string
 
         out_df = out_df[['STREET_NME_FULL', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL', 'PD_NO_CONCAT', 'ADV_PD_NBR', 'FULL_PLACE_NAME']]
 
@@ -56,10 +55,8 @@ class DPKGenerator:
 
         self.out_path = out_path
         self.ed_num = ed_num
-        self.logger.info("Loading data for Electoral District Poll Key")
         self.df = to_dataframe(data, encoding='latin-1')
 
-        self.logger.info("Generating DPK Report Table")
         self.report_dfs = self.gen_report_tables()
 
         if len(self.report_dfs) == 0:
@@ -76,7 +73,6 @@ class DPKGenerator:
                 'rep_yr': self.row1['RDSTRBTN_YEAR'].to_list()[0]
             }
             create_dir(self.out_path)
-            self.logger.info("Creating Report PDF")
             BuildDPKReport(self.report_dict, self.report_dfs, out_dir=self.out_path)
 
             self.logger.info("Report Generated")
