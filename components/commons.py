@@ -47,7 +47,7 @@ def to_dataframe(to_import: str, sheet_name=0, encoding='UTF-8') -> pd.DataFrame
     f_type = path_list[-1].split('.')[-1]
 
     if f_type == 'csv':
-        return pd.read_csv(to_import, encoding=encoding)
+        return pd.read_csv(to_import, encoding=encoding, low_memory=False)
     elif f_type in ["xlsx", "xls"]:
         return pd.read_excel(to_import, sheet_name=sheet_name)
     else:
