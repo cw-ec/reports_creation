@@ -135,6 +135,16 @@ def get_ed_name_from_code(code: int) -> str:
     else:
         raise Exception(f"ED Code {code} does not exist in the 343 dictionary.")
 
+def conv_strm_field(value: str) -> str:
+    """Takes an input string and attempts to convert it to an integer. If fails returns the original string"""
+
+    try:
+         outvalue = str(int(value)).zfill(3)
+         return outvalue
+    except:
+        outvalue = value.zfill(3)
+        return outvalue
+
 def get_excel_header(fed_num: int, report_type: str) -> list[str]:
     """Returns the excel header for the given report type and fed num"""
 

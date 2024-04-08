@@ -3,7 +3,7 @@ import datetime
 import pandas as pd
 from components.commons import logging_setup
 import os
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer, PageBreak
 from reportlab.lib.units import cm
 from reportlab.platypus.flowables import TopPadder
 from reportlab.pdfbase.pdfmetrics import registerFont
@@ -115,7 +115,7 @@ class BuildMPSReport:
 
         column_widths = [130, 130, 130,130]
         # Create report elements
-        elements = [add_report_table(column_widths), Spacer(0 * cm, 0.5 * cm), add_summary_box(column_widths)]
+        elements = [add_report_table(column_widths), PageBreak(), add_summary_box(column_widths)]
 
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)

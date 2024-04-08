@@ -5,7 +5,7 @@ from reportlab.pdfbase.pdfmetrics import registerFont
 import datetime
 import pandas as pd
 import numpy as np
-from components.commons import logging_setup
+from components.commons import logging_setup, conv_strm_field
 import os, sys
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer, PageBreak
 from reportlab.lib.units import cm
@@ -106,7 +106,7 @@ class BuildPDDReport:
                 if c in ["SECTION", 'MRDN']:  # Just text cells convert to paragraph objects directly
                     df[c] = df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
                 else:  # Cells that should be integers convert to integers first then text
-                    df[c] = df[c].astype(int).astype(str).str.zfill(3)  # Make sure these fields are of length 3. Pad with zeros if not
+                    df[c] = df[c].apply(lambda x: conv_strm_field(x))  # Make sure these fields are of length 3. Pad with zeros if not
                     df[c] = df[c].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
 
             element_list = [title_para] + [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header_strm']]] + df.values.tolist()
