@@ -1,5 +1,5 @@
 from math import isnan
-from .commons import logging_setup, to_dataframe, create_dir
+from .commons import logging_setup, to_dataframe, create_dir, to_excel, get_excel_header
 from .builders import BuildDPKReport
 import pandas as pd
 import sys
@@ -24,9 +24,11 @@ class DPKGenerator:
             by=['ED_CODE', 'ST_PARSED_NAME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FULL_PLACE_NAME', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT', 'PD_NBR', 'PD_NBR_SFX', 'ST_SIDE_DESC_BIL'],
             na_position='first')  # Sort ascending with NAN first
 
-        # out_df = out_df.sort_values(by=['ED_CODE', 'ST_NME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FULL_PLACE_NAME', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT', 'PD_NBR', 'PD_NBR_SFX', 'ST_SIDE_DESC_BIL'],
-        #                             key= lambda col: col.map(lambda x: int(re.split('(\d+)',x))))
-
+        to_excel(df=out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "POLL_NAME_FIXED", "PLACE_NAME", "CSD_TYP_DESC_BIL", "ST_NME", "ST_TYP_CDE", "ST_DRCTN_CDE", "FROM_CROSS_FEAT", "TO_CROSS_FEAT","FROM_CIV_NUM", "TO_CIV_NUM", "ST_SIDE_DESC_BIL", "ADV_PD_NBR"]],
+                 out_dir=self.out_path,
+                 out_nme=f"INDCIR_{self.ed_num}",
+                 header=get_excel_header(self.ed_num, "DPK")
+                 )
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
 
@@ -60,7 +62,7 @@ class DPKGenerator:
         self.report_dfs = self.gen_report_tables()
 
         if len(self.report_dfs) == 0:
-            self.logger.error(f"Data for {self.ed_num} contains no data. Report not generated")
+            self.logger.warn(f"Data for {self.ed_num} contains no data. Report not generated")
 
         else:
             # Set a bunch of things for the report from the first line of the data and create a dict to hold them

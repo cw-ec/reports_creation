@@ -1,4 +1,4 @@
-from .commons import logging_setup, to_dataframe, create_dir, add_en_dash
+from .commons import logging_setup, to_dataframe, create_dir,  to_excel, get_excel_header
 from .builders import BuildPDDReport
 import pandas as pd
 import os, sys
@@ -21,6 +21,12 @@ class PDDGenerator:
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
         out_df = out_df.sort_values(by=['PD_NBR', 'PD_NBR_SFX', 'ST_PARSED_NAME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT'], na_position='first') # Sort ascending
+
+        to_excel(df=out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "POLL_NAME_FIXED", "PLACE_NAME",
+             "CSD_TYP_DESC_BIL", "ST_NME", "ST_TYP_CDE", "ST_DRCTN_CDE", "FROM_CROSS_FEAT", "TO_CROSS_FEAT","FROM_CIV_NUM", "TO_CIV_NUM", "ST_SIDE_DESC_BIL", "ADV_PD_NBR"]],
+                 out_dir=self.out_path,
+                 out_nme=f"DESCRI_{self.ed_num}",
+                 header=get_excel_header(self.ed_num, 'PDD'))
 
         # Set dataframes field order and keep only essential fields
         out_df = out_df[['PD_NO_CONCAT', 'STREET_NME_FULL','STREET_NME_FULL_ENG', 'STREET_NME_FULL_FRE', 'FROM_CROSS_FEAT', 'TO_CROSS_FEAT', 'FROM_CIV_NUM', 'TO_CIV_NUM', 'ST_SIDE_DESC_BIL', 'POLL_NAME_FIXED', "FULL_PLACE_NAME"]]
@@ -59,7 +65,7 @@ class PDDGenerator:
         self.report_dfs = self.gen_report_tables()
 
         if len(self.report_dfs) == 0:
-            self.logger.warning(f"No data available for {self.ed_num}. Check input data or workflow")
+            self.logger.warn(f"No data available for {self.ed_num}. Check input data or workflow")
             self.logger.info(f"No PDD report generated for {self.ed_num}")
 
         else:

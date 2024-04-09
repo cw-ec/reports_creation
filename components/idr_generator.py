@@ -58,7 +58,7 @@ class IDRGenerator:
         self.report_df = self.gen_report_table()
 
         if len(self.report_df) == 0:
-            self.logger.info(f"No Communities with Indigenous Peoples found in {self.ed_num}. No report generated.")
+            self.logger.warn(f"No Communities with Indigenous Peoples found in {self.ed_num}. No report generated.")
 
         else:
             # Set a bunch of things for the report from the first line of the data and create a dict to hold them

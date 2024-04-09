@@ -59,7 +59,7 @@ class MPSGenerator:
         self.report_df = self.gen_report_table()
 
         if len(self.report_df) == 0:
-            self.logger.warning(f"No MPS report generated for {self.ed_num} as no data was available. Check data or workflow and try again.")
+            self.logger.warn(f"No MPS report generated for {self.ed_num} as no data was available. Check data or workflow and try again.")
 
         else:
             # Set a bunch of things for the report from the first line of the data and create a dict to hold them

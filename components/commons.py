@@ -146,7 +146,7 @@ def conv_strm_field(value: str) -> str:
         return outvalue
 
 def get_excel_header(fed_num: int, report_type: str) -> list[str]:
-    """Returns the excel header for the given report type and fed num"""
+    """Returns the Excel header for the given report type and fed num"""
 
     if report_type == 'PDP':
         if int(str(fed_num)[:2]) != 24:
@@ -218,3 +218,85 @@ def get_excel_header(fed_num: int, report_type: str) -> list[str]:
                 "Électeurs inscrits / Electors Listed",
                 "Numéro de bureau de vote par anticipation / Advance Polling District Number"
         ]
+    if report_type == 'PDD':
+        if int(str(fed_num)[:2]) != 24:
+            return ["Electoral District Number / Numéro de circonscription",
+                    "English Electoral Distict Name / Nom de circonscription anglais",
+                    "French Electoral Distict Name / Nom de circonscription français",
+                    "Polling Division Number / Numéro de section de vote",
+                    "Prefix / Préfixe",
+                    "Suffix / Suffixe",
+                    "Poll Name / Nom de section de vote",
+                    "Municipality Name / Nom de municipalité",
+                    "Municipality Type / Type de municipalité",
+                    "Street Name / Nom de rue",
+                    "Street Type / Type de rue",
+                    "Street Direction / Direction de rue",
+                    "From Feature / Point de départ",
+                    "To Feature / Point de terminaison",
+                    "From Civic Number / Numéro civique de départ",
+                    "To Civic Number / Numéro civique de terminaison",
+                    "Side / Côté",
+                    "Advance Polling District Number / Numéro de bureau de vote par anticipation"
+                    ]
+        else:
+            return ["Numéro de circonscription / Electoral District Number",
+                    "Nom de circonscription anglais / English Electoral Distict Name",
+                    "Nom de circonscription français / French Electoral Distict Name",
+                    "Numéro de section de vote / Polling Division Number",
+                    "Préfixe / Prefix",
+                    "Suffixe / Suffix",
+                    "Nom de section de vote / Poll Name",
+                    "Nom de municipalité / Municipality Name",
+                    "Type de municipalité / Municipality Type",
+                    "Nom de rue / Street Name",
+                    "Type de rue / Street Type",
+                    "Direction de rue / Street Direction",
+                    "Point de départ / From Feature",
+                    "Point de terminaison / To Feature",
+                    "Numéro civique de départ / From Civic Number",
+                    "Numéro civique de terminaison / To Civic Number",
+                    "Côté / Side",
+                    "Numéro de bureau de vote par anticipation / Advance Polling District Number"
+                    ]
+    if report_type == 'DPK':
+        if int(str(fed_num)[:2]) != 24:
+            return ["Electoral District Number / Numéro de circonscription",
+                    "English Electoral Distict Name / Nom de circonscription anglais",
+                    "French Electoral Distict Name / Nom de circonscription français",
+                    "Polling Division Number / Numéro de section de vote",
+                    "Prefix / Préfixe",
+                    "Suffix / Suffixe",
+                    "Poll Name / Nom de section de vote",
+                    "Municipality Name / Nom de municipalité",
+                    "Municipality Type / Type de municipalité",
+                    "Street Name / Nom de rue",
+                    "Street Type / Type de rue",
+                    "Street Direction / Direction de rue",
+                    "From Feature / Point de départ",
+                    "To Feature / Point de terminaison",
+                    "From Civic Number / Numéro civique de départ",
+                    "To Civic Number / Numéro civique de terminaison",
+                    "Side / Côté",
+                    "Advance Polling District Number / Numéro de bureau de vote par anticipation"
+                    ]
+        else:
+            return ["Numéro de circonscription / Electoral District Number",
+                    "Nom de circonscription anglais / English Electoral Distict Name",
+                    "Nom de circonscription français / French Electoral Distict Name",
+                    "Numéro de section de vote / Polling Division Number",
+                    "Préfixe / Prefix",
+                    "Suffixe / Suffix",
+                    "Nom de section de vote / Poll Name",
+                    "Nom de municipalité / Municipality Name",
+                    "Type de municipalité / Municipality Type",
+                    "Nom de rue / Street Name",
+                    "Type de rue / Street Type",
+                    "Direction de rue / Street Direction",
+                    "Point de départ / From Feature",
+                    "Point de terminaison / To Feature",
+                    "Numéro civique de départ / From Civic Number",
+                    "Numéro civique de terminaison / To Civic Number",
+                    "Côté / Side",
+                    "Numéro de bureau de vote par anticipation / Advance Polling District Number"
+                    ]

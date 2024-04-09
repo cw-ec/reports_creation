@@ -7,6 +7,19 @@ import sys, os
 
 class PDPGenerator:
 
+    def is_valid(self, data, out_path, ed_num):
+        """Checks to see if inputs are valid"""
+
+        if not isinstance(data, str) or not os.path.exists(data):
+            self.logger.exception(f"Parameter data is not of type string or does not exist")
+            raise Exception(f"Parameter data is not of type string or does not exist")
+        if not isinstance(out_path, str):
+            self.logger.exception(f"Parameter out_path must be of type string. Currently type: {type(out_path)}")
+            raise Exception(f"Parameter out_path must be of type string. Currently type: {type(out_path)}")
+        if not isinstance(ed_num, int):
+            self.logger.exception(f"Parameter ed_num must be an integer. Currently type: {type(ed_num)}")
+            raise Exception(f"Parameter ed_num must be an integer. Currently type: {type(ed_num)}")
+
     def gen_report_table(self) -> pd.DataFrame:
         """Generates the table that will be put into the report. Return the table with only the required fields"""
 
@@ -27,8 +40,6 @@ class PDPGenerator:
             out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
 
             # Send the table to be exported to the out directory
-
-
             to_excel(out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "POLL_NAME_FIXED", "ELECTORS_LISTED", "VOID_IND"]],
                      out_dir= self.out_path,
                      out_nme=f"PD_PROF_{self.ed_num}",
@@ -43,6 +54,8 @@ class PDPGenerator:
         # Setup logging
         self.logger = logging_setup()
 
+        self.is_valid(data, out_path, ed_num)
+
         self.out_path = out_path
         self.ed_num = ed_num
         self.df = to_dataframe(data, encoding='latin-1')
@@ -50,7 +63,8 @@ class PDPGenerator:
         self.report_df = self.gen_report_table()
 
         if len(self.report_df) == 0:
-            self.logger.warning(f"No data available for PDP on {self.ed_num}. Check input data or workflow")
+            self.logger.warn(f"No data available for PDP on {self.ed_num}. Check input data or workflow")
+            self.logger.info(f"No PDP report generated for {self.ed_num}")
 
         else:
             # Set a bunch of things for the report from the first line of the data and create a dict to hold them
