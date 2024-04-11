@@ -71,7 +71,12 @@ class ReportFactory:
 
         self.logger.info(f"Exporting reports to: {export_dir}")
 
-        for f in temp_dir.glob("**/*.pdf"):
+        for f in [ t for t_ in [temp_dir.glob(f"**/*{t}") for t in ('.pdf', '.xlsx')] for t in t_]:  # Process excel and pdf files
+
+            if not isinstance(f, str) and not isinstance(f, Path):
+                print(f)
+                print(type(f))
+                continue  # Make sure only strings are processed
 
             f_name = os.path.split(f)[-1]
             self.logger.info(f"Exporting {f_name}")

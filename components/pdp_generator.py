@@ -39,11 +39,14 @@ class PDPGenerator:
 
             out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
 
+            for f in ['ED_NAMEE', 'ED_NAMEF']:  # en-dashes for report excel file
+                out_df[f] = out_df[f].apply(lambda x: x.replace('--', '—'))
+
             # Send the table to be exported to the out directory
             to_excel(out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "POLL_NAME_FIXED", "ELECTORS_LISTED", "VOID_IND"]],
                      out_dir= self.out_path,
                      out_nme=f"PD_PROF_{self.ed_num}",
-                     header= get_excel_header(self.ed_num, 'PDP')
+                     header= get_excel_header(self.ed_num, 'PDP'),
                      )
 
             out_df["VOID_IND"] = out_df["VOID_IND"].replace('N', '') # No need to show N's replace with nothing

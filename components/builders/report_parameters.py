@@ -37,8 +37,8 @@ class PDPSettings:
         e_total_vpd = "Total Void Polling Divisions / <br/> Nombre total de sections de vote nulles"
 
         # Footer Text
-        e_footer_text = "Printed on / Imprimé le"
-        f_footer_text = "Imprimé le / Printed on"
+        e_footer_text = "Created on / Créé le"
+        f_footer_text = "Créé le / Created on"
 
         # Create a dictionary of english first parameters to allow for easy access
         self.e_params_dict = {"header": e_header,
@@ -92,8 +92,8 @@ class APDSettings:
         e_total_apd = "Total number of advanced polling districts /<br/>Nombre total de districts de vote par anticipation"
 
         # Footer Text
-        e_footer_text = "Printed on / Imprimé le"
-        f_footer_text = "Imprimé le / Printed on"
+        e_footer_text = "Created on / Créé le"
+        f_footer_text = "Créé le / Created on"
 
         # Create a dictionary of english first parameters to allow for easy access
         self.e_params_dict = {"header": e_header,
@@ -145,10 +145,8 @@ class PDDSettings:
         f_table_note = "NOTE: COMPREND TOUT LE TERRITOIRE TEL QUE DÉLIMITÉ SUR LA CARTE. / COMPRISES THE ENTIRE TERRITORY DELINEATED ON THE MAP."
 
         # Footer Text
-        e_footer_text = "Printed on / Imprimé le"
-        f_footer_text = "Imprimé le / Printed on"
-
-
+        e_footer_text = "Created on / Créé le"
+        f_footer_text = "Créé le / Created on"
 
         # Create a dictionary of english first parameters to allow for easy access
         self.e_params_dict = {"header": e_header,
@@ -193,8 +191,8 @@ class DPKSettings:
         f_table_header = ["NOM DE RUE /<br/>STREET NAME", "DE /<br/>FROM", "À /<br/>TO", "DE /<br/>FROM", "À /<br/>TO", "CÔTÉ /<br/>SIDE", "SV /<br/>PD", "DVA /<br/>APD"]
 
         # Footer Text
-        e_footer_text = "Printed on / Imprimé le"
-        f_footer_text = "Imprimé le / Printed on"
+        e_footer_text = "Created on / Créé le"
+        f_footer_text = "Créé le / Created on"
 
         # Create a dictionary of english first parameters to allow for easy access
         self.e_params_dict = {"header": e_header,
@@ -245,8 +243,8 @@ class MPSSettings:
         e_total_inst = "Total Number of Institutions /<br/>Total Nombre d'établissements"
 
         # Footer Text
-        e_footer_text = "Printed on / Imprimé le"
-        f_footer_text = "Imprimé le / Printed on"
+        e_footer_text = "Created on / Créé le"
+        f_footer_text = "Créé le / Created on"
 
         # Create a dictionary of english first parameters to allow for easy access
         self.e_params_dict = {"header": e_header,
@@ -294,8 +292,8 @@ class IDRSettings:
         f_ss_table_header = "Statistiques récapitulatives /<br/>Summary Statistics"
 
         # Footer Text
-        e_footer_text = "Printed on / Imprimé le"
-        f_footer_text = "Imprimé le / Printed on"
+        e_footer_text = "Created on / Créé le"
+        f_footer_text = "Créé le / Created on"
 
         # Create a dictionary of english first parameters to allow for easy access
         self.e_params_dict = {"header": e_header,

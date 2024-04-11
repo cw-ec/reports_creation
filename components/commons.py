@@ -3,6 +3,7 @@ import sys
 import os
 import shutil
 import pandas as pd
+import numpy as np
 from datetime import datetime
 from pathlib import Path
 
@@ -32,7 +33,6 @@ def delete_dir(in_path: str) -> None:
     in_path = Path(in_path)
     if in_path.exists() and in_path.is_dir():
         shutil.rmtree(in_path)
-
 
 def to_dataframe(to_import: str, sheet_name=0, encoding='UTF-8') -> pd.DataFrame:
     """Import the given path into a pandas dataframe. Returns that pandas dataframe
@@ -122,7 +122,7 @@ def to_excel(df: pd.DataFrame, out_dir: str, out_nme: str, header: list[str]) ->
     else:
         df.to_excel(os.path.join(out_dir, f"{out_nme}.xlsx"),
                     index=False,  # No need for the index column to be included
-                    sheet_name=out_nme,  # Give the sheet the same name as the excel name
+                    sheet_name=out_nme,  # Give the sheet the same name as the Excel name
                     header=header  # We want to use the column names given not the ones that come with the data
                     )
 
@@ -264,39 +264,39 @@ def get_excel_header(fed_num: int, report_type: str) -> list[str]:
             return ["Electoral District Number / Numéro de circonscription",
                     "English Electoral Distict Name / Nom de circonscription anglais",
                     "French Electoral Distict Name / Nom de circonscription français",
-                    "Polling Division Number / Numéro de section de vote",
-                    "Prefix / Préfixe",
-                    "Suffix / Suffixe",
-                    "Poll Name / Nom de section de vote",
-                    "Municipality Name / Nom de municipalité",
-                    "Municipality Type / Type de municipalité",
                     "Street Name / Nom de rue",
                     "Street Type / Type de rue",
                     "Street Direction / Direction de rue",
+                    "Municipality Name / Nom de municipalité",
+                    "Municipality Type / Type de municipalité",
                     "From Feature / Point de départ",
                     "To Feature / Point de terminaison",
                     "From Civic Number / Numéro civique de départ",
                     "To Civic Number / Numéro civique de terminaison",
                     "Side / Côté",
+                    "Polling Division Number / Numéro de section de vote",
+                    "Prefix / Préfixe",
+                    "Suffix / Suffixe",
+                    "Poll Name / Nom de section de vote",
                     "Advance Polling District Number / Numéro de bureau de vote par anticipation"
                     ]
         else:
             return ["Numéro de circonscription / Electoral District Number",
                     "Nom de circonscription anglais / English Electoral Distict Name",
                     "Nom de circonscription français / French Electoral Distict Name",
-                    "Numéro de section de vote / Polling Division Number",
-                    "Préfixe / Prefix",
-                    "Suffixe / Suffix",
-                    "Nom de section de vote / Poll Name",
-                    "Nom de municipalité / Municipality Name",
-                    "Type de municipalité / Municipality Type",
                     "Nom de rue / Street Name",
                     "Type de rue / Street Type",
                     "Direction de rue / Street Direction",
+                    "Nom de municipalité / Municipality Name",
+                    "Type de municipalité / Municipality Type",
                     "Point de départ / From Feature",
                     "Point de terminaison / To Feature",
                     "Numéro civique de départ / From Civic Number",
                     "Numéro civique de terminaison / To Civic Number",
                     "Côté / Side",
+                    "Numéro de section de vote / Polling Division Number",
+                    "Préfixe / Prefix",
+                    "Suffixe / Suffix",
+                    "Nom de section de vote / Poll Name",
                     "Numéro de bureau de vote par anticipation / Advance Polling District Number"
                     ]

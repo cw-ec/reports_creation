@@ -18,13 +18,15 @@ class DPKGenerator:
         if len(out_df) == 0:
             return []
 
-        out_df['sort_int'] = out_df['STREET_NME_FULL'].str.extract(r'(\d+)').astype(float)
         # Sort the input data (fields ordered as requested)
         out_df = out_df.sort_values(
             by=['ED_CODE', 'ST_PARSED_NAME', 'ST_TYP_CDE', 'ST_DRCTN_CDE', 'FULL_PLACE_NAME', 'FROM_CIV_NUM', 'FROM_CROSS_FEAT', 'PD_NBR', 'PD_NBR_SFX', 'ST_SIDE_DESC_BIL'],
             na_position='first')  # Sort ascending with NAN first
 
-        to_excel(df=out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "POLL_NAME_FIXED", "PLACE_NAME", "CSD_TYP_DESC_BIL", "ST_NME", "ST_TYP_CDE", "ST_DRCTN_CDE", "FROM_CROSS_FEAT", "TO_CROSS_FEAT","FROM_CIV_NUM", "TO_CIV_NUM", "ST_SIDE_DESC_BIL", "ADV_PD_NBR"]],
+        for f in ['ED_NAMEE', 'ED_NAMEF', 'POLL_NAME_FIXED']:  # en-dashes for report excel file
+            out_df[f] = out_df[f].apply(lambda x: x.replace('--', '—'))
+
+        to_excel(df=out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "ST_NME", "ST_TYP_CDE", "ST_DRCTN_CDE", "PLACE_NAME", "CSD_TYP_DESC_BIL", "FROM_CROSS_FEAT", "TO_CROSS_FEAT","FROM_CIV_NUM", "TO_CIV_NUM", "ST_SIDE_DESC_BIL", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "POLL_NAME_FIXED",  "ADV_PD_NBR"]],
                  out_dir=self.out_path,
                  out_nme=f"INDCIR_{self.ed_num}",
                  header=get_excel_header(self.ed_num, "DPK")

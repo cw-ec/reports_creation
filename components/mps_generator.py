@@ -40,10 +40,12 @@ class MPSGenerator:
         out_df = out_df.drop_duplicates(subset='PD_NO_CONCAT', keep='first')
         out_df = out_df[out_df["VOID_IND"]=='N']
 
-        to_excel(df=out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "MOBILE_POLL_STN_ID", "ELECTORS_LISTED", "ADV_PD_NBR"]],
-                 out_dir=self.out_path,
-                 out_nme=f"SUMINS_{self.ed_num}",
-                 header=get_excel_header(self.ed_num, "MPS"))
+        if len(out_df) > 0:
+
+            to_excel(df=out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "TOTAL_INST", "ELECTORS_LISTED", "ADV_PD_NBR"]],
+                     out_dir=self.out_path,
+                     out_nme=f"SUMINS_{self.ed_num}",
+                     header=get_excel_header(self.ed_num, "MPS"))
 
         return out_df[['PD_NO_CONCAT', 'TOTAL_INST', 'ELECTORS_LISTED', 'APD_LIST']]
 
