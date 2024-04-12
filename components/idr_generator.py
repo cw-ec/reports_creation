@@ -2,9 +2,23 @@
 from .commons import logging_setup, to_dataframe, create_dir, add_en_dash, get_prov_from_code, get_ed_name_from_code
 from .builders import BuildIDRReport
 import pandas as pd
-import sys
+import sys, os
 
 class IDRGenerator:
+
+    def is_valid(self, data, out_path, ed_num, sheet_name) -> None:
+        """Checks to see if inputs are valid"""
+        if not isinstance(data, str) or not os.path.exists(data):
+            self.logger.exception(f"Parameter data is not of type string or does not exist")
+            raise Exception(f"Parameter data is not of type string or does not exist")
+        if not isinstance(out_path, str):
+            self.logger.exception(f"Parameter out_path must be of type string. Currently type: {type(out_path)}")
+            raise Exception(f"Parameter out_path must be of type string. Currently type: {type(out_path)}")
+        if not isinstance(ed_num, int):
+            self.logger.exception(f"Parameter ed_num must be an integer. Currently type: {type(ed_num)}")
+            raise Exception(f"Parameter ed_num must be an integer. Currently type: {type(ed_num)}")
+        if not isinstance(sheet_name, str):
+            self.logger.exception(f"Parameter sheet_name: Must be of type string. Currently type: {type(sheet_name)}")
 
     def gen_report_table(self) -> pd.DataFrame:
         """Generates the table that will be put into the report. Return the table with only the required fields"""
@@ -45,14 +59,16 @@ class IDRGenerator:
             out_df = drop_multipart(out_df, "C_NAME","COMMUNITY_TYPE_E", "PD_NO_CONCAT")
             return out_df[["C_NAME", "COMMUNITY_TYPE_E", "PD_NO_CONCAT"]]
 
-    def __init__(self, idr_data, out_path, ed_num):
+    def __init__(self, idr_data, out_path, ed_num, sheet_name="PDs and Indigenous Communities"):
 
         # Setup logging
         self.logger = logging_setup()
 
+        self.is_valid(idr_data, out_path, ed_num, sheet_name)
+
         self.out_path = out_path
         self.ed_num = ed_num
-        self.df = to_dataframe(idr_data, encoding='latin-1', sheet_name="PDs and Indigenous Communities")
+        self.df = to_dataframe(idr_data, encoding='latin-1', sheet_name=sheet_name)
 
         self.logger.info("Generating IDR Report Table")
         self.report_df = self.gen_report_table()

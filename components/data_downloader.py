@@ -1,8 +1,6 @@
 import oracledb
 import json
-import csv
-import os, sys
-import sqlalchemy
+import os
 import pandas as pd
 from collections import OrderedDict
 from .commons import logging_setup, create_dir
@@ -11,6 +9,12 @@ from .commons import logging_setup, create_dir
 class DataDownloader:
     """Downloads the data from associated databases using SQL requirements (username, password) are passed into the  script using a json file. Data will be downloaded into the data folder
     at the root of this repository"""
+
+    def is_valid(self, settings) -> None:
+        """Performs validations on input(s) before they are set"""
+        if not os.path.exists(settings):
+            self.logger.exception(f"Parameter settings: File path provided does not exist. Check path")
+            raise Exception(f"Parameter settings: File path provided does not exist. Check path")
 
     def extract_params(self) -> OrderedDict:
         """Extracts the requested reports from the input workflow"""
@@ -55,6 +59,8 @@ class DataDownloader:
     def __init__(self, settings) -> None:
         # setup logging
         self.logger = logging_setup()
+
+        self.is_valid(settings)
 
         # Get the parameters from the setting json
         self.settings = settings

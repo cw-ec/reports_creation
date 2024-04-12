@@ -7,6 +7,22 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 class PDDGenerator:
 
+    def is_valid(self, data, out_path, ed_num, strm_data_path, pd_add_data_path) -> None:
+        """Checks to see if inputs are valid"""
+        if not isinstance(data, str) or not os.path.exists(data):
+            self.logger.exception(f"Parameter data is not of type string or does not exist")
+            raise Exception(f"Parameter data is not of type string or does not exist")
+        if not isinstance(out_path, str):
+            self.logger.exception(f"Parameter out_path must be of type string. Currently type: {type(out_path)}")
+            raise Exception(f"Parameter out_path must be of type string. Currently type: {type(out_path)}")
+        if not isinstance(ed_num, int):
+            self.logger.exception(f"Parameter ed_num must be an integer. Currently type: {type(ed_num)}")
+            raise Exception(f"Parameter ed_num must be an integer. Currently type: {type(ed_num)}")
+        if not os.path.exists(strm_data_path):
+            self.logger.exception(f"Parameter strm_data_path does not exists: strm.csv must exist and be in the same directory as pd_desc.csv")
+        if not os.path.exists(pd_add_data_path):
+            self.logger.exception(f"Parameter pd_add_data_path does not exists: pd_add.csv must exist and be in the same directory as pd_desc.csv")
+
     def gen_report_tables(self) -> list:
         """Generates the table that will be put into the report. Return the table with only the required fields"""
 
@@ -59,11 +75,16 @@ class PDDGenerator:
         # Setup logging
         self.logger = logging_setup()
 
+        strm_path = os.path.join(os.path.split(data)[0], 'strm.csv')
+        pd_add_path = os.path.join(os.path.split(data)[0], 'ps_add.csv')
+
+        self.is_valid(data, out_path, ed_num, strm_path, pd_add_path)
+
         self.out_path = out_path
         self.ed_num = ed_num
         self.df = to_dataframe(data, encoding='latin-1')
-        self.strm_df = to_dataframe(os.path.join(os.path.split(data)[0], 'strm.csv'), encoding='latin-1')  # STRM Data
-        self.ps_add = to_dataframe(os.path.join(os.path.split(data)[0], 'ps_add.csv'), encoding='latin-1')  # PD Address full data
+        self.strm_df = to_dataframe(strm_path, encoding='latin-1')  # STRM Data
+        self.ps_add = to_dataframe(pd_add_path, encoding='latin-1')  # PD Address full data
 
         self.report_dfs = self.gen_report_tables()
 

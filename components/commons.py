@@ -7,7 +7,6 @@ import numpy as np
 from datetime import datetime
 from pathlib import Path
 
-
 def logging_setup(log_dir=".\\") -> logging.getLogger():
     """Sets up logging takes one parameter to set a directory for the output log file"""
 

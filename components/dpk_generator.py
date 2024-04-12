@@ -2,12 +2,24 @@ from math import isnan
 from .commons import logging_setup, to_dataframe, create_dir, to_excel, get_excel_header
 from .builders import BuildDPKReport
 import pandas as pd
-import sys
+import sys, os
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
 class DPKGenerator:
+
+    def is_valid(self, data, out_path, ed_num) -> None:
+        """Checks to see if inputs are valid"""
+        if not isinstance(data, str) or not os.path.exists(data):
+            self.logger.exception(f"Parameter data is not of type string or does not exist")
+            raise Exception(f"Parameter data is not of type string or does not exist")
+        if not isinstance(out_path, str):
+            self.logger.exception(f"Parameter out_path must be of type string. Currently type: {type(out_path)}")
+            raise Exception(f"Parameter out_path must be of type string. Currently type: {type(out_path)}")
+        if not isinstance(ed_num, int):
+            self.logger.exception(f"Parameter ed_num must be an integer. Currently type: {type(ed_num)}")
+            raise Exception(f"Parameter ed_num must be an integer. Currently type: {type(ed_num)}")
 
     def gen_report_tables(self) -> list:
         """Generates the table that will be put into the report. Return the table with only the required fields"""
@@ -56,6 +68,8 @@ class DPKGenerator:
     def __init__(self, data, out_path, ed_num):
         # Setup logging
         self.logger = logging_setup()
+
+        self.is_valid(data, out_path, ed_num)
 
         self.out_path = out_path
         self.ed_num = ed_num

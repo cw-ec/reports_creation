@@ -12,6 +12,13 @@ from .idr_generator import IDRGenerator
 class ReportFactory:
     """Class responsible for organizing the creation of reports from input json"""
 
+    @staticmethod
+    def is_valid(workflow) -> None:
+        """Checks to see if inputs are valid"""
+
+        if not isinstance(workflow, str) or not os.path.exists(workflow):
+            raise Exception(f"Parameter workflow: Must be of stype string and must point to an existing valid workflow file")
+
     def extract_order(self) -> OrderedDict:
         """Extracts the requested reports from the input workflow"""
 
@@ -91,6 +98,8 @@ class ReportFactory:
     def __init__(self, workflow):
 
         self.logger = logging_setup()
+
+        self.is_valid(workflow)
 
         self.out_dir = ".\\scratch"
         delete_dir(self.out_dir)  # If the out_directory (scratch) exists from a prior run delete it and its contents

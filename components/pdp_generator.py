@@ -7,7 +7,7 @@ import sys, os
 
 class PDPGenerator:
 
-    def is_valid(self, data, out_path, ed_num):
+    def is_valid(self, data, out_path, ed_num) -> None:
         """Checks to see if inputs are valid"""
 
         if not isinstance(data, str) or not os.path.exists(data):
