@@ -49,7 +49,8 @@ class APDGenerator:
             out_df['TOTAL'] = out_df['PD_LIST'].apply(lambda x: len(x) if isinstance(x, list) else 0 ) # Create a field that gives us how many pds are in the apd
             out_df['PD_LIST'] = out_df['PD_LIST'].apply(lambda  x: ', '.join(x) if isinstance(x,list) else '')  # Convert from list to string (list breaks reportlab)
 
-            self.logger.info(f"Generating excel file for {self.ed_num}")
+            for f in ['ED_NAMEE', 'ED_NAMEF', "ADV_POLL_NAME_FIXED"]:  # en-dashes for report excel file
+                out_df[f] = out_df[f].apply(lambda x: x.replace('--', '—'))
             to_excel(df=out_df[
                 ["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_ADV_PD_NBR", "ADV_PD_NBR", "ADV_PD_NBR_SFX", "ADV_POLL_NAME_FIXED", "PD_LIST", "TOTAL"]],
                      out_dir=self.out_path,

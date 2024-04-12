@@ -54,6 +54,9 @@ class MPSGenerator:
 
         if len(out_df) > 0:
 
+            for f in ['ED_NAMEE', 'ED_NAMEF']:  # en-dashes for report excel file
+                out_df[f] = out_df[f].apply(lambda x: x.replace('--', '—'))
+
             to_excel(df=out_df[["ED_CODE", "ED_NAMEE", "ED_NAMEF", "FULL_PD_NBR", "PD_NBR", "PD_NBR_SFX", "TOTAL_INST", "ELECTORS_LISTED", "ADV_PD_NBR"]],
                      out_dir=self.out_path,
                      out_nme=f"SUMINS_{self.ed_num}",

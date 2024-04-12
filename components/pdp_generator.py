@@ -39,7 +39,7 @@ class PDPGenerator:
 
             out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
 
-            for f in ['ED_NAMEE', 'ED_NAMEF']:  # en-dashes for report excel file
+            for f in ['ED_NAMEE', 'ED_NAMEF', 'POLL_NAME_FIXED']:  # en-dashes for report excel file
                 out_df[f] = out_df[f].apply(lambda x: x.replace('--', '—'))
 
             # Send the table to be exported to the out directory
