@@ -81,8 +81,7 @@ class ReportFactory:
         for f in [ t for t_ in [temp_dir.glob(f"**/*{t}") for t in ('.pdf', '.xlsx')] for t in t_]:  # Process excel and pdf files
 
             if not isinstance(f, str) and not isinstance(f, Path):
-                print(f)
-                print(type(f))
+                self.logger.warning(f"{f} is not a valid type string or Path object and cannot be exported")
                 continue  # Make sure only strings are processed
 
             f_name = os.path.split(f)[-1]
