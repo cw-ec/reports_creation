@@ -16,23 +16,33 @@ The following reports can be created using this tool:
 |     Electoral District Poll Key     |     DPK      | Lists every PD street segment for each ORD, SBPD and MOB in a given FED. Each PDSS shows the CSD, street name, the FROM-TO features, the FROM-TO civic # range, side, PD #, and APD #. The PDSS are grouped and ordered by street name, type, direction, and address range, and are sub-grouped by CSD name and type.                                                                                                                                             |
 | Communities with Indigenous Peoples |     IDR      | Lists Communities containing Indigenous Peoples in the FED                                                                                                                                                                                                                                                                                                                                                                                                        |
 
-## Requirements
+## Environment Setup
+
+### Requirements
 
 This project will require the installation python 3.9 or newer. Package requirements can be found in the requirements.txt
 and can be installed using pip or the package manager of your choice. 
 
 Python will need to be called from the command line to test this open a command prompt window and type the command: python
 into the box. If the command is not recognized add the folder containing your python.exe file to the path environment variable for your account.
-If the python command opens the Windows store type the following into the search bar: "Manage app execution aliases" and turn of the two python
-app installers that listed.
+If the python command opens the Windows store type the following into the search bar: "Manage app execution aliases" and turn off the two python
+app installers that are listed.
 
-The required additional packages for this tool:
+!['configure aliases'](docs/img/executionAliases.png)
+
+The required additional python packages for this tool are as follows:
 
     - Pandas
     - Reportlab
     - oracledb
     - click
     - openpyxl
+
+### Installation / Setup
+
+Once python is installed or configured the additional libraries required for the project can be installed. In the absence 
+of a package manager like Anaconda to install the required packages using pip. Pip is a command line tool that is used manage
+python packages.
 
 Install required packages using the provided requirements.txt using pip:
 
@@ -55,14 +65,16 @@ The JSON for the reports creation tool should be formatted as follows:
 
     {
         "reports": [{
-            "type": report appreviation,
+            "type": report abbreviation,
             "feds": an array of all fed numbers to create reports for
             "data": the path to the local csv or xlsx containing the data
         },{
-            "type": report appreviation,
+            "type": report abbreviation,
             "feds": an array of all fed numbers to create reports for
             "data": the path to the local csv or xlsx containing the data
-    }]}
+    }],
+        "export_directory": path to export directory
+    }
 
 Using the above format a valid workflow creating all reports for three feds would look as follows:
 
@@ -90,7 +102,9 @@ Using the above format a valid workflow creating all reports for three feds woul
           "type": "IDR",
           "feds": [47001, 48001, 24001],
           "data": ".\\data\\PDs and Indigenous Communities.xlsx"
-      }]}
+      }],
+        "export_directory": "J:\EMRP\Work\GAM_Reports"
+    }
 
 The above file can be found in workflows folder at the root of this repository and is meant to serve as a reference when 
 creating other workflows.
@@ -102,7 +116,7 @@ For the data download tool the format for the workflow JSON is very similar:
 
     {
         "data": [{
-            "type": report appreviation,
+            "type": report abbreviation,
             "feds": an array of all fed numbers to create reports for
             "data": the path to the local csv or xlsx containing the data
         }]
@@ -111,25 +125,25 @@ A complete workflow for this tool would look as follows:
 
     {"data": [
         {   
-            "username": "usrnme",
+            "username": "usernme",
             "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\pd_desc.sql",
             "ed_list": [48001, 48004, 48005, 24001]
         },{
-            "username": "usrnme",
+            "username": "usernme",
             "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\pd_nums.sql",
             "ed_list": [48001, 48004, 48005, 24001] 
         },{
-            "username": "usrnme",
+            "username": "usernme",
             "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation-Build-PDF-Report\\sql\\ps_add.sql",
             "ed_list": [48001, 48004, 48005, 24001]
         },{
-            "username": "usrnme",
+            "username": "usernme",
             "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\strm.sql",
@@ -147,6 +161,8 @@ The tools in this repository are designed to be run from a command line interfac
 this type of interface is not recommended or supported. Please note that when run the tools will overwrite any preexisting
 files in their respective output folders. If needing to retain any files for archival purposes please make a copy in another
 directory.
+
+When running the tool open the command line (cmd) <kbd>⊞ Win</kbd> then type cmd to bring up the cmd window. 
 
 ### Data Download
 
@@ -173,20 +189,29 @@ This tool is responsible for creating the reports
 
 To run the reports creation tool follow the following steps:
 
-    1.) Open the command line and use the cd command to navigate to the root folder of thisa directory.
+1.) Open the command line and use the cd command to navigate to the root folder of this directory.
+
+2.) Type a valid command to run the tool using the following formula:
+        python <tool_name.py> <path_to_workflow.json>
+    - python refers to the python environment the project requirements were installed with. Should this keyword not work
+      you can replace it with the path to the python.exe file associated with your desired environment.
+    - <tool_name.py> refers to the name of the python file you want to run. These files can be found in this projects 
+      root folder. 
+    - <path_to_workflow.json> this refers to a path to the workflow json file described in the prior section. 
     
-    2.) Type a command to run the tool using the following formula:
-            python <tool_name.py> <path_to_workflow.json>
-        - python refers to the python environment the project requirements were installed with. Should this keyword not work
-          you can replace it with the path to the correct python.exe file.
-        - <tool_name.py> refers to the name of the python file you want to run. These files can be found in this projects 
-          root folder. 
-        - <path_to_workflow.json> this refers to a path to the workflow json file described in the prior section. 
-        
-    3.) Once the command is created hit enter to run it 
+3.) Once the command is created hit <kbd>⏎ Enter</kbd> to run it.
+
+4.) If the command was valid the tool should run. It should produce a series of messages to give you an indication on where 
+it is in the process as well as a timestamp for when that process started. There are three types of messages that can
+appear in the console:
+    - INFO: Informational messages on the current action the tool is performing
+    - WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
+    example of the common warning for this tool is No data available for the specified FED.
+    - ERROR: Something occurred that was significant enough to inhibit processing.
 
 Another method that can be used is to create a .bat file containing the above command. This can be used to chain several
-workflows together as needed.
+workflows together as needed. An example .bat file called 'example.bat' can be found in the workflows folder as a guide 
+for creating your own custom .bat files.
 
 Each report requires certain datasets to be present in the data folder in order for the report to be produced. The table
 below shows the report and the required datasets (as csv's). Ensure that the data is present for the specific FED's needed
@@ -201,5 +226,8 @@ as the data is only downloaded partially as per the data download tool at any on
 |     Electoral District Poll Key     |     DPK      |             pd_desc.csv             |
 | Communities with Indigenous Peoples |     IDR      | PDs and Indigenous Communities.xlsx |
 
-The pdf files will be output in a folder called 'out' in the root folder of this repository. Within the out folder the 
-files are sorted into their own folder based on report type
+The pdf files will be output in a folder called 'scratch' in the root folder of this repository. Within the out folder the 
+files are sorted into their own folder based on report type. Once production of all reports is complete the script will 
+export all pdf files in the scratch directory to the directory specified in the 'export_directory' parameter in the workflow
+json. Note that the scratch directory gets deleted everytime the script is run. The tool will overwrite existing versions
+of a report if a new one is generated.
