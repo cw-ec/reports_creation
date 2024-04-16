@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 from .commons import logging_setup, to_dataframe, create_dir, add_en_dash, get_prov_from_code, get_ed_name_from_code
 from .builders import BuildIDRReport
 import pandas as pd
@@ -49,15 +49,17 @@ class IDRGenerator:
         # Fields are different when in English or French provinces this logic returns the correct fields for that
         if (self.ed_num >= 24000) and (self.ed_num < 25000): # Quebec
 
+            out_df['C_TYPE'] = out_df[['COMMUNITY_TYPE_F', 'COMMUNITY_TYPE_E']].apply(lambda x: f"{x[0]} / {x[1]}",axis=1)  # Concat the community type fields
             out_df.rename(columns={"NAME_2": "C_NAME"}, inplace=True)
             out_df = drop_multipart(out_df, "C_NAME","COMMUNITY_TYPE_F", "PD_NO_CONCAT")
-            return out_df[["C_NAME","COMMUNITY_TYPE_F", "PD_NO_CONCAT"]]
+            return out_df[["C_NAME","C_TYPE", "PD_NO_CONCAT"]]
 
         else: # RoC
 
+            out_df['C_TYPE'] = out_df[['COMMUNITY_TYPE_E', 'COMMUNITY_TYPE_F']].apply(lambda x: f"{x[0]} / {x[1]}", axis=1)  # Concat the community type fields
             out_df.rename(columns={"NAME_1": "C_NAME"}, inplace=True)
             out_df = drop_multipart(out_df, "C_NAME","COMMUNITY_TYPE_E", "PD_NO_CONCAT")
-            return out_df[["C_NAME", "COMMUNITY_TYPE_E", "PD_NO_CONCAT"]]
+            return out_df[["C_NAME", "C_TYPE", "PD_NO_CONCAT"]]
 
     def __init__(self, idr_data, out_path, ed_num, sheet_name="PDs and Indigenous Communities"):
 
@@ -70,18 +72,17 @@ class IDRGenerator:
         self.ed_num = ed_num
         self.df = to_dataframe(idr_data, encoding='latin-1', sheet_name=sheet_name)
 
-        self.logger.info("Generating IDR Report Table")
         self.report_df = self.gen_report_table()
 
         if len(self.report_df) == 0:
-            self.logger.warn(f"No Communities with Indigenous Peoples found in {self.ed_num}. No report generated.")
+            self.logger.warn(f"No data for Communities with Indigenous Peoples found in {self.ed_num}. No report generated.")
 
         else:
             # Set a bunch of things for the report from the first line of the data and create a dict to hold them
             self.row1 = self.df[self.df['FED_NUM'] == self.ed_num].head(1)
 
             self.report_dict = {
-                'ed_name': get_ed_name_from_code(int(self.ed_num)), # No need to join made dict get match via function
+                'ed_name': get_ed_name_from_code(int(self.ed_num)).replace('--', '—'), # No need to join made dict get match via function
                 'ed_code': self.ed_num,
                 'prov': get_prov_from_code(int(self.ed_num)) # No prov in indigenous data. Get from ED_NUM
             }

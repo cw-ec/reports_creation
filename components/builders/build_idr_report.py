@@ -38,6 +38,7 @@ class BuildIDRReport:
 
             # Fix table text
             self.data_df['C_NAME'] = self.data_df['C_NAME'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
+            self.data_df['C_TYPE'] = self.data_df['C_TYPE'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
 
             # Build the table
             t_list = [[Paragraph(x, style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]] + self.data_df.values.tolist()
@@ -69,7 +70,7 @@ class BuildIDRReport:
         self.styles.add(set_col_header_txt_style('ColHeaderTxt'))
         self.styles.add(set_header_custom_style("HeaderTxt"))
 
-        column_widths = [300, 110, 110]
+        column_widths = self.column_widths
         # Create report elements
         elements = [add_report_table(column_widths)]
 
@@ -92,6 +93,7 @@ class BuildIDRReport:
         self.width, self.height = self.pagesize
         self.font = 'Arial'
         self.styles = getSampleStyleSheet()
+        self.column_widths = [250, 160, 110]
 
         # Import special e/f headings and title parameters based on location
         self.settings_dict = IDRSettings(self.in_dict['ed_code']).settings_dict

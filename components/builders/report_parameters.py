@@ -1,4 +1,8 @@
+"""
+This script serves as a repository of text elements for each report type. Each type is saved as English or French first
+to fill in the reports bilingually across the country
 
+"""
 
 class PDPSettings:
     """Contains all page setup components colours, margins page locations for the Polling District Profile Report
