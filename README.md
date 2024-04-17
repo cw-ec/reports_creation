@@ -28,38 +28,97 @@ into the box. If the command is not recognized add the folder containing your py
 If the python command opens the Windows store type the following into the search bar: "Manage app execution aliases" and turn off the two python
 app installers that are listed.
 
-!['configure aliases'](docs/img/executionAliases.png)
+<img alt="&#39;configure aliases&#39;" height="465" src="docs/img/executionAliases.png" width="592"/>
 
 The required additional python packages for this tool are as follows:
 
-    - Pandas
-    - Reportlab
-    - oracledb
-    - click
-    - openpyxl
+- pandas
+- reportlab
+- oracledb
+- click
+- openpyxl
 
 ### Installation / Setup
 
-Once python is installed or configured the additional libraries required for the project can be installed. In the absence 
-of a package manager like Anaconda to install the required packages using pip. Pip is a command line tool that is used manage
-python packages.
+Once python is installed or configured the additional libraries required for the project can be installed. We will be 
+installing the required packages using pip. Pip a tool that can be accessed from the command line to install and manage 
+python packages. It comes preinstalled with python so no additional installations are required to run this tool.
 
-Install required packages using the provided requirements.txt using pip:
+To install the required packages using pip complete the following steps:
 
-    pip install -r requirements.txt
+1.) Open the command line (cmd) <kbd>⊞ Win</kbd> then type cmd to bring up the cmd window.
 
-Should pip need to be updated navigate to the folder containing your python.exe and use the following command to update pip
+2.) To ensure that python is set up correctly type python on the command line and hit enter
+
+3.) Install required packages using the provided requirements.txt using pip:
+
+        pip install -r requirements.txt
+
+   Should an error appear stating that pip need to be updated navigate to the folder containing your python.exe and use 
+   the following command to update pip
 
     python.exe pip install --upgrade pip
 
+### Other Considerations
 If running the data download tool access to the corporate database as well as several additional schemas are required.
-Please consult the SQL files in order to determine if additional permissions are required
+Please ensure that you have permission to access the corporate database (CDB). This should include read access to the 
+SITES_ADMIN schema as well.
 
 ## Workflow Creation
 
-In order to run the reports generation tool you will need to create a workflow. Example workflows can be found in the 
-workflows directory at the root of this repository. Each workflow is a JSON file and contains the specific information
-needed to direct the script in the creation of the desired reports.
+In order to run the tools in this repository you will need to create a workflow file. This file will contain key information
+the tool needs in order to create the correct reports. Workflow files follow a consistent schema that is outlines below.
+Example workflows can also be found in the workflows directory at the root of this repository. These examples files can be
+altered as needed by the user. These files are stored as .json files.
+
+### Data Download Workflow File
+
+For the data download tool the format for the workflow JSON can be seen below:
+
+    { "data": [
+        {
+            "username": your oracle db username,
+            "password": your oracle db password,
+            "database": connection string for the CDB,
+            "sql_path": Path to the required sql file,
+            "ed_list": an array of fed numbers to download the data for stored as integers
+        }]
+    }
+Using the above guide a complete workflow for this tool for three feds would look as follows:
+
+    {"data": [
+        {   
+            "username": "usernme",
+            "password": "pwd",
+            "database": "db.connect.string",
+            "sql_path": "C:\\reports_creation\\sql\\pd_desc.sql",
+            "ed_list": [47001, 48001, 24001]
+        },{
+            "username": "usernme",
+            "password": "pwd",
+            "database": "db.connect.string",
+            "sql_path": "C:\\reports_creation\\sql\\pd_nums.sql",
+            "ed_list": [47001, 48001, 24001] 
+        },{
+            "username": "usernme",
+            "password": "pwd",
+            "database": "db.connect.string",
+            "sql_path": "C:\\reports_creation-Build-PDF-Report\\sql\\ps_add.sql",
+            "ed_list": [47001, 48001, 24001]
+        },{
+            "username": "usernme",
+            "password": "pwd",
+            "database": "db.connect.string",
+            "sql_path": "C:\\reports_creation\\sql\\strm.sql",
+            "ed_list": [47001, 48001, 24001]
+        }
+    ]}
+
+The above script would download all data for the three listed FEDs. A copy of this script can be found in the workflows
+for the folder but not in a working form as that would contain sensitive information. Care should be taken to protect 
+this file once created, and it should not be shared or placed on a shared drive.
+
+### Reports Creation Workflow File
 
 The JSON for the reports creation tool should be formatted as follows:
 
@@ -76,7 +135,7 @@ The JSON for the reports creation tool should be formatted as follows:
         "export_directory": path to export directory
     }
 
-Using the above format a valid workflow creating all reports for three feds would look as follows:
+Using the above guide an example of a valid workflow creating all reports for three feds would look as follows:
 
     {"reports":[{
           "type": "PDP",
@@ -107,62 +166,25 @@ Using the above format a valid workflow creating all reports for three feds woul
     }
 
 The above file can be found in workflows folder at the root of this repository and is meant to serve as a reference when 
-creating other workflows.
+creating other workflows. It can be altered as needed. 
 
 The above script would create reports of every type for each of the three FED's listed in the array (47001, 48001, and 24001) 
 Only the report types being generated need an array unneeded report types can be removed from the workflow.
-
-For the data download tool the format for the workflow JSON is very similar:
-
-    {
-        "data": [{
-            "type": report abbreviation,
-            "feds": an array of all fed numbers to create reports for
-            "data": the path to the local csv or xlsx containing the data
-        }]
-    }
-A complete workflow for this tool would look as follows:
-
-    {"data": [
-        {   
-            "username": "usernme",
-            "password": "pwd",
-            "database": "db.connect.string",
-            "sql_path": "C:\\reports_creation\\sql\\pd_desc.sql",
-            "ed_list": [48001, 48004, 48005, 24001]
-        },{
-            "username": "usernme",
-            "password": "pwd",
-            "database": "db.connect.string",
-            "sql_path": "C:\\reports_creation\\sql\\pd_nums.sql",
-            "ed_list": [48001, 48004, 48005, 24001] 
-        },{
-            "username": "usernme",
-            "password": "pwd",
-            "database": "db.connect.string",
-            "sql_path": "C:\\reports_creation-Build-PDF-Report\\sql\\ps_add.sql",
-            "ed_list": [48001, 48004, 48005, 24001]
-        },{
-            "username": "usernme",
-            "password": "pwd",
-            "database": "db.connect.string",
-            "sql_path": "C:\\reports_creation\\sql\\strm.sql",
-            "ed_list": [48001, 48004, 48005, 24001]
-        }
-    ]}
-
-The above script would download all data for the four listed FEDs. A copy of this script can be found in the workflows
-for the folder but not in a working form as that would contain sensitive information. Care should be taken to protect 
-this file once created, and it should not be shared or placed on a shared drive.
 
 ## Usage
 
 The tools in this repository are designed to be run from a command line interface (CLI) and running the tool outside of 
 this type of interface is not recommended or supported. Please note that when run the tools will overwrite any preexisting
 files in their respective output folders. If needing to retain any files for archival purposes please make a copy in another
-directory.
+directory. If exporting files to a directory on a shared drive ensure that none of the files you are replacing are open 
+by other users as this will cause the tool to fail. 
 
-When running the tool open the command line (cmd) <kbd>⊞ Win</kbd> then type cmd to bring up the cmd window. 
+At this time there are two tools in available for use:
+
+- Data Download: Downloads the data for the reports from the CDB
+- Report Creation: Creates the requested reports using the data from the data download tool
+
+As the output of the data download tool is used by the report creation tool it is recommended that the 
 
 ### Data Download
 
@@ -206,7 +228,7 @@ it is in the process as well as a timestamp for when that process started. There
 appear in the console:
     - INFO: Informational messages on the current action the tool is performing
     - WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
-    example of the common warning for this tool is No data available for the specified FED.
+      example of the common warning for this tool is No data available for the specified FED.
     - ERROR: Something occurred that was significant enough to inhibit processing.
 
 Another method that can be used is to create a .bat file containing the above command. This can be used to chain several
@@ -229,5 +251,5 @@ as the data is only downloaded partially as per the data download tool at any on
 The pdf files will be output in a folder called 'scratch' in the root folder of this repository. Within the out folder the 
 files are sorted into their own folder based on report type. Once production of all reports is complete the script will 
 export all pdf files in the scratch directory to the directory specified in the 'export_directory' parameter in the workflow
-json. Note that the scratch directory gets deleted everytime the script is run. The tool will overwrite existing versions
+file. Note that the scratch directory gets deleted everytime the script is run. The tool will overwrite existing versions
 of a report if a new one is generated.
