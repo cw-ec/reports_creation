@@ -92,7 +92,13 @@ class ReportFactory:
 
             fed_dir = os.path.join(export_dir, prov_abv, fed_num)  # Build the fed dir from the component parts
             create_dir(fed_dir)  # Ensure that the directory exists
-            shutil.copy(f, os.path.join(fed_dir, f_name)) # Copy the file to the export subdirectory
+
+            # Because we're exporting to a shared drive use try except to catch files that are open and note in logs
+            try:
+                shutil.copy(f, os.path.join(fed_dir, f_name)) # Copy the file to the export subdirectory
+
+            except PermissionError:
+                self.logger.exception(f"Permission Error: {f_name} could not be overwritten in export directory. Please ensure the file isn't open and try again.")
 
     def __init__(self, workflow):
 

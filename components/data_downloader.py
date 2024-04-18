@@ -47,6 +47,7 @@ class DataDownloader:
             # Add FED Array to SQL file
             sql_file = sql_file.replace('ED_LIST_HERE', str(tuple(dataset['ed_list'])))
 
+            oracledb.init_oracle_client()  # Should engage oracle thick mode if fails add lib_dir to oracle file on c drive 19_##
             # Create db connection
             connection = oracledb.connect(user=dataset['username'],
                                           password=dataset['password'],

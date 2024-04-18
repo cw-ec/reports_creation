@@ -7,19 +7,20 @@ import numpy as np
 from datetime import datetime
 from pathlib import Path
 
-def logging_setup(log_dir=".\\") -> logging.getLogger():
+def logging_setup(log_dir=".\\logs") -> logging.getLogger():
     """Sets up logging takes one parameter to set a directory for the output log file"""
 
+    create_dir(log_dir)
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[
-            logging.FileHandler(os.path.join(log_dir, f"{datetime.today().strftime('%d-%m-%Y')}_log.log")),
+            logging.FileHandler(os.path.join(log_dir, f"{datetime.today().strftime('%d-%m-%Y')}.log")),
             logging.StreamHandler(sys.stdout)
-        ]
+        ],
+        datefmt="[%Y-%m-%d %H:%M:%S]"  # Tidy's up datetime format
     )
     return logging.getLogger()
-
 
 def create_dir(path: str) -> None:
     """Check if directory exists and if it doesn't create it."""
