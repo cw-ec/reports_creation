@@ -114,6 +114,9 @@ Using the above guide a complete workflow for this tool for three feds would loo
         }
     ]}
 
+**An important note for file paths: please ensure that the \\ syntax is maintained as \ will result in an error and cause
+the script to fail**
+
 The above script would download all data for the three listed FEDs. A copy of this script can be found in the workflows
 for the folder but not in a working form as that would contain sensitive information. Care should be taken to protect 
 this file once created, and it should not be shared or placed on a shared drive.
@@ -162,8 +165,11 @@ Using the above guide an example of a valid workflow creating all reports for th
           "feds": [47001, 48001, 24001],
           "data": ".\\data\\PDs and Indigenous Communities.xlsx"
       }],
-        "export_directory": "J:\EMRP\Work\GAM_Reports"
+        "export_directory": "J:\\EMRP\\Work\\GAM_Reports"
     }
+
+**An important note for file paths: please ensure that the \\ syntax is maintained as \ will result in an error and cause
+the script to fail**
 
 The above file can be found in workflows folder at the root of this repository and is meant to serve as a reference when 
 creating other workflows. It can be altered as needed. 
@@ -190,9 +196,11 @@ As the output of the data download tool is used by the report creation tool it i
 
 This tool is responsible for downloading the data from the databases and into local csv files for the reports creation
 tool. This tool must be run on a production machine, so it can access the database. Ensure that you have been granted 
-all necessary permissions to databases and schemas before running the tool. There are a number of queries each downloading 
-data needed for specific reports. To check what data the reports you're downloading need check the Report Creation
-tool description below. Below is a table that identifies the csv file each sql query creates
+all necessary permissions to databases and schemas before running the tool. 
+
+There are a number of SQL queries available for the tool to run. They can be found in the folder called sql at the root
+of this repository. Each SQL query downloads the data needed for certain reports. To check what data is required for each
+report refer to the table in the report creation tool instructions.
 
 | SQL Query Name | CSV File Name |
 |:--------------:|:-------------:|
@@ -205,39 +213,53 @@ The csv files produced above contain all the information necessary to create eve
 Indigenous Peoples report which requires the PDs and Indigenous Communities.xlsx file which is not one of the files produced
 by this tool and must be retrieved from a location TBD.
 
+To run the tool please follow these steps:
+
+1.) Open the cmd window (<kbd>⊞ Win</kbd> then type cmd)
+
+2.) Navigate to the root directory of this repository. The recommended path for this is c:\\reports_creation to keep the
+    path as short as possible.
+
+3.) Activate the tool by creating a command using the following formula: 
+        
+    python <tool name .py> <path to workflow>
+
+An example of a valid command for the data download tool using a workflow file called download_workflow.json which is located
+in the workflows folder of this repository would look as follows:
+
+    python data_download.py .\\workflows\\download_workflow.json
+
+4.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
+
+5.) If the command was valid the tool will run. While running the tool will produce a series of messages to give you an update
+on what is processing as well as a timestamp for when that process started. There are three types of messages that can
+appear in the console:
+
+- INFO: Informational messages on the current action the tool is performing
+- WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
+  example of the common warning for this tool is No data available for the specified FED.
+- ERROR: Something occurred that was significant enough to inhibit processing.
+
+#### Outputs
+
+This tool creates the following outputs:
+
+1.) CSV file(s) containing data for the feds specified in the workflow. These are located in the data folder at the root
+    of this directory (this location cannot be changed)
+2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
+    allows the user to check for errors after processing. This file will be located in the logs folder at the root of
+    this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
+    the YYYY-MM-DD convention 
+
+
 ### Report Creation
 
-This tool is responsible for creating the reports
-
-To run the reports creation tool follow the following steps:
-
-1.) Open the command line and use the cd command to navigate to the root folder of this directory.
-
-2.) Type a valid command to run the tool using the following formula:
-        python <tool_name.py> <path_to_workflow.json>
-    - python refers to the python environment the project requirements were installed with. Should this keyword not work
-      you can replace it with the path to the python.exe file associated with your desired environment.
-    - <tool_name.py> refers to the name of the python file you want to run. These files can be found in this projects 
-      root folder. 
-    - <path_to_workflow.json> this refers to a path to the workflow json file described in the prior section. 
-    
-3.) Once the command is created hit <kbd>⏎ Enter</kbd> to run it.
-
-4.) If the command was valid the tool should run. It should produce a series of messages to give you an indication on where 
-it is in the process as well as a timestamp for when that process started. There are three types of messages that can
-appear in the console:
-    - INFO: Informational messages on the current action the tool is performing
-    - WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
-      example of the common warning for this tool is No data available for the specified FED.
-    - ERROR: Something occurred that was significant enough to inhibit processing.
-
-Another method that can be used is to create a .bat file containing the above command. This can be used to chain several
-workflows together as needed. An example .bat file called 'example.bat' can be found in the workflows folder as a guide 
-for creating your own custom .bat files.
+This tool is responsible for creating the reports and exporting them to a given directory. This tool should always be run
+after the data download tool as without data no reports will be produced.
 
 Each report requires certain datasets to be present in the data folder in order for the report to be produced. The table
-below shows the report and the required datasets (as csv's). Ensure that the data is present for the specific FED's needed
-as the data is only downloaded partially as per the data download tool at any one time.
+below shows the report and the required datasets (as a csv). Ensure that the data is present for the specific FED's needed
+as the data is  as per the data download tool at any one time.
 
 |               Report                | Abbreviation |          Required Datasets          |
 |:-----------------------------------:|:------------:|:-----------------------------------:|
@@ -248,8 +270,41 @@ as the data is only downloaded partially as per the data download tool at any on
 |     Electoral District Poll Key     |     DPK      |             pd_desc.csv             |
 | Communities with Indigenous Peoples |     IDR      | PDs and Indigenous Communities.xlsx |
 
-The pdf files will be output in a folder called 'scratch' in the root folder of this repository. Within the out folder the 
-files are sorted into their own folder based on report type. Once production of all reports is complete the script will 
-export all pdf files in the scratch directory to the directory specified in the 'export_directory' parameter in the workflow
-file. Note that the scratch directory gets deleted everytime the script is run. The tool will overwrite existing versions
-of a report if a new one is generated.
+To run the reports creation tool follow the following steps:
+
+1.) Open the command line and use the cd command to navigate to the root folder of this directory.
+
+2.) Type a valid command to run the tool using the following formula:
+        
+    python <tool_name.py> <path_to_workflow.json>
+    
+- python refers to the python environment the project requirements were installed with. Should this keyword not work
+      you can replace it with the path to the python.exe file associated with your desired environment.
+- <tool_name.py> refers to the name of the python file you want to run. These files can be found in this projects 
+  root folder. 
+- <path_to_workflow.json> this refers to a path to the workflow json file described in the prior section. 
+
+For example to run the report creation tool using a workflow json called example would produce a command that looks like this:
+
+    python report_creation.py .\\workflows\\example.json
+    
+3.) Once the command is created hit <kbd>⏎ Enter</kbd> to run it.
+
+4.) If the command was valid the tool will run. While running the tool will produce a series of messages to give you an update
+on what is processing as well as a timestamp for when that process started. There are three types of messages that can
+appear in the console:
+
+- INFO: Informational messages on the current action the tool is performing
+- WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
+  example of the common warning for this tool is No data available for the specified FED.
+- ERROR: Something occurred that was significant enough to inhibit processing.
+
+Another method that can be used is to create a .bat file containing the above command. This can be used to chain several
+workflows together as needed. An example .bat file called 'example.bat' can be found in the workflows folder as a guide 
+for creating your own custom .bat files.
+
+The pdf files produced by this tool will be output in a folder called 'scratch' in the root folder of this repository.
+From there they are exported to the directory specified by the export_directory parameter in the workflow file. Once 
+production of all reports is complete the script will export all pdf files in the scratch directory to the directory 
+specified in the 'export_directory' parameter in the workflow file. Note that the scratch directory gets deleted everytime 
+the script is run. The tool will overwrite existing versions of a report if a new one is generated.

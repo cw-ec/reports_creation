@@ -15,7 +15,7 @@ def logging_setup(log_dir=".\\logs") -> logging.getLogger():
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[
-            logging.FileHandler(os.path.join(log_dir, f"{datetime.today().strftime('%d-%m-%Y')}.log")),
+            logging.FileHandler(os.path.join(log_dir, f"{datetime.today().strftime('%Y-%m-%d')}.log")),
             logging.StreamHandler(sys.stdout)
         ],
         datefmt="[%Y-%m-%d %H:%M:%S]"  # Tidy's up datetime format
