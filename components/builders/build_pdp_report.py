@@ -3,7 +3,7 @@ import datetime
 import pandas as pd
 from components.commons import logging_setup
 from reportlab.platypus.flowables import TopPadder
-import os
+import os, sys
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer, PageBreak
 from reportlab.lib.units import cm
 from reportlab.pdfbase.pdfmetrics import registerFont
@@ -72,6 +72,8 @@ class BuildPDPReport:
 
 
             stats_df = self.data_df[self.data_df['VOID_IND']=='']  # '' because 'N' get removed in the generator
+            stats_df = stats_df[~stats_df['ELECTORS_LISTED'].isnull()]  # Don't count rows with na values
+            
             # Calc Stats
             total_active_pd = len(stats_df)  # Total # of pd's with VOID_IND == 'N'
             total_electors = stats_df['ELECTORS_LISTED'].sum()

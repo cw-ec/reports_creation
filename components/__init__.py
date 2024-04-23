@@ -8,3 +8,4 @@ from .dpk_generator import DPKGenerator
 from .mps_generator import MPSGenerator
 from .idr_generator import IDRGenerator
 from .report_factory import ReportFactory
+from .zip_outputs import ZipOutputs
