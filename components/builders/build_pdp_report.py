@@ -1,5 +1,7 @@
 # -*- coding: utf-8-*-
 import datetime
+
+import numpy as np
 import pandas as pd
 from components.commons import logging_setup
 from reportlab.platypus.flowables import TopPadder
@@ -42,6 +44,10 @@ class BuildPDPReport:
             df = self.data_df.copy()
             df['PD_NO_CONCAT'] = df['PD_NO_CONCAT'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
 
+            # Make the electors listed values prettier
+            df["ELECTORS_LISTED"] = df["ELECTORS_LISTED"].astype("string").fillna('')
+            df["ELECTORS_LISTED"] = df["ELECTORS_LISTED"].apply(lambda x: Paragraph(str(int(float(x))), style=self.styles['CellText']) if len(x) > 0 else x)
+
             # Build the table
             lista = [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]] + df.values.tolist()
             tbl = Table(lista, style=ts, repeatRows=1, colWidths=c_widths)
@@ -72,13 +78,20 @@ class BuildPDPReport:
 
 
             stats_df = self.data_df[self.data_df['VOID_IND']=='']  # '' because 'N' get removed in the generator
-            stats_df = stats_df[~stats_df['ELECTORS_LISTED'].isnull()]  # Don't count rows with na values
-            
+
             # Calc Stats
-            total_active_pd = len(stats_df)  # Total # of pd's with VOID_IND == 'N'
-            total_electors = stats_df['ELECTORS_LISTED'].sum()
-            avg_ele_per_pd = int(stats_df['ELECTORS_LISTED'].mean())
-            total_void = len(self.data_df[self.data_df['VOID_IND'] =='Y'])
+            total_active_pd = int(len(stats_df))  # Total # of pd's with VOID_IND == 'N'
+            total_electors = int(stats_df['ELECTORS_LISTED'].sum())
+
+            # Because sometimes the values might be NaN
+            try:
+                avg_ele_per_pd = int(stats_df['ELECTORS_LISTED'].dropna(how='all').mean())
+
+            except ValueError:
+                self.logger.warn(f"AVERAGE ELECTOR PER PD: summary statistic cannot be converted to an integer check elector count values. Replacing Null Value with NaN")
+                avg_ele_per_pd = np.NaN
+
+            total_void = int(len(self.data_df[self.data_df['VOID_IND'] =='Y']))
 
             # Setup Summary Stats DF
             cols = [self.settings_dict['ss_table_header'], '']

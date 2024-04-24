@@ -37,7 +37,10 @@ class PDPGenerator:
             # Fix en dashes if needed
             out_df['POLL_NAME_FIXED'] = out_df['POLL_NAME_FIXED'].apply(lambda x: x.replace('--', '—'))
 
-            out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
+            # out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
+            out_df = out_df.merge(self.ec_df[["PD_ID", "ELECTOR_COUNT"]], on="PD_ID", how='left')
+            out_df.drop(columns=['ELECTORS_LISTED'], inplace=True)
+            out_df.rename(columns={"ELECTOR_COUNT":"ELECTORS_LISTED"}, inplace=True)
 
             for f in ['ED_NAMEE', 'ED_NAMEF', 'POLL_NAME_FIXED']:  # en-dashes for report excel file
                 out_df[f] = out_df[f].apply(lambda x: x.replace('--', '—'))
@@ -62,6 +65,7 @@ class PDPGenerator:
         self.out_path = out_path
         self.ed_num = ed_num
         self.df = to_dataframe(data, encoding='latin-1')
+        self.ec_df = to_dataframe(".\\data\ELECTOR_COUNTS.xlsx", encoding='latin-1')  # Placeholder until database table gets updates
 
         self.report_df = self.gen_report_table()
 

@@ -97,7 +97,14 @@ class PDDGenerator:
             self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
             self.ps_add = self.ps_add[(self.ps_add['PD_NBR'] >= 400) & (self.ps_add['ED_CODE'] == self.ed_num)]  # We only need the records for single building and mobile polls for the ed we're working with
-            self.ps_add = self.ps_add[['FULL_PD_NBR', 'SITE_NAME_BIL', 'FINAL_SITE_ADDRESS', 'FULL_SBPD_PLACE', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE', 'SITE_PLACE_NAME', 'ELECTORS_LISTED']]
+            # Drop PD_ID from this list after database is updated as it will no longer be needed (only needed for join to electos xlsx)
+            self.ps_add = self.ps_add[['FULL_PD_NBR', 'SITE_NAME_BIL', 'FINAL_SITE_ADDRESS', 'FULL_SBPD_PLACE', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE', 'SITE_PLACE_NAME', 'ELECTORS_LISTED', 'PD_ID']]
+
+            # Electors listed join data until database get updated
+            self.ec_df = to_dataframe(".\\data\ELECTOR_COUNTS.xlsx", encoding='latin-1')  # Placeholder until database table gets updates
+            self.ps_add =  self.ps_add.merge(self.ec_df[["PD_ID", "ELECTOR_COUNT"]], on="PD_ID", how='left')
+            self.ps_add.drop(columns=['ELECTORS_LISTED', 'PD_ID'], inplace=True)
+            self.ps_add.rename(columns={"ELECTOR_COUNT": "ELECTORS_LISTED"}, inplace=True)
 
             self.report_dict = {
                 'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),

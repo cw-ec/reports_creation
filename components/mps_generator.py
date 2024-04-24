@@ -31,7 +31,11 @@ class MPSGenerator:
 
         # Create Poll Number field be concatenating the poll num and suffix
         out_df['PD_NO_CONCAT'] = out_df[['PD_NBR', 'PD_NBR_SFX']].astype(str).apply('-'.join, axis=1)
-        out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
+        # out_df['ELECTORS_LISTED'] = 123  # 123 placeholder for now until we get the electors counts added to the SQL
+
+        out_df = out_df.merge(self.ec_df[["PD_ID", "ELECTOR_COUNT"]], on="PD_ID", how='left')
+        out_df.drop(columns=['ELECTORS_LISTED'], inplace=True)
+        out_df.rename(columns={"ELECTOR_COUNT": "ELECTORS_LISTED"}, inplace=True)
 
         # Add the institution count to the report table
         inst_count = out_df.groupby('PD_NO_CONCAT')['MOBILE_POLL_STN_ID'].nunique().rename('TOTAL_INST')
@@ -74,6 +78,7 @@ class MPSGenerator:
         self.out_path = out_path
         self.ed_num = ed_num
         self.df = to_dataframe(data, encoding='latin-1')
+        self.ec_df = to_dataframe(".\\data\ELECTOR_COUNTS.xlsx", encoding='latin-1')  # Placeholder until database table gets updates
 
         self.report_df = self.gen_report_table()
 

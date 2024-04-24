@@ -177,6 +177,27 @@ creating other workflows. It can be altered as needed.
 The above script would create reports of every type for each of the three FED's listed in the array (47001, 48001, and 24001) 
 Only the report types being generated need an array unneeded report types can be removed from the workflow.
 
+### Zip Outputs
+
+The JSON for the reports creation tool should be formatted as follows:
+
+    {
+      "map_dir": path to the directory containg unsorted map series PDFs,
+      "report_dir": path to the dorectory containing sorted report PDFs from the report creation tool,
+      "out_dir": path to the directory that will contain the sorted and zipped outputs
+    }
+
+An example of what a complete workflow would look like is found below:
+    
+    {
+      "map_dir": "J:\\MapSeries\\Dump",
+      "report_dir": "J:\\EMRP\\Work\\GAM_Reports",
+      "out_dir": ".\\test"
+    }
+
+The above workflow would sort and zip all the files contained in the both the map and report directories by FED and place
+zipped versions of those directories in the out directory. 
+
 ## Usage
 
 The tools in this repository are designed to be run from a command line interface (CLI) and running the tool outside of 
@@ -249,8 +270,7 @@ This tool creates the following outputs:
 2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
     allows the user to check for errors after processing. This file will be located in the logs folder at the root of
     this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
-    the YYYY-MM-DD convention 
-
+    the YYYY-MM-DD convention. 
 
 ### Report Creation
 
@@ -308,3 +328,61 @@ From there they are exported to the directory specified by the export_directory 
 production of all reports is complete the script will export all pdf files in the scratch directory to the directory 
 specified in the 'export_directory' parameter in the workflow file. Note that the scratch directory gets deleted everytime 
 the script is run. The tool will overwrite existing versions of a report if a new one is generated.
+
+#### Outputs
+
+1.) PDF and XLSX files sorted by fed in the given export directory 
+2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
+    allows the user to check for errors after processing. This file will be located in the logs folder at the root of
+    this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
+    the YYYY-MM-DD convention. 
+
+### Zip Outputs
+
+This tool is responsible for creating an organized zip file of all the products produced by the map series and report
+creation projects. The output of this tool is a .zip file per FED that contains both maps and reports for the consumption
+of both internal and external clients. This tool should only be run after all other tools are finished processing as it 
+requires all products to be available at runtime. 
+
+This tool will place the produced .zip files in a directory as specified in the workflow .zip. It is imperative that the 
+user ensure that none of these files are open BEFORE running the tool as a permission error will cause the tool to fail and
+require processing to start over again. 
+
+The process for running this tool is similar to the other tools previously described in this section. Please follow the 
+directions below to best use this tool:
+
+1.) Open the cmd window (<kbd>⊞ Win</kbd> then type cmd)
+
+2.) Navigate to the root directory of this repository. The recommended path for this is c:\\reports_creation to keep the
+    path as short as possible.
+
+3.) Activate the tool by creating a command using the following formula: 
+        
+    python <tool name .py> <path to workflow>
+
+An example of a valid command for the data download tool using a workflow file called zip_ex.json which is located
+in the workflows folder of this repository would look as follows:
+
+    python zip_output.py .\\workflows\\zip_ex.json
+
+4.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
+
+5.) If the command was valid the tool will run. While running the tool will produce a series of messages to give you an update
+on what is processing as well as a timestamp for when that process started. There are three types of messages that can
+appear in the console:
+
+- INFO: Informational messages on the current action the tool is performing
+- WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
+  example of the common warning for this tool is No data available for the specified FED.
+- ERROR: Something occurred that was significant enough to inhibit processing.
+
+#### Outputs
+
+On a successful run of the tool the following outputs will be produced:
+
+1.) A .zip file for each FED that contains all map and report files that were available in the provided directories when
+    the tool was run. 
+2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
+    allows the user to check for errors after processing. This file will be located in the logs folder at the root of
+    this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
+    the YYYY-MM-DD convention.

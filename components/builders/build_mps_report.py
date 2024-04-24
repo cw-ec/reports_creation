@@ -40,6 +40,10 @@ class BuildMPSReport:
             df = self.data_df.copy()
             df['PD_NO_CONCAT'] = df['PD_NO_CONCAT'].apply(lambda x: Paragraph(x, style=self.styles['CellText']))
 
+            # Make the electors listed values prettier
+            df["ELECTORS_LISTED"] = df["ELECTORS_LISTED"].astype("string").fillna('')
+            df["ELECTORS_LISTED"] = df["ELECTORS_LISTED"].apply(lambda x: Paragraph(str(int(float(x))), style=self.styles['CellText']) if len(x) > 0 else x)
+
             # Build the table
             t_list = [[Paragraph(x, style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header']]] + df.values.tolist()
             tbl = Table(t_list, style=ts, repeatRows=1, colWidths=c_widths)
@@ -68,8 +72,8 @@ class BuildMPSReport:
                     lambda x: Paragraph(x, style=self.styles['CellText']))
 
             # Calc Stats
-            total_active_pd = len(self.data_df)
-            total_electors = self.data_df['ELECTORS_LISTED'].sum()
+            total_active_pd = int(len(self.data_df))
+            total_electors = int(self.data_df['ELECTORS_LISTED'].sum())
             total_num_inst = int(self.data_df.loc[:, 'TOTAL_INST'].sum())
 
             # Setup Stats DF

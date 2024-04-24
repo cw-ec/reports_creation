@@ -152,13 +152,14 @@ class BuildPDDReport:
             ps_add = self.ps_add[self.ps_add['FULL_PD_NBR'] == pd_num]
 
             # Build the mp full address field in an order based on the province QC vs RoC
-            if int(self.in_dict['ed_code']) >= 24000 and int(self.in_dict['ed_code']) <= 24999:  # Addresses in QC
+            if (int(self.in_dict['ed_code']) >= 24000) and (int(self.in_dict['ed_code']) <= 24999):  # Addresses in QC
                 ps_add['mp_add_full'] = self.ps_add[['SITE_PLACE_NAME', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE']].apply(lambda x: Paragraph(f"{add_fre}<br/>{x.iloc[0]}, {x.iloc[1]} {x.iloc[2]} /<br/> {add_eng}<br/>{x.iloc[0]}, {x.iloc[1]} {x.iloc[2]}", style=self.styles['SingleCellText']),axis=1)
 
             else:  # RoC
                 ps_add['mp_add_full'] = self.ps_add[['SITE_PLACE_NAME', 'CPC_PRVNC_NAME', 'SITE_PSTL_CDE']].apply(lambda x: Paragraph(f"{add_eng}<br/>{x.iloc[0]}, {x.iloc[1]} {x.iloc[2]} /<br/> {add_fre}<br/>{x.iloc[0]}, {x.iloc[1]} {x.iloc[2]}", style=self.styles['SingleCellText']),axis=1)
 
             ps_add["SITE_NAME_BIL"] = ps_add["SITE_NAME_BIL"].apply(lambda x: Paragraph(x, style=self.styles['CellText']) if isinstance(x, str) else '')
+            ps_add["ELECTORS_LISTED"] = ps_add["ELECTORS_LISTED"].apply(lambda x: Paragraph(str(int(x)), style= self.styles['CellText']) if not isnan(x) else '')
 
             element_list = [title_para] + [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header_mp']]] + ps_add[["SITE_NAME_BIL", 'mp_add_full', 'ELECTORS_LISTED']].values.tolist()
             tbl = Table(element_list, style=ts, repeatRows=2, colWidths=mp_widths)

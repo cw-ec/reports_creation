@@ -32,15 +32,18 @@ class ZipOutputs:
 
                 ptype = file.name.split('_')[0]
                 fed = file.name.split('_')[1].split('.')[0]
+                if (int(fed) >= 24000) and (int(fed) < 25000): # Quebec
+                    subdir = 'cartes'
+                else:  # RoC
+                    subdir = 'maps'
 
                 if ptype == 'InsetIndex':  # no suffix on inset reports use simplified workflow
 
-                    fed = fed.split('.')[0]  # needed because fed has the file type in it and it's not needed
-                    out_pdf_path = os.path.join(self.scratch_dir, fed)
+                    out_pdf_path = os.path.join(self.scratch_dir, fed, subdir)
 
                     Path(out_pdf_path).mkdir(parents=True, exist_ok=True)
                     self.logger.info(f"Sorting: {file.name}")
-                    copyfile(os.path.join(map_dir, file.name), os.path.join(out_pdf_path, 'maps', f"{ptype}_{fed}.pdf"))
+                    copyfile(os.path.join(map_dir, file.name), os.path.join(out_pdf_path, f"{ptype}_{fed}.pdf"))
 
                 else:  # Map PDFs have more components and need a more complex workflow
                     suffix = file.name.split('_')[2].split('.')[0]
@@ -49,7 +52,7 @@ class ZipOutputs:
                     if (suffix.split('.')[0][0].isalpha()) and (len(suffix) == 2):
                         suffix = f"{suffix[0]}0{suffix[1]}"
 
-                    out_pdf_path = os.path.join(self.scratch_dir, fed, 'maps', self.poll_type[ptype])
+                    out_pdf_path = os.path.join(self.scratch_dir, fed, subdir, self.poll_type[ptype])
                     # Make sure output path exists. Create if needed
                     Path(out_pdf_path).mkdir(parents=True, exist_ok=True)
                     self.logger.info(f"Sorting: {file.name}")
@@ -63,12 +66,19 @@ class ZipOutputs:
             for fed_dir in report_dir.glob('*/*/'):
                 self.logger.info(f"Moving all reports in {fed_dir}")
 
-                report_path = os.path.join(self.scratch_dir, os.path.split(fed_dir)[-1], 'reports')
+                # Construct the report path
+                fed = os.path.split(fed_dir)[-1]
+                if (int(fed) >= 24000) and (int(fed) < 25000): # Quebec
+                    subdir = 'rapports'
+                else:  # RoC
+                    subdir = 'reports'
+
+                report_path = os.path.join(self.scratch_dir, fed, subdir)
 
                 if os.path.exists(report_path):
                     delete_dir(report_path)
 
-                copytree(fed_dir, os.path.join(self.scratch_dir, os.path.split(fed_dir)[-1], 'reports'), )
+                copytree(fed_dir, report_path)
 
         map_dir = Path(self.params['map_dir'])
         report_dir = Path(self.params['report_dir'])
@@ -112,7 +122,8 @@ class ZipOutputs:
         self.poll_type = {'A': 'ADV',
                           'P': 'PollDay'}
 
-        # Create scratch directory if necessary
+        # Ensure the scratch directory is empty and exists
+        delete_dir(str(self.scratch_dir))
         create_dir(str(self.scratch_dir))
 
         # Extract parameters from the workflow.json

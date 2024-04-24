@@ -83,6 +83,10 @@ data from the database using the pre-constructed SQL statements.
 |:---------:|---------------------------------------------------------------------------------------------|
 | settings  | This is a path to a json file containing all the information required to download the data. |
 
+### zip_outputs.py
+
+Contains all code to run the output_zipper tool. 
+
 ### commons.py
 
 Contains common functions and objects that are used by more than one of the generator scripts. 
