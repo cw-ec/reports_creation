@@ -184,7 +184,8 @@ The JSON for the reports creation tool should be formatted as follows:
     {
       "map_dir": path to the directory containg unsorted map series PDFs,
       "report_dir": path to the dorectory containing sorted report PDFs from the report creation tool,
-      "out_dir": path to the directory that will contain the sorted and zipped outputs
+      "out_dir": path to the directory that will contain the sorted and zipped outputs,
+      "feds": an array of fed numbers as integers to sort and create .zip files for
     }
 
 An example of what a complete workflow would look like is found below:
@@ -192,11 +193,12 @@ An example of what a complete workflow would look like is found below:
     {
       "map_dir": "J:\\MapSeries\\Dump",
       "report_dir": "J:\\EMRP\\Work\\GAM_Reports",
-      "out_dir": ".\\test"
+      "out_dir": ".\\test",
+      "feds": [10001, 12002, 24002]
     }
 
-The above workflow would sort and zip all the files contained in the both the map and report directories by FED and place
-zipped versions of those directories in the out directory. 
+The above workflow would sort and zip all the files contained in the both the map and report directories for each of the 
+given FEDs and place zipped versions of those directories in the specified out directory. 
 
 ## Usage
 
@@ -279,7 +281,7 @@ after the data download tool as without data no reports will be produced.
 
 Each report requires certain datasets to be present in the data folder in order for the report to be produced. The table
 below shows the report and the required datasets (as a csv). Ensure that the data is present for the specific FED's needed
-as the data is  as per the data download tool at any one time.
+as the data can be downloaded only for specific FEDs by the data download tool.
 
 |               Report                | Abbreviation |          Required Datasets          |
 |:-----------------------------------:|:------------:|:-----------------------------------:|

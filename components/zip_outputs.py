@@ -32,63 +32,74 @@ class ZipOutputs:
 
                 ptype = file.name.split('_')[0]
                 fed = file.name.split('_')[1].split('.')[0]
-                if (int(fed) >= 24000) and (int(fed) < 25000): # Quebec
-                    subdir = 'cartes'
-                else:  # RoC
-                    subdir = 'maps'
 
-                if ptype == 'InsetIndex':  # no suffix on inset reports use simplified workflow
+                if int(fed) in fed_list:  # If the fed # is in the fed to process the maps
 
-                    out_pdf_path = os.path.join(self.scratch_dir, fed, subdir)
+                    # Folder names differ by province
+                    if (int(fed) >= 24000) and (int(fed) < 25000): # Quebec
+                        subdir = 'cartes'
+                    else:  # RoC
+                        subdir = 'maps'
 
-                    Path(out_pdf_path).mkdir(parents=True, exist_ok=True)
-                    self.logger.info(f"Sorting: {file.name}")
-                    copyfile(os.path.join(map_dir, file.name), os.path.join(out_pdf_path, f"{ptype}_{fed}.pdf"))
+                    if ptype == 'InsetIndex':  # no suffix on inset reports use simplified workflow
 
-                else:  # Map PDFs have more components and need a more complex workflow
-                    suffix = file.name.split('_')[2].split('.')[0]
+                        out_pdf_path = os.path.join(self.scratch_dir, fed, subdir)
 
-                    # Add a 0 for sorting purposes if the suffix of the file name looks like this: 'A1' -> 'A01'
-                    if (suffix.split('.')[0][0].isalpha()) and (len(suffix) == 2):
-                        suffix = f"{suffix[0]}0{suffix[1]}"
+                        Path(out_pdf_path).mkdir(parents=True, exist_ok=True)
+                        self.logger.info(f"Sorting: {file.name}")
+                        copyfile(os.path.join(map_dir, file.name), os.path.join(out_pdf_path, f"{ptype}_{fed}.pdf"))
 
-                    out_pdf_path = os.path.join(self.scratch_dir, fed, subdir, self.poll_type[ptype])
-                    # Make sure output path exists. Create if needed
-                    Path(out_pdf_path).mkdir(parents=True, exist_ok=True)
-                    self.logger.info(f"Sorting: {file.name}")
-                    copyfile(os.path.join(map_dir, file.name),
-                             os.path.join(out_pdf_path, f"{ptype}_{fed}_{suffix}.pdf"))
+                    else:  # Map PDFs have more components and need a more complex workflow
+                        suffix = file.name.split('_')[2].split('.')[0]
+
+                        # Add a 0 for sorting purposes if the suffix of the file name looks like this: 'A1' -> 'A01'
+                        if (suffix.split('.')[0][0].isalpha()) and (len(suffix) == 2):
+                            suffix = f"{suffix[0]}0{suffix[1]}"
+
+                        out_pdf_path = os.path.join(self.scratch_dir, fed, subdir, self.poll_type[ptype])
+                        # Make sure output path exists. Create if needed
+                        Path(out_pdf_path).mkdir(parents=True, exist_ok=True)
+                        self.logger.info(f"Sorting: {file.name}")
+                        copyfile(os.path.join(map_dir, file.name),
+                                 os.path.join(out_pdf_path, f"{ptype}_{fed}_{suffix}.pdf"))
 
         def sort_reports():
             """Sort the reports in the reports before zipping"""
 
             # Get all FED subdirectories from the reports_folder
             for fed_dir in report_dir.glob('*/*/'):
-                self.logger.info(f"Moving all reports in {fed_dir}")
 
                 # Construct the report path
                 fed = os.path.split(fed_dir)[-1]
-                if (int(fed) >= 24000) and (int(fed) < 25000): # Quebec
-                    subdir = 'rapports'
-                else:  # RoC
-                    subdir = 'reports'
 
-                report_path = os.path.join(self.scratch_dir, fed, subdir)
+                if int(fed) in fed_list:  # If the fed # is in the fed to process the reports
 
-                if os.path.exists(report_path):
-                    delete_dir(report_path)
+                    self.logger.info(f"Sorting all reports for: {fed}")
+                    # Folder names differ by province
+                    if (int(fed) >= 24000) and (int(fed) < 25000): # Quebec
+                        subdir = 'rapports'
+                    else:  # RoC
+                        subdir = 'reports'
 
-                copytree(fed_dir, report_path)
+                    report_path = os.path.join(self.scratch_dir, fed, subdir)
 
-        map_dir = Path(self.params['map_dir'])
-        report_dir = Path(self.params['report_dir'])
+                    if os.path.exists(report_path):
+                        delete_dir(report_path)
 
+                    copytree(fed_dir, report_path)
+
+        # Set certain variables from the params
+        map_dir = Path(self.params['map_dir'])  # where the maps live
+        report_dir = Path(self.params['report_dir'])  # where the reports live
+        fed_list = self.params['feds']  # the feds to process
+
+        self.logger.info(f"Starting sorting for MAPS an REPORTS in {len(fed_list)} FEDs")
         # Start Sorting: Maps first
-        self.logger.info(f"Sorting Maps in: {map_dir}")
+        self.logger.info(f"Starting sorting process on Maps in: {map_dir}")
         sort_maps()
-
-        self.logger.info(f"Sorting Reports in: {report_dir}")
+        self.logger.info(f"Starting sorting process on Reports in: {report_dir}")
         sort_reports()
+        self.logger.info("Sorting complete")
 
     def export_files(self):
         """Zips and exports the sorted files from the scratch directory to the output directory"""
