@@ -42,6 +42,8 @@ class PDPGenerator:
             out_df.drop(columns=['ELECTORS_LISTED'], inplace=True)
             out_df.rename(columns={"ELECTOR_COUNT":"ELECTORS_LISTED"}, inplace=True)
 
+            out_df['ELECTORS_LISTED'] = out_df['ELECTORS_LISTED'].fillna(0)
+
             for f in ['ED_NAMEE', 'ED_NAMEF', 'POLL_NAME_FIXED']:  # en-dashes for report excel file
                 out_df[f] = out_df[f].apply(lambda x: x.replace('--', '—'))
 

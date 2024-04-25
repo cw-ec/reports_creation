@@ -105,6 +105,7 @@ class PDDGenerator:
             self.ps_add =  self.ps_add.merge(self.ec_df[["PD_ID", "ELECTOR_COUNT"]], on="PD_ID", how='left')
             self.ps_add.drop(columns=['ELECTORS_LISTED', 'PD_ID'], inplace=True)
             self.ps_add.rename(columns={"ELECTOR_COUNT": "ELECTORS_LISTED"}, inplace=True)
+            self.ps_add['ELECTORS_LISTED'] = self.ps_add['ELECTORS_LISTED'].fillna(0)
 
             self.report_dict = {
                 'ed_name': self.row1["ED_NAME_BIL"].to_list()[0].replace('--', '—'),

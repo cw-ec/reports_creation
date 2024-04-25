@@ -80,18 +80,18 @@ class BuildPDPReport:
             stats_df = self.data_df[self.data_df['VOID_IND']=='']  # '' because 'N' get removed in the generator
 
             # Calc Stats
-            total_active_pd = int(len(stats_df))  # Total # of pd's with VOID_IND == 'N'
-            total_electors = int(stats_df['ELECTORS_LISTED'].sum())
+            total_active_pd = str(int(len(stats_df)))  # Total # of pd's with VOID_IND == 'N'
+            total_electors = str(int(stats_df['ELECTORS_LISTED'].sum()))
 
             # Because sometimes the values might be NaN
             try:
-                avg_ele_per_pd = int(stats_df['ELECTORS_LISTED'].dropna(how='all').mean())
+                avg_ele_per_pd = str(round(stats_df['ELECTORS_LISTED'].dropna(how='all').mean(),1))
 
             except ValueError:
                 self.logger.warn(f"AVERAGE ELECTOR PER PD: summary statistic cannot be converted to an integer check elector count values. Replacing Null Value with NaN")
                 avg_ele_per_pd = np.NaN
 
-            total_void = int(len(self.data_df[self.data_df['VOID_IND'] =='Y']))
+            total_void = str(int(len(self.data_df[self.data_df['VOID_IND'] =='Y'])))
 
             # Setup Summary Stats DF
             cols = [self.settings_dict['ss_table_header'], '']

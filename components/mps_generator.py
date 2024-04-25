@@ -36,6 +36,7 @@ class MPSGenerator:
         out_df = out_df.merge(self.ec_df[["PD_ID", "ELECTOR_COUNT"]], on="PD_ID", how='left')
         out_df.drop(columns=['ELECTORS_LISTED'], inplace=True)
         out_df.rename(columns={"ELECTOR_COUNT": "ELECTORS_LISTED"}, inplace=True)
+        out_df['ELECTORS_LISTED'] = out_df['ELECTORS_LISTED'].fillna(0)
 
         # Add the institution count to the report table
         inst_count = out_df.groupby('PD_NO_CONCAT')['MOBILE_POLL_STN_ID'].nunique().rename('TOTAL_INST')
