@@ -85,7 +85,7 @@ class BuildPDPReport:
 
             # Because sometimes the values might be NaN
             try:
-                avg_ele_per_pd = str(round(stats_df['ELECTORS_LISTED'].dropna(how='all').mean(),1))
+                avg_ele_per_pd = str(int(round(stats_df['ELECTORS_LISTED'].dropna(how='all').mean(),0)))
 
             except ValueError:
                 self.logger.warn(f"AVERAGE ELECTOR PER PD: summary statistic cannot be converted to an integer check elector count values. Replacing Null Value with NaN")

@@ -4,7 +4,7 @@ This folder and its subfolders contain all component files used in the tools for
 download and report generation tools can be found here. The general structure of the report generation process can be 
 visualized as follows:
 
-<img height="551" src="C:\reports_creation\docs\img\rc_process.png" width="206"/>
+<img height="551" src=".\\..\\..\\reports_creation\docs\img\rc_process.png" width="206"/>
 
 ## Report Generation Scripts
 
