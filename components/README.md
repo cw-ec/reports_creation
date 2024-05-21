@@ -1,5 +1,19 @@
 # Components
 
+<!-- TOC -->
+* [Components](#components)
+  * [Report Generation Scripts](#report-generation-scripts)
+    * [Report Generators](#report-generators)
+    * [Report Builders](#report-builders)
+  * [Other Scripts](#other-scripts)
+    * [report_factory.py](#reportfactorypy)
+    * [data_downloader.py](#datadownloaderpy)
+    * [zip_outputs.py](#zipoutputspy)
+    * [commons.py](#commonspy)
+    * [builders/common_builds.py](#builderscommonbuildspy)
+    * [builders.report_parameters.py](#buildersreportparameterspy)
+<!-- TOC -->
+
 This folder and its subfolders contain all component files used in the tools for this repository. All files for the data
 download and report generation tools can be found here. The general structure of the report generation process can be 
 visualized as follows:

@@ -67,7 +67,7 @@ The required additional python packages for this tool are as follows:
 
 Once python is installed or configured the additional libraries required for the project can be installed. We will be 
 installing the required packages using pip. Pip a tool that can be accessed from the command line to install and manage 
-python packages. It comes preinstalled with python so no additional installations are required to run this tool.
+python packages. It comes preinstalled with python so no additional installations are required to use it.
 
 To install the required packages using pip complete the following steps:
 
@@ -99,8 +99,8 @@ called pandas the command would look something like this:
 
     pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org pandas
 
-Should an error appear stating that pip need to be updated navigate to the folder containing your python.exe and use 
-the following command to update pip
+Should an error appear stating that pip needs to be updated navigate to the folder containing your python.exe and use 
+the following command to update pip:
 
     python.exe pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --upgrade pip
 
@@ -112,10 +112,10 @@ schema should be included as well.
 ## Workflow Creation
 
 In order to run the tools in this repository you will need to create a workflow file. These workflow files are structured 
-using JSON (javascript object notation)  This file will contain key parameters the tool needs in order to create the correct 
-reports. Workflow files follow a consistent schema for each that is outlined below. Example files for each tool 
+using Javascript Object Notation (JSON).  This file will contain key parameters the tool needs in order to create the 
+reports. Workflow files follow a consistent schema which is outlined and described below. Example files for each tool 
 (except for the data download tool for privacy reasons) can also be found in the workflows directory at the root 
-of this repository. These examples files can be altered as needed by the user.
+of this repository. It is recommended that users alter these files as needed.
 
 ### Data Download Workflow File
 
@@ -162,9 +162,9 @@ Using the above guide a complete workflow for this tool for three feds would loo
     ]}
 
 **An important note for file paths: please ensure that the \\ syntax is maintained as \ will result in an error and cause
-the script to fail**
+the tool to fail**
 
-The above script would download all data for the three listed FEDs. A copy of this script can be found in the workflows
+The above JSON would download all data for the three listed FEDs. A copy of this JSON can be found in the workflows
 for the folder but not in a working form as that would contain sensitive information. Care should be taken to protect 
 this file once created, and it should not be shared or placed on a shared drive.
 
@@ -216,13 +216,11 @@ Using the above guide an example of a valid workflow creating all reports for th
     }
 
 **An important note for file paths: please ensure that the \\ syntax is maintained as \ will result in an error and cause
-the script to fail**
+the tool to fail**
 
 The above file can be found in workflows folder at the root of this repository and is meant to serve as a reference when 
-creating other workflows. It can be altered as needed. 
-
-The above script would create reports of every type for each of the three FED's listed in the array (47001, 48001, and 24001) 
-Only the report types being generated need an array unneeded report types can be removed from the workflow.
+creating other workflows. The above JSON would create reports of every type for each of the three FED's listed in the array 
+(47001, 48001, and 24001). Only the report types being generated need an array unneeded report types can be removed from the workflow.
 
 ### Zip Outputs
 
@@ -245,7 +243,7 @@ An example of what a complete workflow would look like is found below:
     }
 
 **An important note for file paths: please ensure that the \\ syntax is maintained as \ will result in an error and cause
-the script to fail**
+the tool to fail**
 
 The above workflow would sort and zip all the files contained in the both the map and report directories for each of the 
 given FEDs and place zipped versions of those directories in the specified out directory. 
@@ -392,11 +390,12 @@ the script is run. The tool will overwrite existing versions of a report if a ne
 
 #### Outputs
 
-    1.) PDF and XLSX files sorted by fed in the given export directory 
-    2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
-        allows the user to check for errors after processing. This file will be located in the logs folder at the root of
-        this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
-        the YYYY-MM-DD convention. 
+  1.) PDF and XLSX files sorted by fed in the given export directory 
+    
+  2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
+      allows the user to check for errors after processing. This file will be located in the logs folder at the root of
+      this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
+      the YYYY-MM-DD convention. 
 
 ### Zip Outputs
 
@@ -441,9 +440,10 @@ three types of messages that can appear in the console:
 
 On a successful run of the tool the following outputs will be produced:
 
-    1.) A .zip file for each FED that contains all map and report files that were available in the provided directories when
-        the tool was run. 
-    2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
-        allows the user to check for errors after processing. This file will be located in the logs folder at the root of
-        this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
-        the YYYY-MM-DD convention.
+  1.) A .zip file for each FED that contains all map and report files that were available in the provided directories when
+      the tool was run. 
+  
+  2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
+      allows the user to check for errors after processing. This file will be located in the logs folder at the root of
+      this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
+      the YYYY-MM-DD convention.
