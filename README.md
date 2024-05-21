@@ -73,14 +73,14 @@ To install the required packages using pip complete the following steps:
 
 1.) Open the command line (cmd) <kbd>⊞ Win</kbd> then type cmd to bring up the cmd window.
 
-<img src="C:\reports_creation\docs\img\cmd_blank.png"/>
+<img src="docs\img\cmd_blank.png"/>
 
 2.) To ensure that python is set up correctly type python on the command line and hit enter. If successful your cmd should
 look something similar to the below image:
 
-<img src="C:\reports_creation\docs\img\wrk_py_var.png"/>
+<img src="docs\img\wrk_py_var.png"/>
 
-If an error appears or the command python is recognized then ensure that python is installed correctly and the path to
+If an error appears or the command "python" is not recognized then ensure that python is installed correctly and the path to
 the python.exe file is incorporated into the PATH environment variable for your profile. 
 
 Once you've ensured that python is set up correctly and the python command opens as expected open a new empty cmd and proceed
@@ -105,9 +105,9 @@ the following command to update pip
     python.exe pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --upgrade pip
 
 ### Other Considerations
-If running the data download tool access to the corporate database as well as several additional schemas are required.
-Please ensure that you have permission to access the corporate database (CDB). This should include read access to the 
-SITES_ADMIN schema as well.
+If running the data download tool access to the corporate database as well as additional schema(s) is required.
+Please ensure that you have permission to access the corporate database (CDB). At minimum read access to the SITES_ADMIN 
+schema should be included as well.
 
 ## Workflow Creation
 
@@ -289,11 +289,11 @@ by this tool and must be retrieved from a location TBD.
 To run the tool please follow these steps:
 
 1.) Open the cmd window (<kbd>⊞ Win</kbd> then type cmd)
-<img src="C:\reports_creation\docs\img\cmd_blank.png"/>
+<img src="docs\img\cmd_blank.png"/>
 
-2.) Navigate to the root directory of this repository. The recommended path for this is c:\\reports_creation to keep the
+2.) Navigate to the root directory of this repository. The recommended path for this is **c:\\reports_creation** to keep the
     path as short as possible.
-<img src="C:\reports_creation\docs\img\nav_to_wrk_dir.png"/>
+<img src="docs\img\nav_to_wrk_dir.png"/>
 
 3.) Activate the tool by creating a command using the following formula: 
         
@@ -305,7 +305,7 @@ in the workflows folder of this repository would look as follows:
     python data_download.py .\\workflows\\download_workflow.json
 
 4.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
-<img src="C:\reports_creation\docs\img\cmd_w_rc_command.png"/>
+<img src="docs\img\cmd_w_rc_command.png"/>
 
 5.) If the command was valid the tool will run. While running the tool will produce a series of messages complete with time stamps
 to give you an update on what the tool is processing or any significant events that occur while processing. There are 
@@ -320,12 +320,12 @@ three types of messages that can appear in the console:
 
 This tool creates the following outputs:
 
-1.) CSV file(s) containing data for the feds specified in the workflow. These are located in the data folder at the root
-    of this directory (this location cannot be changed)
-2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
-    allows the user to check for errors after processing. This file will be located in the logs folder at the root of
-    this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
-    the YYYY-MM-DD convention. 
+    1.) CSV file(s) containing data for the feds specified in the workflow. These are located in the data folder at the root
+        of this directory (this location cannot be changed)
+    2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
+        allows the user to check for errors after processing. This file will be located in the logs folder at the root of
+        this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
+        the YYYY-MM-DD convention. 
 
 ### Report Creation
 
@@ -386,11 +386,11 @@ the script is run. The tool will overwrite existing versions of a report if a ne
 
 #### Outputs
 
-1.) PDF and XLSX files sorted by fed in the given export directory 
-2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
-    allows the user to check for errors after processing. This file will be located in the logs folder at the root of
-    this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
-    the YYYY-MM-DD convention. 
+    1.) PDF and XLSX files sorted by fed in the given export directory 
+    2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
+        allows the user to check for errors after processing. This file will be located in the logs folder at the root of
+        this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
+        the YYYY-MM-DD convention. 
 
 ### Zip Outputs
 
@@ -435,9 +435,9 @@ three types of messages that can appear in the console:
 
 On a successful run of the tool the following outputs will be produced:
 
-1.) A .zip file for each FED that contains all map and report files that were available in the provided directories when
-    the tool was run. 
-2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
-    allows the user to check for errors after processing. This file will be located in the logs folder at the root of
-    this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
-    the YYYY-MM-DD convention.
+    1.) A .zip file for each FED that contains all map and report files that were available in the provided directories when
+        the tool was run. 
+    2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
+        allows the user to check for errors after processing. This file will be located in the logs folder at the root of
+        this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
+        the YYYY-MM-DD convention.
