@@ -289,11 +289,13 @@ by this tool and must be retrieved from a location TBD.
 To run the tool please follow these steps:
 
 1.) Open the cmd window (<kbd>⊞ Win</kbd> then type cmd)
-<img src="docs\img\cmd_blank.png"/>
+
+<img src="docs\img\cmd_blank.png" width="489" height="253"/>
 
 2.) Navigate to the root directory of this repository. The recommended path for this is **c:\\reports_creation** to keep the
     path as short as possible.
-<img src="docs\img\nav_to_wrk_dir.png"/>
+
+<img src="docs\img\nav_to_wrk_dir.png" width="487.5" height="257"/>
 
 3.) Activate the tool by creating a command using the following formula: 
         
@@ -305,11 +307,16 @@ in the workflows folder of this repository would look as follows:
     python data_download.py .\\workflows\\download_workflow.json
 
 4.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
-<img src="docs\img\cmd_w_rc_command.png"/>
 
-5.) If the command was valid the tool will run. While running the tool will produce a series of messages complete with time stamps
-to give you an update on what the tool is processing or any significant events that occur while processing. There are 
-three types of messages that can appear in the console:
+<img src="docs\img\cmd_w_rc_command.png" width="488.5" height="256.5"/>
+
+5.) If the command was valid the tool will begin to process the workflow file. While running the tool will produce a series 
+of messages complete with time stamps to give the user updates on the tools progress and any significant events that 
+might have occurred. These messages should look something like this:
+
+<img src="docs\img\run_mess.png" width="605" height="201"/>
+
+There are three types of messages that can appear in the console:
 
 - INFO: Informational messages on the current action the tool is performing
 - WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
@@ -320,12 +327,13 @@ three types of messages that can appear in the console:
 
 This tool creates the following outputs:
 
-    1.) CSV file(s) containing data for the feds specified in the workflow. These are located in the data folder at the root
-        of this directory (this location cannot be changed)
-    2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
-        allows the user to check for errors after processing. This file will be located in the logs folder at the root of
-        this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
-        the YYYY-MM-DD convention. 
+1.) CSV file(s) containing data for the feds specified in the workflow. These are located in the data folder at the root
+    of this directory (this location cannot be changed)
+
+2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
+    allows the user to check for errors after processing. This file will be located in the logs folder at the root of
+    this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
+    the YYYY-MM-DD convention. 
 
 ### Report Creation
 
@@ -431,7 +439,7 @@ in the workflows folder of this repository would look as follows:
 to give you an update on what the tool is processing or any significant events that occur while processing. There are 
 three types of messages that can appear in the console:
 
-- INFO: Informational messages on the current action the tool is performing
+- INFO: Informational messages on the current action the tool is processing.
 - WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
   example of the common warning for this tool is No data available for the specified FED.
 - ERROR: Something occurred that was significant enough to inhibit processing.
