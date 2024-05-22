@@ -290,12 +290,12 @@ To run the tool please follow these steps:
 
 1.) Open the cmd window (<kbd>⊞ Win</kbd> then type cmd)
 
-<img src="docs\img\cmd_blank.png" width="489" height="253"/>
+<img src="docs\img\cmd_blank.png"/>
 
 2.) Navigate to the root directory of this repository. The recommended path for this is **c:\\reports_creation** to keep the
     path as short as possible.
 
-<img src="docs\img\nav_to_wrk_dir.png" width="487.5" height="257"/>
+<img src="docs\img\nav_to_wrk_dir.png"/>
 
 3.) Activate the tool by creating a command using the following formula: 
         
@@ -308,7 +308,7 @@ in the workflows folder of this repository would look as follows:
 
 4.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
 
-<img src="docs\img\cmd_w_rc_command.png" width="488.5" height="256.5"/>
+<img src="docs\img\cmd_w_rc_command.png"/>
 
 5.) If the command was valid the tool will begin to process the workflow file. While running the tool will produce a series 
 of messages complete with time stamps to give the user updates on the tools progress and any significant events that 
@@ -318,7 +318,7 @@ might have occurred. These messages should look something like this:
 
 There are three types of messages that can appear in the console:
 
-- INFO: Informational messages on the current action the tool is performing
+- INFO: Informational messages on the current action the tool is processing.
 - WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
   example of the common warning for this tool is No data available for the specified FED.
 - ERROR: Something occurred that was significant enough to inhibit processing.
@@ -359,36 +359,40 @@ as the data can be downloaded only for specific FEDs when using the data downloa
 
 To run the reports creation tool follow the following steps:
 
-1.) Open the command line and use the cd command to navigate to the root folder of this directory.
+1.) Open the cmd window (<kbd>⊞ Win</kbd> then type cmd)
 
-2.) Type a valid command to run the tool using the following formula:
+<img src="docs\img\cmd_blank.png"/>
+
+2.) Navigate to the root directory of this repository. The recommended path for this is **c:\\reports_creation** to keep the
+    path as short as possible.
+
+<img src="docs\img\nav_to_wrk_dir.png"/>
+
+3.) Activate the tool by creating a command using the following formula: 
         
-    python <tool_name.py> <path_to_workflow.json>
-    
-- python refers to the python environment the project requirements were installed with. Should this keyword not work
-      you can replace it with the path to the python.exe file associated with your desired environment.
-- <tool_name.py> refers to the name of the python file you want to run. These files can be found in this projects 
-  root folder. 
-- <path_to_workflow.json> this refers to a path to the workflow json file described in the prior section. 
+    python <tool name .py> <path to workflow>
 
-For example to run the report creation tool using a workflow json called example would produce a command that looks like this:
+An example of a valid command for the data download tool using a workflow file called download_workflow.json which is located
+in the workflows folder of this repository would look as follows:
 
-    python report_creation.py .\\workflows\\example.json
-    
-3.) Once the command is created hit <kbd>⏎ Enter</kbd> to run it.
+    python data_download.py .\\workflows\\download_workflow.json
 
-4.) If the command was valid the tool will run. While running the tool will produce a series of messages complete with time stamps
-to give you an update on what the tool is processing or any significant events that occur while processing. There are 
-three types of messages that can appear in the console:
+4.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
 
-- INFO: Informational messages on the current action the tool is performing
+<img src="docs\img\cmd_w_rc_command.png"/>
+
+5.) If the command was valid the tool will begin to process the workflow file. While running the tool will produce a series 
+of messages complete with time stamps to give the user updates on the tools progress and any significant events that 
+might have occurred. These messages should look something like this:
+
+<img src="docs\img\run_mess.png" width="605" height="201"/>
+
+There are three types of messages that can appear in the console:
+
+- INFO: Informational messages on the current action the tool is processing.
 - WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
   example of the common warning for this tool is No data available for the specified FED.
 - ERROR: Something occurred that was significant enough to inhibit processing.
-
-Another method that can be used is to create a .bat file containing the above command. This can be used to chain several
-workflows together as needed. An example .bat file called 'example.bat' can be found in the workflows folder as a guide 
-for creating your own custom .bat files.
 
 The pdf files produced by this tool will be output in a folder called 'scratch' in the root folder of this repository.
 From there they are exported to the directory specified by the export_directory parameter in the workflow file. Once 
@@ -421,23 +425,33 @@ directions below to best use this tool:
 
 1.) Open the cmd window (<kbd>⊞ Win</kbd> then type cmd)
 
-2.) Navigate to the root directory of this repository. The recommended path for this is c:\\reports_creation to keep the
+<img src="docs\img\cmd_blank.png"/>
+
+2.) Navigate to the root directory of this repository. The recommended path for this is **c:\\reports_creation** to keep the
     path as short as possible.
+
+<img src="docs\img\nav_to_wrk_dir.png"/>
 
 3.) Activate the tool by creating a command using the following formula: 
         
     python <tool name .py> <path to workflow>
 
-An example of a valid command for the data download tool using a workflow file called zip_ex.json which is located
+An example of a valid command for the data download tool using a workflow file called download_workflow.json which is located
 in the workflows folder of this repository would look as follows:
 
-    python zip_output.py .\\workflows\\zip_ex.json
+    python data_download.py .\\workflows\\download_workflow.json
 
 4.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
 
-5.) If the command was valid the tool will run. While running the tool will produce a series of messages complete with time stamps
-to give you an update on what the tool is processing or any significant events that occur while processing. There are 
-three types of messages that can appear in the console:
+<img src="docs\img\cmd_w_rc_command.png"/>
+
+5.) If the command was valid the tool will begin to process the workflow file. While running the tool will produce a series 
+of messages complete with time stamps to give the user updates on the tools progress and any significant events that 
+might have occurred. These messages should look something like this:
+
+<img src="docs\img\run_mess.png" width="605" height="201"/>
+
+There are three types of messages that can appear in the console:
 
 - INFO: Informational messages on the current action the tool is processing.
 - WARNING: Something occurred that was outside the normal parameters of the tool but did not inhibit processing. An
@@ -455,3 +469,9 @@ On a successful run of the tool the following outputs will be produced:
       allows the user to check for errors after processing. This file will be located in the logs folder at the root of
       this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
       the YYYY-MM-DD convention.
+
+### Further Automation Options
+
+A method that can be used to further automate these tools is to create a .bat file containing the commands from the above section. 
+This can be used to chain several workflows together as needed. An example .bat file called 'example.bat' can be found in 
+the workflows folder as a guide for creating your own custom .bat files.
