@@ -1,5 +1,3 @@
-# Components
-
 <!-- TOC -->
 * [Components](#components)
   * [Report Generation Scripts](#report-generation-scripts)
@@ -14,24 +12,27 @@
     * [builders.report_parameters.py](#buildersreportparameterspy)
 <!-- TOC -->
 
+# Components
+
 This folder and its subfolders contain all component files used in the tools for this repository. All files for the data
 download and report generation tools can be found here. The general structure of the report generation process can be 
 visualized as follows:
 
-<img height="551" src=".\\..\\..\\reports_creation\docs\img\rc_process.png" width="206"/>
+<img height="551" src="\\..\\..\\reports_creation\docs\img\rc_process.png" width="206"/>
 
 ## Report Generation Scripts
 
-The report generation scripts make up the majority of the scripts in this folder. These scripts are responsible for 
-ingesting the csv data, cleaning that data and then converting it into a format that can be read by the report generation
-scripts. These scripts all follow the same basic structure for each given report. A general description of each can be found 
-below.
+The report generation scripts make up the majority of the code in this project. These scripts are responsible for 
+ingesting data, data cleaning and processing the data so that can be easily processed by the report generation
+scripts. These scripts all follow the same basic structure for each given report. A general description of this structure 
+can be found below.
 
 ### Report Generators
 
 Each report has an associated generator script responsible for organizing and prepping the report data and other associated
-elements. The generator script ensures that there is data present for the given Fed number and generates the Excel file (if necessary).
-Once done it then sends all relevant inputs to a builder script that is responsible for building the report PDF.
+elements. The generator script ensures that there is data present for the given Fed number and generates associated the Excel file 
+(if required). Once finished processing it sends all relevant inputs to a builder script that is responsible for creating and styling
+the report PDF.
 
 A report generator script follows the following naming convention "<report abbreviation>_generator.py" for example the
 file name for the PDD report generator would be PDD_generator.py. The input parameters for each generator are standardized
@@ -49,9 +50,9 @@ with this repository.
 
 ### Report Builders
 
-Each report has an associated report builder script. These scripts can be found in the builders folder in this directory.
+Each report has an associated report builder script. These scripts can be found in the builders subdirectory of this directory.
 The builder script is responsible for building and exporting the report PDF. This includes all parameters for text, page
-and layout style. The builder take the data and other essential parameters from the generator script and uses them to 
+and layout style. The builder reads the data and other essential parameters from the generator script and uses them to 
 produce the report.
 
 For PDP, APD, MPS, IDR reports the parameters are as follows:

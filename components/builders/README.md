@@ -1,7 +1,7 @@
 # Report Builders
 
 The scripts in this folder take the data cleaned / formatted by the generation scripts and uses that a baseline to build
-the report pdf. 
+the report pdf. A more detailed version of these descriptions can be found in the components' directory. 
 
 ## Report Builders
 
