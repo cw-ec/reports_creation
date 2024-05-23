@@ -134,15 +134,17 @@ class BuildMPSReport:
         self.pagesize = pagesize
         self.orientation = orientation
 
+        # Import special e/f headings and title parameters based on location
+        self.settings_dict = MPSSettings(self.in_dict['ed_code']).settings_dict
+
         # Setup other parameters
+        self.report_name = self.settings_dict['report_name']
         if pagesize == 'Letter':
             self.pagesize = letter
         self.width, self.height = self.pagesize
         self.font = 'Arial'
         self.styles = getSampleStyleSheet()
 
-        # Import special e/f headings and title parameters based on location
-        self.settings_dict = MPSSettings(self.in_dict['ed_code']).settings_dict
 
         # This is like this because we need to newline characters for the header to work properly
         self.header_text =  f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
@@ -155,7 +157,7 @@ class BuildMPSReport:
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"SUMINS_{self.in_dict['ed_code']}.pdf"),
+        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"{self.report_name}_{self.in_dict['ed_code']}.pdf"),
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
                             rightMargin=2.2 * cm,

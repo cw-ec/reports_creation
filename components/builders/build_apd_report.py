@@ -138,6 +138,9 @@ class BuildAPDReport:
         self.pagesize = pagesize
         self.orientation = orientation
 
+        # Import e/f text objects based on report location
+        self.settings_dict = APDSettings(self.in_dict['ed_code']).settings_dict
+
         # Setup other parameters
         if pagesize == 'Letter':
             self.pagesize = letter
@@ -145,9 +148,7 @@ class BuildAPDReport:
         self.font = 'Arial'
         self.encoding = 'LATIN-1'
         self.styles = getSampleStyleSheet()
-
-        # Import e/f text objects based on report location
-        self.settings_dict = APDSettings(self.in_dict['ed_code']).settings_dict
+        self.report_name = self.settings_dict['report_name']
 
         # This is like this because we need to newline characters for the header to work properly
         self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b>
@@ -160,7 +161,7 @@ class BuildAPDReport:
         # Setup document
         # If things are overlapping the header / footer change the margins below
         self.logger.info("Creating APD document")
-        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"ADVANC_{self.in_dict['ed_code']}.pdf"),
+        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"{self.report_name}_{self.in_dict['ed_code']}.pdf"),
                             page_size=self.pagesize,
                             leftMargin=2.2 * cm,
                             rightMargin=2.2 * cm,

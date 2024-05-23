@@ -10,6 +10,10 @@ class PDPSettings:
 
     def __init__(self, in_ed):
 
+        # Report name to set as part of the pdf file name
+        e_report_name = "PD_PROF"
+        f_report_name = "PD_PROF"
+
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
             'report_type': "Profil de Section de Vote / Polling District Profile ",
@@ -52,7 +56,8 @@ class PDPSettings:
                               "ss_total_noe": e_total_noe,
                               "ss_total_apd": e_total_apd,
                               "ss_avg_noe_per_apd": e_avg_noe_per_apd,
-                              "ss_total_vpd": e_total_vpd
+                              "ss_total_vpd": e_total_vpd,
+                              "report_name":e_report_name
                               }
         self.f_params_dict = {"header": f_header,
                               "table_header": f_table_header,
@@ -61,7 +66,8 @@ class PDPSettings:
                               "ss_total_noe": f_total_noe,
                               "ss_total_apd": f_total_apd,
                               "ss_avg_noe_per_apd": f_avg_noe_per_apd,
-                              "ss_total_vpd": f_total_vpd
+                              "ss_total_vpd": f_total_vpd,
+                              "report_name": f_report_name
                               }
         if (in_ed > 24000) and (in_ed < 24999):
             self.settings_dict = self.f_params_dict
@@ -73,6 +79,10 @@ class APDSettings:
     including French and English versions"""
 
     def __init__(self, in_ed):
+
+        # Report name to set as part of the pdf file name
+        e_report_name = "ADVANC"
+        f_report_name = "ADVANC"
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -104,13 +114,15 @@ class APDSettings:
                               "table_header": e_table_header,
                               "ss_table_header": e_ss_table_header,
                               "footer_text": e_footer_text,
-                              "ss_total_apd": e_total_apd
+                              "ss_total_apd": e_total_apd,
+                              "report_name": e_report_name,
                               }
         self.f_params_dict = {"header": f_header,
                               "table_header": f_table_header,
                               "ss_table_header": f_ss_table_header,
                               "footer_text": f_footer_text,
-                              "ss_total_apd": f_total_apd
+                              "ss_total_apd": f_total_apd,
+                              "report_name": f_report_name
                               }
         if (in_ed > 24000) and (in_ed < 24999):
             self.settings_dict = self.f_params_dict
@@ -122,6 +134,10 @@ class PDDSettings:
         including French and English versions"""
 
     def __init__(self, in_ed):
+
+        # Report name to set as part of the pdf file name
+        e_report_name = "DESCRIPTIONS"
+        f_report_name = "DESCRIPTIONS"
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -160,6 +176,7 @@ class PDDSettings:
                               "table_header_strm": e_table_header_strm,
                               "table_note": e_table_note,
                               "footer_text": e_footer_text,
+                              "report_name": e_report_name
                               }
         self.f_params_dict = {"header": f_header,
                               "table_title": f_table_title,
@@ -168,6 +185,7 @@ class PDDSettings:
                               "table_header_strm": f_table_header_strm,
                               "table_note": f_table_note,
                               "footer_text": f_footer_text,
+                              "report_name": f_report_name
                               }
 
         if (in_ed >= 24000) and (in_ed < 25000):
@@ -180,6 +198,10 @@ class DPKSettings:
         including French and English versions"""
 
     def __init__(self, in_ed):
+
+        # Report name to set as part of the pdf file name
+        e_report_name = "INDCIR"
+        f_report_name = "INDCIR"
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -202,10 +224,12 @@ class DPKSettings:
         self.e_params_dict = {"header": e_header,
                               "table_header": e_table_header,
                               "footer_text": e_footer_text,
+                              "report_name": e_report_name
                               }
         self.f_params_dict = {"header": f_header,
                               "table_header": f_table_header,
                               "footer_text": f_footer_text,
+                              "report_name": f_report_name
                               }
 
         if (in_ed > 24000) and (in_ed < 24999):
@@ -218,6 +242,10 @@ class MPSSettings:
     including French and English versions"""
 
     def __init__(self, in_ed):
+
+        # Report name to set as part of the pdf file name
+        e_report_name = "SUMINS"
+        f_report_name = "SUMINS"
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -257,7 +285,8 @@ class MPSSettings:
                               "footer_text": e_footer_text,
                               "ss_total_pd": e_total_pd,
                               "ss_total_noe": e_total_noe,
-                              "ss_total_inst": e_total_inst
+                              "ss_total_inst": e_total_inst,
+                              "report_name": f_report_name
                               }
         self.f_params_dict = {"header": f_header,
                               "table_header": f_table_header,
@@ -265,7 +294,8 @@ class MPSSettings:
                               "footer_text": f_footer_text,
                               "ss_total_pd": f_total_pd,
                               "ss_total_noe": f_total_noe,
-                              "ss_total_inst": f_total_inst
+                              "ss_total_inst": f_total_inst,
+                              "report_name": f_report_name
                               }
         if (in_ed > 24000) and (in_ed < 24999):
             self.settings_dict = self.f_params_dict
@@ -277,6 +307,10 @@ class IDRSettings:
     including French and English versions"""
 
     def __init__(self, in_ed):
+
+        # Report name to set as part of the pdf file name
+        e_report_name = "INDIG_AUTOCH"
+        f_report_name = "AUTOCH_INDIG"
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -300,12 +334,14 @@ class IDRSettings:
         f_footer_text = "Créé le / Created on"
 
         # Create a dictionary of english first parameters to allow for easy access
-        self.e_params_dict = {"header": e_header,
+        self.e_params_dict = {"report_name": e_report_name,
+                              "header": e_header,
                               "table_header": e_table_header,
                               "ss_table_header": e_ss_table_header,
                               "footer_text": e_footer_text,
                               }
-        self.f_params_dict = {"header": f_header,
+        self.f_params_dict = {"report_name": f_report_name,
+                              "header": f_header,
                               "table_header": f_table_header,
                               "ss_table_header": f_ss_table_header,
                               "footer_text": f_footer_text,

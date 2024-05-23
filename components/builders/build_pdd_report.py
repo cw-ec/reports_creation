@@ -314,15 +314,16 @@ class BuildPDDReport:
         self.df_list = df_list  # List of the dataframes to be put in the document
         self.ps_add = ps_add_df  # Dataframe containing the complete address information for sbp and mobile polls
 
+        # Import special e/f headings and title parameters based on location
+        self.settings_dict = PDDSettings(self.in_dict['ed_code']).settings_dict
+
         # Setup other parameters for the page and element styles
+        self.report_name = self.settings_dict['report_name']
         self.font = 'Arial'
         self.styles = getSampleStyleSheet()
         self.page_height = 8.5 * inch
         self.page_width = 11 * inch
         self.plc_nme_dict = {}
-
-        # Import special e/f headings and title parameters based on location
-        self.settings_dict = PDDSettings(self.in_dict['ed_code']).settings_dict
 
         # This is like this because we need to newline characters for the header to work properly
         self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
@@ -335,7 +336,7 @@ class BuildPDDReport:
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"DESCRIPTIONS_{self.in_dict['ed_code']}.pdf"),
+        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"{self.report_name}_{self.in_dict['ed_code']}.pdf"),
                                      leftMargin=2 * cm,
                                      rightMargin=-5 * cm,
                                      topMargin=13 * cm,

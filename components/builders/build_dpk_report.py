@@ -135,6 +135,9 @@ class BuildDPKReport:
         self.out_dir = out_dir
         self.df_list = df_list
 
+        # Import special e/f headings and title parameters based on location
+        self.settings_dict = DPKSettings(self.in_dict['ed_code']).settings_dict
+
         # Setup other parameters
         self.font = 'Arial'
         self.styles = getSampleStyleSheet()
@@ -142,10 +145,7 @@ class BuildDPKReport:
         self.page_width = 11 * inch
         # Column widths
         self.col_widths = [90, 185, 120, 50, 50, 120, 45, 40]  # must sum to 700
-
-
-        # Import special e/f headings and title parameters based on location
-        self.settings_dict = DPKSettings(self.in_dict['ed_code']).settings_dict
+        self.report_name = self.settings_dict["report_name"]
 
         # This is like this because we need to newline characters for the header to work properly
         self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
@@ -158,7 +158,7 @@ class BuildDPKReport:
 
         # Setup document
         # If things are overlapping the header / footer change the margins below
-        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"INDCIR_{self.in_dict['ed_code']}.pdf"),
+        self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"{self.report_name}_{self.in_dict['ed_code']}.pdf"),
                                      leftMargin=2 * cm,
                                      rightMargin=-5 * cm,
                                      topMargin=14 * cm,
