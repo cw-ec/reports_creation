@@ -286,7 +286,7 @@ class MPSSettings:
                               "ss_total_pd": e_total_pd,
                               "ss_total_noe": e_total_noe,
                               "ss_total_inst": e_total_inst,
-                              "report_name": f_report_name
+                              "report_name": e_report_name
                               }
         self.f_params_dict = {"header": f_header,
                               "table_header": f_table_header,
