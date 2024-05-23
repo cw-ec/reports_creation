@@ -403,8 +403,21 @@ the script is run. The tool will overwrite existing versions of a report if a ne
 
 #### Outputs
 
-  1.) PDF and XLSX files sorted by fed in the given export directory 
-    
+  1.) PDF and XLSX files sorted by fed in the given export directory. Standardized base file names for each report can be found 
+      in the table below. Cells have been left blank where a file name is not applicable as no file is produced:
+
+| Report | English PDF Base Name | French PDF Base Name | English XLSX Base Name | French XLSX Base Name |
+|:------:|:---------------------:|:--------------------:|:----------------------:|:---------------------:|
+|  PDP   |        PD_PROF        |       PD_PROF        |        PD_PROF         |        PD_PROF        |
+|  APD   |        ADVANC         |        ADVANC        |         ADVANC         |        ADVANC         |
+|  PDD   |     DESCRIPTIONS      |     DESCRIPTIONS     |                        |                       |
+|  DPK   |        INDCIR         |        INDCIR        |         INDCIR         |        INDCIR         |
+|  MPS   |        SUMINS         |        SUMINS        |         SUMINS         |        SUMINS         |
+|  IDR   |     INDIG_AUTOCH      |     AUTOCH_INDIG     |                        |                       |
+
+Note that the above table only contains the base file names of the file. All file names will have the FED number appended
+after the base in order to signify the FED to which the report belongs.
+ 
   2.) A log file containing all the messages that were printed to the cmd window. This serves as a record of the process and
       allows the user to check for errors after processing. This file will be located in the logs folder at the root of
       this repository and all log files will use this naming convention: <date_of_processing>.log with the date following 
