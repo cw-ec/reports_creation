@@ -139,13 +139,13 @@ class BuildDPKReport:
         self.settings_dict = DPKSettings(self.in_dict['ed_code']).settings_dict
 
         # Setup other parameters
-        self.font = 'Arial'
-        self.styles = getSampleStyleSheet()
-        self.page_height = 8.5 * inch
-        self.page_width = 11 * inch
-        # Column widths
-        self.col_widths = [90, 185, 120, 50, 50, 120, 45, 40]  # must sum to 700
+        self.font = self.settings_dict['font']
+        self.page_height = self.settings_dict['page_height']
+        self.page_width = self.settings_dict['page_width']
+        self.col_widths = self.settings_dict['column_widths']  # must sum to 700
         self.report_name = self.settings_dict["report_name"]
+        self.page_margins = self.settings_dict['page_margins']
+        self.styles = getSampleStyleSheet()
 
         # This is like this because we need to newline characters for the header to work properly
         self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
@@ -159,10 +159,10 @@ class BuildDPKReport:
         # Setup document
         # If things are overlapping the header / footer change the margins below
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"{self.report_name}_{self.in_dict['ed_code']}.pdf"),
-                                     leftMargin=2 * cm,
-                                     rightMargin=-5 * cm,
-                                     topMargin=14 * cm,
-                                     bottomMargin=1 * cm,
+                                     leftMargin=self.page_margins['leftMargin'],
+                                     rightMargin=self.page_margins['rightMargin'],
+                                     topMargin=self.page_margins['topMargin'],
+                                     bottomMargin=self.page_margins['bottomMargin']
                                      )
 
         # Creates the document for the report and exports

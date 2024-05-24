@@ -49,7 +49,7 @@ class IDRGenerator:
         # Fields are different when in English or French provinces this logic returns the correct fields for that
         if (self.ed_num >= 24000) and (self.ed_num < 25000): # Quebec
 
-            out_df['C_TYPE'] = out_df[['COMMUNITY_TYPE_F', 'COMMUNITY_TYPE_E']].apply(lambda x: f"{x[0]} / {x[1]}",axis=1)  # Concat the community type fields
+            out_df['C_TYPE'] = out_df[['COMMUNITY_TYPE_F', 'COMMUNITY_TYPE_E']].apply(lambda x: f"{x.iloc[0]} / {x.iloc[1]}",axis=1)  # Concat the community type fields
             out_df.rename(columns={"NAME_2": "C_NAME"}, inplace=True)
             out_df = drop_multipart(out_df, "C_NAME","COMMUNITY_TYPE_F", "PD_NO_CONCAT")
             return out_df[["C_NAME","C_TYPE", "PD_NO_CONCAT"]]

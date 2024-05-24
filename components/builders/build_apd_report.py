@@ -122,8 +122,7 @@ class BuildAPDReport:
         self.styles.add(set_single_cell_tbl_style('SingleCellText'))
 
         # Create report elements
-        column_widths = [50, 180, 220, 70]
-        elements = [add_report_table(col_widths=column_widths), PageBreak(), add_summary_box(col_widths=column_widths)]
+        elements = [add_report_table(col_widths=self.column_widths), PageBreak(), add_summary_box(col_widths=self.column_widths)]
 
         # Build the document from the elements we have
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
@@ -138,17 +137,22 @@ class BuildAPDReport:
         self.pagesize = pagesize
         self.orientation = orientation
 
+        if pagesize == 'Letter':
+            self.pagesize = letter
+
         # Import e/f text objects based on report location
         self.settings_dict = APDSettings(self.in_dict['ed_code']).settings_dict
 
         # Setup other parameters
-        if pagesize == 'Letter':
-            self.pagesize = letter
-        self.width, self.height = self.pagesize
-        self.font = 'Arial'
-        self.encoding = 'LATIN-1'
-        self.styles = getSampleStyleSheet()
+        self.font =  self.settings_dict['font']
+        self.encoding = self.settings_dict['encoding']
         self.report_name = self.settings_dict['report_name']
+        self.header_margin = self.settings_dict['header_margin']  # Modifies the distance the top of the header is from the top of the page
+        self.column_widths = self.settings_dict["column_widths"]
+        self.page_margins = self.settings_dict["page_margins"]
+
+        self.styles = getSampleStyleSheet()
+        self.width, self.height = self.pagesize
 
         # This is like this because we need to newline characters for the header to work properly
         self.header_text = f"""<b>{self.settings_dict['header']['dept_nme']}</b>
@@ -162,13 +166,12 @@ class BuildAPDReport:
         # If things are overlapping the header / footer change the margins below
         self.logger.info("Creating APD document")
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"{self.report_name}_{self.in_dict['ed_code']}.pdf"),
-                            page_size=self.pagesize,
-                            leftMargin=2.2 * cm,
-                            rightMargin=2.2 * cm,
-                            topMargin=4.5 * cm,
-                            bottomMargin=2.5 * cm
+                                     page_size=self.pagesize,
+                                     leftMargin=self.page_margins['leftMargin'],
+                                     rightMargin=self.page_margins['rightMargin'],
+                                     topMargin=self.page_margins['topMargin'],
+                                     bottomMargin=self.page_margins['bottomMargin']
         )
-        self.header_margin =  2* cm  # Modifies the distance the top of the header is from the top of the page
 
         # Creates the document for the report and exports
         self.apd_report_pages()

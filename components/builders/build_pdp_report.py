@@ -134,9 +134,8 @@ class BuildPDPReport:
         self.styles.add(set_header_custom_style("HeaderTxt"))
         self.styles.add(set_single_cell_tbl_style('SingleCellText'))
 
-        column_widths = [80, 180, 180,80]
         # Create report elements
-        elements = [add_report_table(column_widths), PageBreak(), add_summary_box(column_widths)]
+        elements = [add_report_table(self.column_widths), PageBreak(), add_summary_box(self.column_widths)]
 
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
@@ -152,16 +151,21 @@ class BuildPDPReport:
         self.pagesize = pagesize
         self.orientation = orientation
 
+        if pagesize == 'Letter':
+            self.pagesize = letter
+
         # Import special e/f headings and title parameters based on location
         self.settings_dict = PDPSettings(self.in_dict['ed_code']).settings_dict
 
         # Setup other parameters
-        if pagesize == 'Letter':
-            self.pagesize = letter
         self.width, self.height = self.pagesize
-        self.font = 'Arial'
-        self.styles = getSampleStyleSheet()
+        self.font = self.settings_dict['font']
         self.report_name = self.settings_dict['report_name']
+        self.header_margin = self.settings_dict['header_margin']
+        self.column_widths = self.settings_dict['column_widths']
+        self.page_margins = self.settings_dict['page_margins']
+
+        self.styles = getSampleStyleSheet()
 
         # This is like this because we need to newline characters for the header to work properly
         self.header_text =  f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
@@ -176,12 +180,11 @@ class BuildPDPReport:
         # If things are overlapping the header / footer change the margins below
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"{self.report_name}_{self.in_dict['ed_code']}.pdf"),
                             page_size=self.pagesize,
-                            leftMargin=2.2 * cm,
-                            rightMargin=2.2 * cm,
-                            topMargin=4.5 * cm,
-                            bottomMargin=1 * cm
+                            leftMargin=self.page_margins['leftMargin'],
+                            rightMargin=self.page_margins['rightMargin'],
+                            topMargin=self.page_margins['topMargin'],
+                            bottomMargin=self.page_margins['bottomMargin']
         )
-        self.header_margin = 0.5 * cm
 
         # Creates the document for the report and exports
         self.pdp_report_pages()

@@ -1,3 +1,5 @@
+from reportlab.lib.units import cm, inch
+
 """
 This script serves as a repository of text elements for each report type. Each type is saved as English or French first
 to fill in the reports bilingually across the country
@@ -13,6 +15,18 @@ class PDPSettings:
         # Report name to set as part of the pdf file name
         e_report_name = "PD_PROF"
         f_report_name = "PD_PROF"
+
+        # Page and font settings
+        font = 'Arial'
+        encoding = "LATIN-1"
+        column_widths = [80, 180, 180,80]
+        header_margin = 0.5 * cm
+        page_margins = {
+            "leftMargin": 2.2 * cm,
+            "rightMargin": 2.2 * cm,
+            "topMargin": 4.5 * cm,
+            "bottomMargin": 1 * cm
+        }
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -57,7 +71,12 @@ class PDPSettings:
                               "ss_total_apd": e_total_apd,
                               "ss_avg_noe_per_apd": e_avg_noe_per_apd,
                               "ss_total_vpd": e_total_vpd,
-                              "report_name":e_report_name
+                              "report_name":e_report_name,
+                              "font": font,
+                              "encoding": encoding,
+                              "column_widths": column_widths,
+                              "header_margin": header_margin,
+                              "page_margins": page_margins
                               }
         self.f_params_dict = {"header": f_header,
                               "table_header": f_table_header,
@@ -67,7 +86,12 @@ class PDPSettings:
                               "ss_total_apd": f_total_apd,
                               "ss_avg_noe_per_apd": f_avg_noe_per_apd,
                               "ss_total_vpd": f_total_vpd,
-                              "report_name": f_report_name
+                              "report_name": f_report_name,
+                              "font": font,
+                              "encoding": encoding,
+                              "column_widths": column_widths,
+                              "header_margin": header_margin,
+                              "page_margins": page_margins
                               }
         if (in_ed > 24000) and (in_ed < 24999):
             self.settings_dict = self.f_params_dict
@@ -83,6 +107,18 @@ class APDSettings:
         # Report name to set as part of the pdf file name
         e_report_name = "ADVANC"
         f_report_name = "ADVANC"
+
+        # Page and text parameters
+        font = 'Arial'
+        encoding = "LATIN-1"
+        column_widths = [50, 180, 220, 70]
+        header_margin = 2* cm
+        page_margins = {
+            "leftMargin": 2.2 * cm,
+            "rightMargin": 2.2* cm,
+            "topMargin": 4.5 * cm,
+            "bottomMargin": 2.5 * cm
+        }
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -116,13 +152,23 @@ class APDSettings:
                               "footer_text": e_footer_text,
                               "ss_total_apd": e_total_apd,
                               "report_name": e_report_name,
+                              "font": font,
+                              "column_widths": column_widths,
+                              "header_margin": header_margin,
+                              "encoding": encoding,
+                              "page_margins": page_margins
                               }
         self.f_params_dict = {"header": f_header,
                               "table_header": f_table_header,
                               "ss_table_header": f_ss_table_header,
                               "footer_text": f_footer_text,
                               "ss_total_apd": f_total_apd,
-                              "report_name": f_report_name
+                              "report_name": f_report_name,
+                              "font": font,
+                              "column_widths": column_widths,
+                              "header_margin": header_margin,
+                              "encoding": encoding,
+                              "page_margins": page_margins
                               }
         if (in_ed > 24000) and (in_ed < 24999):
             self.settings_dict = self.f_params_dict
@@ -138,6 +184,21 @@ class PDDSettings:
         # Report name to set as part of the pdf file name
         e_report_name = "DESCRIPTIONS"
         f_report_name = "DESCRIPTIONS"
+
+        # Page and font settings
+        font = 'Arial'
+        encoding = "LATIN-1"
+        reg_column_widths = [220, 120, 120, 50, 50, 140]  # Sums to 700
+        sbp_column_widths = [500, 200]  # Sums to 700
+        mp_column_widths = [250, 250, 200]  # Sums to 700
+        page_height = 8.5 * inch
+        page_width = 11 * inch
+        page_margins = {
+            "leftMargin": 2 * cm,
+            "rightMargin": -5 * cm,
+            "topMargin": 13 * cm,
+            "bottomMargin": 1 * cm
+        }
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -176,7 +237,15 @@ class PDDSettings:
                               "table_header_strm": e_table_header_strm,
                               "table_note": e_table_note,
                               "footer_text": e_footer_text,
-                              "report_name": e_report_name
+                              "report_name": e_report_name,
+                              "font": font,
+                              "encoding": encoding,
+                              "reg_column_widths": reg_column_widths,
+                              "sbp_column_widths": sbp_column_widths,
+                              "mp_column_widths": mp_column_widths,
+                              "page_margins": page_margins,
+                              "page_height": page_height,
+                              "page_width": page_width
                               }
         self.f_params_dict = {"header": f_header,
                               "table_title": f_table_title,
@@ -185,7 +254,15 @@ class PDDSettings:
                               "table_header_strm": f_table_header_strm,
                               "table_note": f_table_note,
                               "footer_text": f_footer_text,
-                              "report_name": f_report_name
+                              "report_name": f_report_name,
+                              "font": font,
+                              "encoding": encoding,
+                              "reg_column_widths": reg_column_widths,
+                              "sbp_column_widths": sbp_column_widths,
+                              "mp_column_widths": mp_column_widths,
+                              "page_margins": page_margins,
+                              "page_height": page_height,
+                              "page_width": page_width
                               }
 
         if (in_ed >= 24000) and (in_ed < 25000):
@@ -202,6 +279,19 @@ class DPKSettings:
         # Report name to set as part of the pdf file name
         e_report_name = "INDCIR"
         f_report_name = "INDCIR"
+
+        # Page and font settings
+        font = 'Arial'
+        encoding = "LATIN-1"
+        column_widths = [90, 185, 120, 50, 50, 120, 45, 40]  # must sum to 700
+        page_height = 8.5 * inch
+        page_width = 11 * inch
+        page_margins = {
+            "leftMargin": 2 * cm,
+            "rightMargin": -5 * cm,
+            "topMargin": 14 * cm,
+            "bottomMargin": 1 * cm
+        }
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -224,12 +314,24 @@ class DPKSettings:
         self.e_params_dict = {"header": e_header,
                               "table_header": e_table_header,
                               "footer_text": e_footer_text,
-                              "report_name": e_report_name
+                              "report_name": e_report_name,
+                              "font": font,
+                              "encoding": encoding,
+                              "column_widths": column_widths,
+                              "page_margins": page_margins,
+                              "page_height": page_height,
+                              "page_width": page_width
                               }
         self.f_params_dict = {"header": f_header,
                               "table_header": f_table_header,
                               "footer_text": f_footer_text,
-                              "report_name": f_report_name
+                              "report_name": f_report_name,
+                              "font": font,
+                              "encoding": encoding,
+                              "column_widths": column_widths,
+                              "page_margins": page_margins,
+                              "page_height": page_height,
+                              "page_width": page_width
                               }
 
         if (in_ed > 24000) and (in_ed < 24999):
@@ -246,6 +348,18 @@ class MPSSettings:
         # Report name to set as part of the pdf file name
         e_report_name = "SUMINS"
         f_report_name = "SUMINS"
+
+        # Page and font settings
+        font = 'Arial'
+        encoding = "LATIN-1"
+        column_widths = [130, 130, 130, 130]
+        header_margin = 2 * cm
+        page_margins = {
+            "leftMargin": 2.2 * cm,
+            "rightMargin": 2.2 * cm,
+            "topMargin": 4.5 * cm,
+            "bottomMargin": 2.5 * cm
+        }
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -286,7 +400,12 @@ class MPSSettings:
                               "ss_total_pd": e_total_pd,
                               "ss_total_noe": e_total_noe,
                               "ss_total_inst": e_total_inst,
-                              "report_name": e_report_name
+                              "report_name": e_report_name,
+                              "font": font,
+                              "header_margin": header_margin,
+                              "encoding": encoding,
+                              "column_widths": column_widths,
+                              "page_margins": page_margins,
                               }
         self.f_params_dict = {"header": f_header,
                               "table_header": f_table_header,
@@ -295,7 +414,12 @@ class MPSSettings:
                               "ss_total_pd": f_total_pd,
                               "ss_total_noe": f_total_noe,
                               "ss_total_inst": f_total_inst,
-                              "report_name": f_report_name
+                              "report_name": f_report_name,
+                              "font": font,
+                              "header_margin": header_margin,
+                              "encoding": encoding,
+                              "column_widths": column_widths,
+                              "page_margins": page_margins,
                               }
         if (in_ed > 24000) and (in_ed < 24999):
             self.settings_dict = self.f_params_dict
@@ -311,6 +435,18 @@ class IDRSettings:
         # Report name to set as part of the pdf file name
         e_report_name = "INDIG_AUTOCH"
         f_report_name = "AUTOCH_INDIG"
+
+        # Page and font settings
+        font = 'Arial'
+        encoding = "LATIN-1"
+        column_widths = [250, 160, 110]
+        header_margin = 2 * cm
+        page_margins = {
+            "leftMargin": 2.2 * cm,
+            "rightMargin": 2.2 * cm,
+            "topMargin": 5.0 * cm,
+            "bottomMargin": 2.5 * cm
+        }
 
         # Header dicts additional report specific info appended later
         f_header = {'dept_nme': "ÉLECTIONS CANADA / ELECTIONS CANADA",
@@ -339,12 +475,22 @@ class IDRSettings:
                               "table_header": e_table_header,
                               "ss_table_header": e_ss_table_header,
                               "footer_text": e_footer_text,
+                              "font": font,
+                              "header_margin": header_margin,
+                              "column_widths": column_widths,
+                              "encoding": encoding,
+                              "page_margins": page_margins
                               }
         self.f_params_dict = {"report_name": f_report_name,
                               "header": f_header,
                               "table_header": f_table_header,
                               "ss_table_header": f_ss_table_header,
                               "footer_text": f_footer_text,
+                              "font": font,
+                              "header_margin": header_margin,
+                              "column_widths": column_widths,
+                              "encoding": encoding,
+                              "page_margins": page_margins
                               }
         if (in_ed > 24000) and (in_ed < 24999):
             self.settings_dict = self.f_params_dict

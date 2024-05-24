@@ -87,17 +87,22 @@ class BuildIDRReport:
         self.pagesize = pagesize
         self.orientation = orientation
 
+        # Associate pagesize with the correct pagesize object
+        if pagesize == 'Letter':
+            self.pagesize = letter
+
         # Import special e/f headings and title parameters based on location
         self.settings_dict = IDRSettings(self.in_dict['ed_code']).settings_dict
 
         # Setup other parameters
-        if pagesize == 'Letter':
-            self.pagesize = letter
         self.width, self.height = self.pagesize
-        self.font = 'Arial'
-        self.styles = getSampleStyleSheet()
-        self.column_widths = [250, 160, 110]
+        self.font = self.settings_dict["font"]
+        self.column_widths = self.settings_dict["column_widths"]
         self.report_name = self.settings_dict["report_name"]
+        self.header_margin = self.settings_dict["header_margin"]  # Modifies the distance the top of the header is from the top of the page
+        self.page_margins = self.settings_dict['page_margins']
+
+        self.styles = getSampleStyleSheet()
 
         # This is like this because we need to newline characters for the header to work properly
         self.header_text =  f"""<b>{self.settings_dict['header']['dept_nme']}</b><br/>
@@ -111,13 +116,12 @@ class BuildIDRReport:
         # Setup document
         # If things are overlapping the header / footer change the margins below
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"{self.report_name}_{self.in_dict['ed_code']}.pdf"),
-                            page_size=self.pagesize,
-                            leftMargin=2.2 * cm,
-                            rightMargin=2.2 * cm,
-                            topMargin=5.0 * cm,
-                            bottomMargin=2.5 * cm
+                             page_size=self.pagesize,
+                             leftMargin=self.page_margins['leftMargin'],
+                             rightMargin=self.page_margins['rightMargin'],
+                             topMargin=self.page_margins['topMargin'],
+                             bottomMargin=self.page_margins['bottomMargin']
         )
-        self.header_margin =  2* cm  # Modifies the distance the top of the header is from the top of the page
 
         # Creates the document for the report and exports
         self.idr_report_pages()

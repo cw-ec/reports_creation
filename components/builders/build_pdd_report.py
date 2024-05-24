@@ -162,7 +162,7 @@ class BuildPDDReport:
             ps_add["ELECTORS_LISTED"] = ps_add["ELECTORS_LISTED"].apply(lambda x: Paragraph(str(int(x)), style= self.styles['CellText']) if not isnan(x) else '')
 
             element_list = [title_para] + [[Paragraph(f"<b>{x}</b>", style=self.styles['ColHeaderTxt']) for x in self.settings_dict['table_header_mp']]] + ps_add[["SITE_NAME_BIL", 'mp_add_full', 'ELECTORS_LISTED']].values.tolist()
-            tbl = Table(element_list, style=ts, repeatRows=2, colWidths=mp_widths)
+            tbl = Table(element_list, style=ts, repeatRows=2, colWidths=self.mp_column_widths)
 
             return tbl
 
@@ -273,9 +273,7 @@ class BuildPDDReport:
             # Generate the table for the pd based on the dataframes contents
             if pd_pre <= 399: # for regular tables
 
-                reg_widths = [220, 120, 120, 50, 50, 140] # Sums to 700
-
-                elements.append(add_report_table(pd_df, reg_widths))
+                elements.append(add_report_table(pd_df, self.reg_column_widths))
 
                 # If the next table is in the strm list then add a spacer if not then add a pagebreak
                 if index + 1 in strm_list:
@@ -289,14 +287,10 @@ class BuildPDDReport:
                     self.logger.error("Single Building Poll greater than 1 location")
                     sys.exit()
 
-                sbp_widths = [500, 200]  # Sums to 700
-
-                elements.append(add_sbp_table(pd_df, sbp_widths))
+                elements.append(add_sbp_table(pd_df, self.sbp_column_widths))
                 elements.append(PageBreak()) # PageBreak is needed to create a gap between the tables
 
             elif pd_pre >= 500: # for mobile polls (MOB)
-
-                mp_widths = [250, 250, 200] # Sums to 700
 
                 elements.append(add_mp_table(pd_df))
                 elements.append(PageBreak()) # PageBreak is needed to create a gap between the tables
@@ -319,10 +313,15 @@ class BuildPDDReport:
 
         # Setup other parameters for the page and element styles
         self.report_name = self.settings_dict['report_name']
-        self.font = 'Arial'
+        self.font = self.settings_dict['font']
+        self.page_margins = self.settings_dict['page_margins']
+        self.page_height = self.settings_dict['page_height']
+        self.page_width = self.settings_dict['page_width']
+        self.reg_column_widths = self.settings_dict['reg_column_widths']
+        self.sbp_column_widths = self.settings_dict['sbp_column_widths']
+        self.mp_column_widths = self.settings_dict['mp_column_widths']
+
         self.styles = getSampleStyleSheet()
-        self.page_height = 8.5 * inch
-        self.page_width = 11 * inch
         self.plc_nme_dict = {}
 
         # This is like this because we need to newline characters for the header to work properly
@@ -337,10 +336,10 @@ class BuildPDDReport:
         # Setup document
         # If things are overlapping the header / footer change the margins below
         self.pdf = SimpleDocTemplate(os.path.join(self.out_dir, f"{self.report_name}_{self.in_dict['ed_code']}.pdf"),
-                                     leftMargin=2 * cm,
-                                     rightMargin=-5 * cm,
-                                     topMargin=13 * cm,
-                                     bottomMargin=1* cm,
+                                     leftMargin=self.page_margins['leftMargin'],
+                                     rightMargin=self.page_margins['rightMargin'],
+                                     topMargin=self.page_margins['topMargin'],
+                                     bottomMargin=self.page_margins['bottomMargin']
                                      )
 
         # Creates the document for the report and exports
