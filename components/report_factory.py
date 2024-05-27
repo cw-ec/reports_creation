@@ -58,19 +58,19 @@ class ReportFactory:
                 elif report['type'] == "PDD": # For Polling District Descriptions
                     PDDGenerator(data_path, out_path, r)
 
-                elif report['type'] == "DPK": # For District Poll Key
+                elif report['type'] == "DPK": # For District Poll Keys
                     DPKGenerator(data_path, out_path, r)
 
-                elif report['type'] == "MPS": # For Mobile Polls Summary
+                elif report['type'] == "MPS": # For Mobile Polls Summaries
                     MPSGenerator(data_path, out_path, r)
 
-                elif report['type'] == "IDR": # For Indigenous Lands Report
+                elif report['type'] == "IDR": # For Indigenous Lands Reports
                     IDRGenerator(data_path, out_path, r)
 
                 else:  # For those cases where the input key does not match any of the valid report types
                     self.logger.warning(f"{report['type']} does not match a valid report type. Check the project documentation for all valid report types")
 
-    def export_order(self):
+    def export_order(self) -> None:
         """Exports the order to the given export directory"""
 
         export_dir = self.order['export_directory']
@@ -98,9 +98,9 @@ class ReportFactory:
                 shutil.copy(f, os.path.join(fed_dir, f_name)) # Copy the file to the export subdirectory
 
             except PermissionError:
-                self.logger.exception(f"Permission Error: {f_name} could not be overwritten in export directory. Please ensure the file isn't open and try again.")
+                self.logger.exception(f"Permission Error: {f_name} could not be overwritten in export directory. Please ensure the file that the file is closed and try again.")
 
-    def __init__(self, workflow):
+    def __init__(self, workflow) -> None:
 
         self.logger = logging_setup()
 

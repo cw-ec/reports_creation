@@ -23,7 +23,7 @@ registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 class BuildPDPReport:
     """Builds the report pdf with a header and footer"""
 
-    def pdp_report_pages(self):
+    def pdp_report_pages(self) -> None:
         """Setups the template for the pdp report"""
 
         def add_report_table(c_widths: list) -> Table:
@@ -111,7 +111,7 @@ class BuildPDPReport:
             return table
 
 
-        def _header_footer(canvas, doc):
+        def _header_footer(canvas, doc) -> None:
             # Save the state of our canvas, so we can draw on it
             canvas.saveState()
 
@@ -141,7 +141,7 @@ class BuildPDPReport:
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
 
 
-    def __init__(self,in_dict, data_df, out_dir, pagesize='Letter', orientation='Portrait'):
+    def __init__(self,in_dict, data_df, out_dir, pagesize='Letter', orientation='Portrait') -> None:
         self.logger = logging_setup()
 
         # Parameters sets from inputs

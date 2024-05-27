@@ -20,3 +20,7 @@ page styles. Common custom text styles are also built here to be shared between 
 
 Contains reports specific text organized by report type. These objects contain text for page text elements such as the 
 header, footer and table column names, etc. 
+
+When making alterations to the reports the parameters in this file should be altered. These alterations will affect the 
+appearance of all output reports of that type. Make all edits with caution and ensure that when changing text that that 
+change is reflected in both the English and French variables for that text.

@@ -20,7 +20,7 @@ registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 class BuildIDRReport:
     """Builds the report pdf with a header and footer"""
 
-    def idr_report_pages(self):
+    def idr_report_pages(self) -> None:
         """Setups the template for the pdp report"""
 
         def add_report_table(c_widths: list) -> Table:
@@ -46,7 +46,7 @@ class BuildIDRReport:
 
             return tbl
 
-        def _header_footer(canvas, doc):
+        def _header_footer(canvas, doc) -> None:
             # Save the state of our canvas, so we can draw on it
             canvas.saveState()
 
@@ -77,7 +77,7 @@ class BuildIDRReport:
         # Build the document from the elements we have and using the custom canvas with numbers
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer, canvasmaker=NumberedCanvas)
 
-    def __init__(self,in_dict, data_df, out_dir, pagesize='Letter', orientation='Portrait'):
+    def __init__(self,in_dict, data_df, out_dir, pagesize='Letter', orientation='Portrait') -> None:
         self.logger = logging_setup()
 
         # Parameters sets from inputs

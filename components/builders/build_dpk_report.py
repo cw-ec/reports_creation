@@ -23,7 +23,7 @@ registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 
 class BuildDPKReport:
 
-    def dpk_report_pages(self):
+    def dpk_report_pages(self) -> None:
         """Sets up the pages for the pdd report"""
 
         def add_report_table(df, col_widths) -> Table:
@@ -73,7 +73,7 @@ class BuildDPKReport:
             return tbl
 
 
-        def _header_footer(canvas, doc):
+        def _header_footer(canvas, doc) -> None:
             # Save the state of our canvas, so we can draw on it
             canvas.saveState()
 
@@ -127,7 +127,7 @@ class BuildDPKReport:
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer,
                        canvasmaker=NumberedCanvasLandscape)
 
-    def __init__(self,in_dict, df_list, out_dir):
+    def __init__(self,in_dict, df_list, out_dir) -> None:
         self.logger = logging_setup()
 
         # Parameters sets from inputs

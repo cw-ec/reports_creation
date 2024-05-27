@@ -21,11 +21,11 @@ class ZipOutputs:
 
             return oc
 
-    def sort_dirs(self):
+    def sort_dirs(self) -> None:
         """Combines all files from the map and report directories and puts them into a single zip file. This is exported
         to the out directory"""
 
-        def sort_maps():
+        def sort_maps() -> None:
             """Code for sorting the maps before zipping. Taken from the cw-ec/map_series"""
 
             for file in map_dir.glob("*.pdf"):
@@ -63,7 +63,7 @@ class ZipOutputs:
                         copyfile(os.path.join(map_dir, file.name),
                                  os.path.join(out_pdf_path, f"{ptype}_{fed}_{suffix}.pdf"))
 
-        def sort_reports():
+        def sort_reports() -> None:
             """Sort the reports in the reports before zipping"""
 
             # Get all FED subdirectories from the reports_folder
@@ -101,7 +101,7 @@ class ZipOutputs:
         sort_reports()
         self.logger.info("Sorting complete")
 
-    def export_files(self):
+    def export_files(self) -> None:
         """Zips and exports the sorted files from the scratch directory to the output directory"""
 
         # Get every dir in scratch and make a zip
@@ -117,7 +117,7 @@ class ZipOutputs:
                 self.logger.warn(f"{d} does not exist. No zip created")
 
 
-    def __init__(self, workflow:str):
+    def __init__(self, workflow:str) -> None:
         """Combines and creates zip directories of the input map and report directories"""
 
         self.logger = logging_setup()

@@ -10,7 +10,7 @@ class PDPSettings:
     """Contains all page setup components colours, margins page locations for the Polling District Profile Report
     including French and English versions"""
 
-    def __init__(self, in_ed):
+    def __init__(self, in_ed) -> None:
 
         # Report name to set as part of the pdf file name
         e_report_name = "PD_PROF"
@@ -102,7 +102,7 @@ class APDSettings:
     """Contains all page setup components colours, margins page locations for the  Advanced Polling Districts Report
     including French and English versions"""
 
-    def __init__(self, in_ed):
+    def __init__(self, in_ed) -> None:
 
         # Report name to set as part of the pdf file name
         e_report_name = "ADVANC"
@@ -179,7 +179,7 @@ class PDDSettings:
     """Contains all page setup components colours, margins page locations for the Polling District Descriptions Report
         including French and English versions"""
 
-    def __init__(self, in_ed):
+    def __init__(self, in_ed) -> None:
 
         # Report name to set as part of the pdf file name
         e_report_name = "DESCRIPTIONS"
@@ -191,6 +191,7 @@ class PDDSettings:
         reg_column_widths = [220, 120, 120, 50, 50, 140]  # Sums to 700
         sbp_column_widths = [500, 200]  # Sums to 700
         mp_column_widths = [250, 250, 200]  # Sums to 700
+        trm_column_widths = [200, 150, 150, 200]  # Sums to 700
         page_height = 8.5 * inch
         page_width = 11 * inch
         page_margins = {
@@ -243,6 +244,7 @@ class PDDSettings:
                               "reg_column_widths": reg_column_widths,
                               "sbp_column_widths": sbp_column_widths,
                               "mp_column_widths": mp_column_widths,
+                              "trm_column_widths": trm_column_widths,
                               "page_margins": page_margins,
                               "page_height": page_height,
                               "page_width": page_width
@@ -260,6 +262,7 @@ class PDDSettings:
                               "reg_column_widths": reg_column_widths,
                               "sbp_column_widths": sbp_column_widths,
                               "mp_column_widths": mp_column_widths,
+                              "trm_column_widths": trm_column_widths,
                               "page_margins": page_margins,
                               "page_height": page_height,
                               "page_width": page_width
@@ -274,7 +277,7 @@ class DPKSettings:
     """Contains all page setup components colours, margins page locations for the Polling District Descriptions Report
         including French and English versions"""
 
-    def __init__(self, in_ed):
+    def __init__(self, in_ed) -> None:
 
         # Report name to set as part of the pdf file name
         e_report_name = "INDCIR"
@@ -343,7 +346,7 @@ class MPSSettings:
     """Contains all page setup components colours, margins page locations for the  Mobile Polls Summary (MPS) Report
     including French and English versions"""
 
-    def __init__(self, in_ed):
+    def __init__(self, in_ed) -> None:
 
         # Report name to set as part of the pdf file name
         e_report_name = "SUMINS"
@@ -430,7 +433,7 @@ class IDRSettings:
     """Contains all page setup components colours, margins page locations for the  Mobile Polls Summary (MPS) Report
     including French and English versions"""
 
-    def __init__(self, in_ed):
+    def __init__(self, in_ed) -> None:
 
         # Report name to set as part of the pdf file name
         e_report_name = "INDIG_AUTOCH"

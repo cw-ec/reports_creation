@@ -24,7 +24,7 @@ registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 
 class BuildPDDReport:
 
-    def pdd_report_pages(self):
+    def pdd_report_pages(self) -> None:
         """Sets up the pages for the pdd report"""
 
         def add_report_table(df, col_widths) -> Table:
@@ -217,7 +217,7 @@ class BuildPDDReport:
 
             return tbl
 
-        def _header_footer(canvas, doc):
+        def _header_footer(canvas, doc) -> None:
             # Save the state of our canvas, so we can draw on it
             canvas.saveState()
 
@@ -233,8 +233,6 @@ class BuildPDDReport:
 
             # Release the canvas
             canvas.restoreState()
-
-            # Setup basic styles
 
         self.styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER))
 
@@ -256,9 +254,7 @@ class BuildPDDReport:
             # If an STRM Table it will not have a pd id and should be run before that code
             if (index in strm_list) and ("TWNSHIP" in pd_df.columns.tolist()): # For TRM Tables should have TWNSHIP as a field
 
-                trm_widths = [200, 150, 150, 200] # Sums to 700
-
-                elements.append(add_strm_table(pd_df, trm_widths))
+                elements.append(add_strm_table(pd_df, self.trm_column_widths))
                 elements.append(PageBreak())
                 continue
 
@@ -299,7 +295,7 @@ class BuildPDDReport:
         self.pdf.build(elements, onFirstPage=_header_footer, onLaterPages=_header_footer,
                        canvasmaker=NumberedCanvasLandscape)
 
-    def __init__(self,in_dict, df_list, ps_add_df, out_dir):
+    def __init__(self,in_dict, df_list, ps_add_df, out_dir) -> None:
         self.logger = logging_setup()
 
         # Parameters sets from inputs
@@ -320,6 +316,7 @@ class BuildPDDReport:
         self.reg_column_widths = self.settings_dict['reg_column_widths']
         self.sbp_column_widths = self.settings_dict['sbp_column_widths']
         self.mp_column_widths = self.settings_dict['mp_column_widths']
+        self.trm_column_widths = self.settings_dict['trm_column_widths']
 
         self.styles = getSampleStyleSheet()
         self.plc_nme_dict = {}
