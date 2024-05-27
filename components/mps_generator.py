@@ -69,7 +69,7 @@ class MPSGenerator:
 
         return out_df[['PD_NO_CONCAT', 'TOTAL_INST', 'ELECTORS_LISTED', 'APD_LIST']]
 
-    def __init__(self, data, out_path, ed_num):
+    def __init__(self, data, out_path, ed_num) -> None:
 
         # Setup logging
         self.logger = logging_setup()
@@ -79,7 +79,7 @@ class MPSGenerator:
         self.out_path = out_path
         self.ed_num = ed_num
         self.df = to_dataframe(data, encoding='latin-1')
-        self.ec_df = to_dataframe(".\\data\ELECTOR_COUNTS.xlsx", encoding='latin-1')  # Placeholder until database table gets updates
+        self.ec_df = to_dataframe(".\\data\ELECTOR_COUNTS.xlsx", encoding='latin-1')  # Placeholder until database table gets updated
 
         self.report_df = self.gen_report_table()
 
