@@ -1,0 +1,5 @@
+pandas
+numpy
+reportlab
+openpyxl
+click

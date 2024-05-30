@@ -1,0 +1,6 @@
+{
+  "map_dir": "J:\\MapSeries\\Dump",
+  "report_dir": "J:\\EMRP\\Work\\GAM_Reports",
+  "out_dir": "J:\\GAM_Products",
+  "feds": [10001, 10002, 24001, 24002]
+}
