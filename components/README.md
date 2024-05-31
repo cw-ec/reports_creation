@@ -22,8 +22,8 @@ visualized as follows:
 
 ## Report Generation Scripts
 
-The report generation scripts make up the majority of the code in this project. These scripts are responsible for 
-ingesting data, data cleaning and processing the data so that can be easily processed by the report generation
+The scripts associated with report generation make up the majority of this project. These scripts are responsible for 
+ingesting, cleaning and processing the data so that it is correctly formatted for the report generation
 scripts. These scripts all follow the same basic structure for each given report. A general description of this structure 
 can be found below.
 

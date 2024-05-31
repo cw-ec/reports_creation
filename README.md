@@ -87,7 +87,7 @@ look something similar to the below image:
 <img src="docs\img\wrk_py_var.png"/>
 
 If an error appears or the command "python" is not recognized then ensure that python is installed correctly and the path to
-the python.exe file is incorporated into the PATH environment variable for your profile. 
+the python.exe file is incorporated into the PATH environment variable for your windows profile. 
 
 Once you've ensured that python is set up correctly and the python command opens as expected open a new empty cmd and proceed
 to the next step
