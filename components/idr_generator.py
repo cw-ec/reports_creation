@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .commons import logging_setup, to_dataframe, create_dir, add_en_dash, get_prov_from_code, get_ed_name_from_code
+from .commons import logging_setup, to_dataframe, create_dir, get_prov_from_code, get_ed_name_from_code
 from .builders import BuildIDRReport
 import pandas as pd
 import sys, os

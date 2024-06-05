@@ -4,6 +4,11 @@ from reportlab.lib.units import cm, inch
 This script serves as a repository of text elements for each report type. Each type is saved as English or French first
 to fill in the reports bilingually across the country
 
+Parameters should be altered here and the changes will be reflected in the corresponding report.
+
+When adding additional parameters ensure that the new parameter is added to the output dictionaries at the end of the init
+function or they will not be added to the report 
+
 """
 
 class PDPSettings:

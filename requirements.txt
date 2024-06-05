@@ -3,3 +3,4 @@ numpy
 reportlab
 openpyxl
 click
+oracledb

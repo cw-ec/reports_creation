@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from .commons import logging_setup, to_dataframe, create_dir, get_ed_name_from_code, to_excel, get_excel_header
+from .commons import logging_setup, to_dataframe, create_dir, to_excel, get_excel_header
 from .builders import BuildPDPReport
-from .builders.report_parameters import PDPSettings
 import pandas as pd
 import sys, os
 
