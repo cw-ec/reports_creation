@@ -213,8 +213,10 @@ Using the above guide a complete workflow for this tool for three feds would loo
         }
     ]}
 
-**An important note for file paths: please ensure that the '\\' syntax is maintained as '\' will result in an error and cause
+**An important note for file paths: please ensure that the double slash syntax is maintained as single slashes will result in an error and cause
 the tool to fail**
+
+    \\ instead of \
 
 The above JSON would download all data for the three listed FEDs. A copy of this JSON can be found in the workflows
 for the folder but not in a working form as that would contain sensitive information. Care should be taken to protect 
@@ -356,8 +358,11 @@ Using the above guide an example of a valid workflow creating all reports for th
         "export_directory": "J:\\EMRP\\Work\\GAM_Reports"
     }
 
-**An important note for file paths: please ensure that the '\\' syntax is maintained as '\' will result in an error and cause
+**An important note for file paths: please ensure that the double slash syntax is maintained as single slashes will result in an error and cause
 the tool to fail**
+
+    \\ instead of \
+
 
 The above file can be found in workflows folder at the root of this repository and is meant to serve as a reference when 
 creating other workflows. The above JSON would create reports of every type for each of the three FED's listed in the array 
@@ -478,8 +483,11 @@ An example of what a complete workflow would look like is found below:
       "feds": [10001, 12002, 24002]
     }
 
-**An important note for file paths: please ensure that the '\\' syntax is maintained as '\' will result in an error and cause
+**An important note for file paths: please ensure that the double slash syntax is maintained as single slashes will result in an error and cause
 the tool to fail**
+
+    \\ instead of \
+
 
 The above workflow would sort and zip all the files contained in the both the map and report directories for each of the 
 given FEDs and place zipped versions of those directories in the specified output directory. 
