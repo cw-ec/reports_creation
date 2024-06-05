@@ -143,8 +143,15 @@ In order to run the tools in this repository you will need to create a workflow 
 using Javascript Object Notation (JSON). This file will contain key parameters the tool needs in order to create the 
 reports. Workflow files follow a consistent schema which is outlined and described in the workflow section of each tool. 
 Example files for each tool(except for the data download tool for privacy reasons) can also be found in the workflows directory 
-at the root of this repository. It is recommended that users alter these files as needed using an ide such as VS Code or 
-a text editor like Notepad++.
+at the root of this repository. It is recommended that users alter these files as needed using an integrated development environment (IDE) such as VS Code or 
+a text editor like Notepad++. A correctly formatted workflow in an IDE should look like the image below:
+
+<img src="docs\img\wrkflw_in_ide.png"/>
+
+The benefits of using an IDE over a text editor for this purpose this that the IDE comes with built in tools that will 
+highlight syntax errors and autocomplete partial lines of code. It is recommended that a user take advantage of these
+functions. An IDE that is available in the Elections Canada production environment from the software centre is Visual Studio Code.
+This IDE will allow you to easily manage your workflows and code while minimizing errors.
 
 ### Data Download
 
