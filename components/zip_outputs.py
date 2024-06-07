@@ -37,11 +37,11 @@ class ZipOutputs:
 
                     # Folder names differ by province
                     if (int(fed) >= 24000) and (int(fed) < 25000): # Quebec
-                        subdir = 'cartes'
+                        subdir = 'cartes_maps'
                     else:  # RoC
-                        subdir = 'maps'
+                        subdir = 'maps_cartes'
 
-                    if ptype == 'InsetIndex':  # no suffix on inset reports use simplified workflow
+                    if (ptype == 'InsetIndex_IndexCartons') or (ptype == 'IndexCartons_InsetIndex'): # no suffix on inset reports use simplified workflow
 
                         out_pdf_path = os.path.join(self.scratch_dir, fed, subdir)
 
@@ -50,18 +50,18 @@ class ZipOutputs:
                         copyfile(os.path.join(map_dir, file.name), os.path.join(out_pdf_path, f"{ptype}_{fed}.pdf"))
 
                     else:  # Map PDFs have more components and need a more complex workflow
-                        suffix = file.name.split('_')[2].split('.')[0]
+                        suffix = file.name.split('_')[-1].split('.')[0]
 
                         # Add a 0 for sorting purposes if the suffix of the file name looks like this: 'A1' -> 'A01'
                         if (suffix.split('.')[0][0].isalpha()) and (len(suffix) == 2):
                             suffix = f"{suffix[0]}0{suffix[1]}"
 
-                        out_pdf_path = os.path.join(self.scratch_dir, fed, subdir, self.poll_type[ptype])
+                        out_pdf_path = os.path.join(self.scratch_dir, fed, subdir)
                         # Make sure output path exists. Create if needed
                         Path(out_pdf_path).mkdir(parents=True, exist_ok=True)
                         self.logger.info(f"Sorting: {file.name}")
                         copyfile(os.path.join(map_dir, file.name),
-                                 os.path.join(out_pdf_path, f"{ptype}_{fed}_{suffix}.pdf"))
+                                 os.path.join(out_pdf_path, f"{fed}_{suffix}.pdf"))
 
         def sort_reports() -> None:
             """Sort the reports in the reports before zipping"""
@@ -77,9 +77,9 @@ class ZipOutputs:
                     self.logger.info(f"Sorting all reports for: {fed}")
                     # Folder names differ by province
                     if (int(fed) >= 24000) and (int(fed) < 25000): # Quebec
-                        subdir = 'rapports'
+                        subdir = 'rapports_reports'
                     else:  # RoC
-                        subdir = 'reports'
+                        subdir = 'reports_rapports'
 
                     report_path = os.path.join(self.scratch_dir, fed, subdir)
 
