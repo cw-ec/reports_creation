@@ -31,7 +31,7 @@ class ZipOutputs:
             for file in map_dir.glob("*.pdf"):
 
                 ptype = file.name.split('_')[0]
-                fed = file.name.split('_')[1].split('.')[0]
+                fed = file.name.split('_')[0]
 
                 if int(fed) in fed_list:  # If the fed # is in the fed to process the maps
 
