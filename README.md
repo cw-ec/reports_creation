@@ -19,6 +19,7 @@
       * [Running the Tool](#running-the-tool-2)
       * [Outputs](#outputs-2)
     * [Further Automation](#further-automation)
+    * [Other Documentation](#other-documentation)
 <!-- TOC -->
 
 # Reports Creation
@@ -476,7 +477,7 @@ The JSON for the reports creation tool should be formatted as follows:
 
     {
       "map_dir": path to the directory containg unsorted map series PDFs,
-      "report_dir": path to the dorectory containing sorted report PDFs from the report creation tool,
+      "report_dir": path to the directory containing sorted report PDFs from the report creation tool,
       "out_dir": path to the directory that will contain the sorted and zipped outputs,
       "feds": an array of fed numbers as integers to sort and create .zip files for
     }
@@ -571,3 +572,16 @@ On a successful run of the tool the following outputs will be produced:
 A method that can be used to further automate these tools is to create a .bat file containing the commands from the above section. 
 This can be used to chain several workflows together as needed. An example .bat file called 'example.bat' can be found in 
 the workflows folder as a guide for creating your own custom .bat files.
+
+### Other Documentation
+
+The  docx / pdf version of this documentation was created using the following command in pandoc
+
+    pandoc -t docx C:\reports_creation\readme.md -o ReportsUserGuide.docx
+
+Once the docx version was created the images need to be added and the tables restyled to improve the default look of the 
+document. Once complete save the docx as a pdf.
+
+For more an indepth look at the code within the tools there is a readme in the components directory that explains
+in further detail. There is no pdf version of that documentation as it is intended for future developers and isn't required 
+to run the tools.
