@@ -17,6 +17,10 @@ from .report_parameters import IDRSettings
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 
+"""
+Builder class for the IDR Report
+"""
+
 class BuildIDRReport:
     """Builds the report pdf with a header and footer"""
 

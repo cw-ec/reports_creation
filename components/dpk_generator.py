@@ -4,13 +4,19 @@ from .builders import BuildDPKReport
 import pandas as pd
 import sys, os
 
+# Prevent chained assignment warning from appearing we know that these are occurring they aren't a problem
 pd.options.mode.chained_assignment = None  # default='warn'
 
+"""
+This Script contains the class responsible for prepping the data for the DPK reports and then calling the builder class
+for the report.
+"""
 
 class DPKGenerator:
 
     def is_valid(self, data, out_path, ed_num) -> None:
-        """Checks to see if inputs are valid"""
+        """Checks to see if inputs are valid. Raises exception if they aren't"""
+
         if not isinstance(data, str) or not os.path.exists(data):
             self.logger.exception(f"Parameter data is not of type string or does not exist")
             raise Exception(f"Parameter data is not of type string or does not exist")
@@ -64,8 +70,8 @@ class DPKGenerator:
 
         return df_list
 
+    def __init__(self, data, out_path, ed_num) -> None :
 
-    def __init__(self, data, out_path, ed_num):
         # Setup logging
         self.logger = logging_setup()
 
@@ -77,10 +83,11 @@ class DPKGenerator:
 
         self.report_dfs = self.gen_report_tables()
 
-        if len(self.report_dfs) == 0:
+        # Chek to see if there is still data present after initial processing
+        if len(self.report_dfs) == 0:  # No need for this to be more complicated it's already checked in the gen function
             self.logger.warn(f"Data for {self.ed_num} contains no data. Report not generated")
 
-        else:
+        else:  # If there is still data then continue processing
             # Set a bunch of things for the report from the first line of the data and create a dict to hold them
             self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
@@ -90,7 +97,9 @@ class DPKGenerator:
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0],
                 'rep_yr': self.row1['RDSTRBTN_YEAR'].to_list()[0]
             }
-            create_dir(self.out_path)
+            create_dir(self.out_path)  # Make sure the output path exists
+
+            # Run the report builder
             BuildDPKReport(self.report_dict, self.report_dfs, out_dir=self.out_path)
 
             self.logger.info("Report Generated")

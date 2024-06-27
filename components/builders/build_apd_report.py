@@ -19,6 +19,10 @@ from .common_builds import *
 
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
+
+"""
+Builder class for the APD Report
+"""
 class BuildAPDReport:
     """Builds the report pdf using the input data"""
 

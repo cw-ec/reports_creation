@@ -18,6 +18,10 @@ from .report_parameters import MPSSettings
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 
+"""
+Builder class for the MPS Report
+"""
+
 class BuildMPSReport:
     """Builds the report pdf with a header and footer"""
 

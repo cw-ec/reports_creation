@@ -9,6 +9,9 @@ Parameters should be altered here and the changes will be reflected in the corre
 When adding additional parameters ensure that the new parameter is added to the output dictionaries at the end of the init
 function or they will not be added to the report 
 
+Do not break the connections made here to the classes in the tools. Doing so will add significant complexity to future updates.
+We want to avoid that.
+
 """
 
 class PDPSettings:

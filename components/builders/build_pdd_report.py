@@ -22,6 +22,10 @@ from .report_parameters import PDDSettings
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 
+"""
+Builder class for the PDD Report
+"""
+
 class BuildPDDReport:
 
     def pdd_report_pages(self) -> None:

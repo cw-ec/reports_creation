@@ -5,6 +5,10 @@ import pandas as pd
 from math import isnan
 import sys, os
 
+"""
+Process the input data for the MPS report and calls the MPS builder function to finish the report. 
+"""
+
 class MPSGenerator:
 
     def is_valid(self, data, out_path, ed_num) -> None:
@@ -96,6 +100,7 @@ class MPSGenerator:
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0],
                 'rep_yr': self.row1['RDSTRBTN_YEAR'].to_list()[0]
             }
+            # Ensure that the output directory exists
             create_dir(self.out_path)
             BuildMPSReport(self.report_dict, self.report_df, out_dir=self.out_path)
 

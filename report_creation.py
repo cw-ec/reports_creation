@@ -3,7 +3,8 @@ import os
 from components import ReportFactory
 
 """
-Access point for report creation tool. 
+Access point for report creation tool. Calls the report factory which is responsible for determining which reports to make 
+from the workflow file and running the correct process. 
 """
 
 os.path.dirname(os.path.abspath(__file__))

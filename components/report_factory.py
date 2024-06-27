@@ -9,6 +9,11 @@ from .dpk_generator import DPKGenerator
 from .mps_generator import MPSGenerator
 from .idr_generator import IDRGenerator
 
+"""
+This script contains the report factory class which acts as the nerve center for the report production tool. This class
+is responsible for ingesting the workflow, organizing its contents and producing reports based on the input. 
+"""
+
 class ReportFactory:
     """Class responsible for organizing the creation of reports from input json"""
 

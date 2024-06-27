@@ -12,7 +12,9 @@ from reportlab.lib.pagesizes import letter, landscape
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 
-# Custom objects and functions for use in the building of reports
+"""
+Custom objects and functions for use in the building of reports such as canvases and text styles.
+"""
 
 class NumberedCanvas(canvas.Canvas):
     """ Adds page numbers to the canvas.

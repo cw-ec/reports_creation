@@ -18,6 +18,10 @@ from .report_parameters import PDPSettings
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 
+"""
+Builder class for the PDP Report
+"""
+
 class BuildPDPReport:
     """Builds the report pdf with a header and footer"""
 
@@ -75,7 +79,7 @@ class BuildPDPReport:
                     lambda x: Paragraph(x, style=self.styles['CellText']))
 
 
-            stats_df = self.data_df[self.data_df['VOID_IND']=='']  # '' because 'N' get removed in the generator
+            stats_df = self.data_df[self.data_df['VOID_IND']=='']  # '' because 'N' gets removed in the generator
 
             # Calc Stats
             total_active_pd = str(int(len(stats_df)))  # Total # of pd's with VOID_IND == 'N'

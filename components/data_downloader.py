@@ -5,6 +5,9 @@ import pandas as pd
 from collections import OrderedDict
 from .commons import logging_setup, create_dir
 
+"""
+This script contains the class that is responsible for downloading the data required to create the reports. 
+"""
 
 class DataDownloader:
     """Downloads the data from associated databases using SQL requirements (username, password) are passed into the  script using a json file. Data will be downloaded into the data folder
@@ -44,10 +47,11 @@ class DataDownloader:
 
             # connect_string = f"oracle://{dataset['username']}:{dataset['password']}@{dataset['database']}"
 
-            # Add FED Array to SQL file
+            # convert FED list to Tuple and add as an array to the SQL file
             sql_file = sql_file.replace('ED_LIST_HERE', str(tuple(dataset['ed_list'])))
 
             oracledb.init_oracle_client()  # Should engage oracle thick mode if fails add lib_dir to oracle file on c drive 19_##
+
             # Create db connection
             connection = oracledb.connect(user=dataset['username'],
                                           password=dataset['password'],

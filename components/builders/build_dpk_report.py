@@ -21,6 +21,9 @@ from .report_parameters import DPKSettings
 registerFont(TTFont('Arial','ARIAL.ttf'))
 registerFont(TTFont('Arial-Bold', 'ARLRDBD.TTF'))
 
+"""
+Builder class for the DPK Report
+"""
 class BuildDPKReport:
 
     def dpk_report_pages(self) -> None:

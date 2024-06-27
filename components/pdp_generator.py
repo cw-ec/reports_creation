@@ -4,6 +4,9 @@ from .builders import BuildPDPReport
 import pandas as pd
 import sys, os
 
+"""
+Process the input data for the PDP report and calls the PDP builder function to finish the report. 
+"""
 class PDPGenerator:
 
     def is_valid(self, data, out_path, ed_num) -> None:

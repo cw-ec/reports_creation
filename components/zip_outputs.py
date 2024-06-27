@@ -6,6 +6,12 @@ from shutil import copyfile, copytree, make_archive, rmtree
 
 from .commons import logging_setup, create_dir, delete_dir
 
+"""
+This script contains ZipOutputs class that deals with the sorting and zipping of the GAM maps and reports. The sorting 
+functionality for maps a replicated from the map series repository and any changes to either function should be replicated 
+in both to ensure that both tool continue to perform as expected. 
+"""
+
 class ZipOutputs:
 
     def extract_params(self) -> OrderedDict:
@@ -26,7 +32,7 @@ class ZipOutputs:
         to the out directory"""
 
         def sort_maps() -> None:
-            """Code for sorting the maps before zipping. Taken from the cw-ec/map_series"""
+            """Code for sorting the maps before zipping. Taken from the cw-ec/map_series  Make sure that these always match in terms of function"""
 
             for file in map_dir.glob("*.pdf"):
 
@@ -64,6 +70,7 @@ class ZipOutputs:
                             suffix = f"{suffix[0]}0{suffix[1]}"
 
                         out_pdf_path = os.path.join(self.scratch_dir, fed, subdir)
+
                         # Make sure output path exists. Create if needed
                         Path(out_pdf_path).mkdir(parents=True, exist_ok=True)
                         self.logger.info(f"Sorting: {file.name}")
@@ -158,4 +165,4 @@ class ZipOutputs:
         self.logger.info("Deleting scratch directory")
         delete_dir(str(self.scratch_dir))
 
-        self.logger.info("Process Complete!")
+        self.logger.info("Processing Complete!")

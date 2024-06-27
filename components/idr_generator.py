@@ -4,10 +4,14 @@ from .builders import BuildIDRReport
 import pandas as pd
 import sys, os
 
+"""
+Process the input data for the IDR report and calls the IDR builder function to finish the report. 
+"""
+
 class IDRGenerator:
 
     def is_valid(self, data, out_path, ed_num, sheet_name) -> None:
-        """Checks to see if inputs are valid"""
+        """Checks to see if inputs are valid. Returns an exception if any inputs fail"""
         if not isinstance(data, str) or not os.path.exists(data):
             self.logger.exception(f"Parameter data is not of type string or does not exist")
             raise Exception(f"Parameter data is not of type string or does not exist")
@@ -33,7 +37,6 @@ class IDRGenerator:
             else:  # Where multipart features are present check for and remove those with matching pd_nums
                 out = df[~df.index.isin(multi.index.values.tolist())]
                 return out
-
 
         # Create data copy because we may need the orig later
         out_df = self.df.copy()
@@ -66,7 +69,7 @@ class IDRGenerator:
         # Setup logging
         self.logger = logging_setup()
 
-        self.is_valid(idr_data, out_path, ed_num, sheet_name)
+        self.is_valid(idr_data, out_path, ed_num, sheet_name)  # run the validator
 
         self.out_path = out_path
         self.ed_num = ed_num
@@ -88,6 +91,7 @@ class IDRGenerator:
             }
             create_dir(self.out_path)
 
+            # Run the report builder
             BuildIDRReport(self.report_dict, self.report_df, out_dir=self.out_path)
 
             self.logger.info("Report Generated")

@@ -6,6 +6,12 @@ import pandas as pd
 from datetime import datetime
 from pathlib import Path
 
+"""
+This script contains functions that are shared by one or more tools / scripts. A change here will effect all tools that 
+utilize the changed function. Should a custom version of a function here be needed it should be placed in the tool its specifically
+needed for.  
+"""
+
 def logging_setup(log_dir=".\\logs") -> logging.getLogger():
     """Sets up logging takes one parameter to set a directory for the output log file"""
 

@@ -5,6 +5,10 @@ import os, sys
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
+"""
+Process the input data for the PDD report and calls the PDD builder function to finish the report. 
+"""
+
 class PDDGenerator:
 
     def is_valid(self, data, out_path, ed_num, strm_data_path, pd_add_data_path) -> None:
@@ -113,7 +117,11 @@ class PDDGenerator:
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0],
                 'rep_yr': self.row1['RDSTRBTN_YEAR'].to_list()[0]
             }
+
+            # Ensure that the output directory exists
             create_dir(self.out_path)
+
+            # Build the report
             BuildPDDReport(self.report_dict, self.report_dfs, self.ps_add, out_dir=self.out_path)
 
             self.logger.info("Report Generated")

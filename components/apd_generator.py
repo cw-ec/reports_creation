@@ -4,6 +4,10 @@ from .builders import BuildAPDReport
 import pandas as pd
 import sys, os
 
+"""
+This script contains the class responsible for prepping input data so that it is ready for the APD report.
+"""
+
 class APDGenerator:
     """ Responsible for generating the Advance Polling Districts Report"""
 
@@ -63,7 +67,7 @@ class APDGenerator:
             return out_df[['ADV_PD_NBR', 'ADV_POLL_NAME_FIXED', 'PD_LIST', 'TOTAL']]
 
 
-    def __init__(self, data, out_path, ed_num):
+    def __init__(self, data, out_path, ed_num) -> None:
 
         # Setup logging
         self.logger = logging_setup()
@@ -77,11 +81,11 @@ class APDGenerator:
         self.logger.info("Generating ADP Report Table")
         self.report_df = self.gen_report_table()
 
-
-        if len(self.report_df) == 0:
+        # Check if there is still data available after processing.
+        if len(self.report_df) == 0:  # If not then don't continue processing and warm the user
             self.logger.warn(f"No APD report generated for {self.ed_num} as no data was available. Check data or workflow and try again.")
 
-        else:
+        else:  # If there is still data then continue processing
             # Set a bunch of things for the report from the first line of the data and create a dict to hold them
             self.row1 = self.df[self.df['ED_CODE'] == self.ed_num].head(1)
 
@@ -94,6 +98,7 @@ class APDGenerator:
                 'prov': self.row1['PRVNC_NAME_BIL'].to_list()[0]
             }
 
+            # Run the builder class to construct the report
             BuildAPDReport(self.report_dict, self.report_df, out_dir=self.out_path)
 
             self.logger.info("Report Generated")
