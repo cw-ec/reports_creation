@@ -33,6 +33,13 @@ class ZipOutputs:
                 ptype = file.name.split('_')[0]
                 fed = file.name.split('_')[0]
 
+                # For those inset index cases.
+                if not fed.isdigit():
+                    fed = file.name.split('_')[-1].split('.')[0]
+                    if not fed.isdigit():  # If value is still not numeric after this return warning and continue
+                        self.logger.warning(f"{file.name} does not fit the naming convention for sorting. Skipping file.")
+                        continue
+
                 if int(fed) in fed_list:  # If the fed # is in the fed to process the maps
 
                     # Folder names differ by province
@@ -41,7 +48,7 @@ class ZipOutputs:
                     else:  # RoC
                         subdir = 'maps_cartes'
 
-                    if (ptype == 'InsetIndex_IndexCartons') or (ptype == 'IndexCartons_InsetIndex'): # no suffix on inset reports use simplified workflow
+                    if (ptype == 'InsetIndex') or (ptype == 'IndexCartons'): # no suffix on inset reports use simplified workflow
 
                         out_pdf_path = os.path.join(self.scratch_dir, fed, subdir)
 
