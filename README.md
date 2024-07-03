@@ -73,7 +73,7 @@ To verify this please follow the steps below:
 1.) Open the command line (cmd) <kbd>⊞ Win</kbd> then type cmd to bring up. the cmd window. If successful your cmd should
 look something similar to the below image:
 
-<img src="docs\img\wrk_py_var.png"/>
+<img src="docs\img\cmd_blank.png"/>
 
 2.) To ensure that python is set up correctly type python on the command line and hit enter. If successful your cmd should
 look something similar to the below image:
