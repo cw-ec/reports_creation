@@ -366,6 +366,11 @@ Using the above guide an example of a valid workflow creating all reports for th
         "export_directory": "J:\\EMRP\\Work\\GAM_Reports"
     }
 
+While the export directory is set to a local directory in the example report files should be uploaded to the following 
+directory on the J drive by changing the "export_directory" parameter
+
+    "export_directory": "J:\\EMRP\\Work\\GAM_Reports"
+
 **An important note for file paths: please ensure that the double slash syntax is maintained as single slashes will result in an error and cause
 the tool to fail**
 
@@ -412,7 +417,7 @@ we can now run the tools. The below image shows the complete process that is bro
 An example of a valid command for the data download tool using a workflow file called download_workflow.json which is located
 in the workflows folder of this repository would look as follows:
 
-    python data_download.py .\\workflows\\pdd.json
+    python report_creation.py .\\workflows\\pdd.json
 
 5.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
 
@@ -536,7 +541,7 @@ we can now run the tools. The below image shows the complete process that is bro
 An example of a valid command for the data download tool using a workflow file called download_workflow.json which is located
 in the workflows folder of this repository would look as follows:
 
-    python data_download.py .\\workflows\\download_workflow.json
+    python output_zipper.py .\\workflows\\download_workflow.json
 
 5.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
 
