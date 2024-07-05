@@ -125,8 +125,8 @@ access to the corporate database as well as additional schema(s) is required. Pl
 access the corporate database (CDB). At minimum read access to the SITES_ADMIN schema should be included as well. You are also required
 to install the oracle drivers from the software centre in order run this tool. 
 
-**Ensure that you have the 64 bit oracle driver installed on your production machine if intending to run the data download
-tool. The tool will NOT be able to run without them**
+**Ensure that you have the 64 bit oracle driver installed on your production machine. The tool will NOT be able to run without them
+and the 32 bit drivers are incompatible.**
 
 ## Using the Tools
 
