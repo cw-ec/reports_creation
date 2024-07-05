@@ -122,7 +122,11 @@ Once you've found the correct path run the following command to update pip:
 ### Other Considerations
 If downloading the data for this project (such as running the data download tool found in this repo, or running the SQL) 
 access to the corporate database as well as additional schema(s) is required. Please ensure that you have permission to 
-access the corporate database (CDB). At minimum read access to the SITES_ADMIN schema should be included as well.
+access the corporate database (CDB). At minimum read access to the SITES_ADMIN schema should be included as well. You are also required
+to install the oracle drivers from the software centre in order run this tool. 
+
+**Ensure that you have the 64 bit oracle driver installed on your production machine if intending to run the data download
+tool. The tool will NOT be able to run without them**
 
 ## Using the Tools
 
