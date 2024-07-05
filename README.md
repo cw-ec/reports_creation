@@ -269,7 +269,7 @@ we can now run the tools. The below image shows the complete process that is bro
 An example of a valid command for the data download tool using a workflow file called download_workflow.json which is located
 in the workflows folder of this repository would look as follows:
 
-    python data_download.py .\\workflows\\download_workflow.json
+    python download_data.py .\\workflows\\download_workflow.json
 
 5.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
 
@@ -421,7 +421,7 @@ we can now run the tools. The below image shows the complete process that is bro
 An example of a valid command for the data download tool using a workflow file called download_workflow.json which is located
 in the workflows folder of this repository would look as follows:
 
-    python report_creation.py .\\workflows\\pdd.json
+    python report_creation.py .\\workflows\\example_workflow.json
 
 5.) Once the command is constructed hit <kbd>⏎ Enter</kbd> to run it.
 

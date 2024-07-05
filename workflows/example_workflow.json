@@ -22,4 +22,6 @@
   "type": "IDR",
   "feds": [47001, 48001, 24001],
   "data": ".\\data\\PDs and Indigenous Communities.xlsx"
-  }]}
+  }],
+  "export_directory": ".\\reports"
+}
