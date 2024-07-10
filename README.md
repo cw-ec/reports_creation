@@ -214,7 +214,7 @@ Using the above guide a complete workflow for this tool for three feds would loo
             "username": "usernme",
             "password": "pwd",
             "database": "db.connect.string",
-            "sql_path": "C:\\reports_creation-Build-PDF-Report\\sql\\ps_add.sql",
+            "sql_path": "C:\\reports_creation\\sql\\ps_add.sql",
             "ed_list": [47001, 48001, 24001]
         },{
             "username": "usernme",
