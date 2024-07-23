@@ -1,6 +1,7 @@
 import oracledb
 import json
 import os
+import keyring
 import pandas as pd
 from collections import OrderedDict
 from .commons import logging_setup, create_dir
@@ -31,6 +32,10 @@ class DataDownloader:
                 oc[k] = content[k]
 
             return oc
+
+    def retrieve_credentials(self) -> list:
+        """Retrives the credentials for the database from the ODBC Data Source Manager"""
+        creds = keyring.get_credential(self.service, self.username)
 
     def download_data(self) -> None:
         """Downloads the data into the data folder"""
@@ -69,6 +74,10 @@ class DataDownloader:
 
         # Get the parameters from the setting json
         self.settings = settings
+
+        # Hard coded for testing purposes but change to workflow for the prod version
+        self.service = 'cdb1'
+        self.username = 'usrnme'
 
         # Set output directory and create the directory
         self.out_path = ".\\data"

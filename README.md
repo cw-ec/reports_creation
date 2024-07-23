@@ -64,6 +64,7 @@ The required additional python packages for this tool are as follows:
 - oracledb
 - click
 - openpyxl
+- keyring
 
 ### Python Installation / Setup
 
@@ -180,6 +181,39 @@ data from each sql
 The csv files produced above contain all the information necessary to create every report except for the Communities with
 Indigenous Peoples report which requires the PDs and Indigenous Communities.xlsx file which is not one of the files produced
 by this tool and must be retrieved from a location TBD.
+
+#### Tool Specific Setup
+
+In order to run this tool an additional piece of setup needs to be completed in order to ensure that your oracle credentials 
+are properly protected
+
+1.) in the search bar at the bottom left of your screen search for the program 'ODBC Data Sources (64-bit)'. This is a 
+built-in credential manager which will be used to store your oracle database credentials.
+
+<img src="C:\reports_creation\docs\img\ODBC_cred_src.png"/>
+
+Open the program and the following program should open:
+
+<img src="C:\reports_creation\docs\img\ODBC_cred_mgr.png"/>
+
+2.) Ensure that you are in the User DSN tab and hit the 'Add...' button on the right hand side of the program. The following
+window should appear:
+
+<img src="C:\reports_creation\docs\img\ODBC_new_data_src.png"/>
+
+Select the most uptodate available version of the OraClient Oracle driver (version 19.0 in the image above)
+
+4.) The Driver Configuration window should appear. Fill out the fields as follows.
+    - Data Source Name: Name of the database we're using (cdb1)
+    - Description: Describe the data base (Corporate Database)
+    - TNS Service Name: The connection string to the data base (cdb1.elections.ca)
+    - User ID: Your unique oracle User ID
+
+<img src="C:\reports_creation\docs\img\odbc_driver_config.png"/>
+
+3.)
+
+    keyring.set_password('cdb1', 'wenkoffc', 'test123')
 
 #### Workflow File Creation
 

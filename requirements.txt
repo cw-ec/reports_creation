@@ -1,6 +1,6 @@
 pandas
-numpy
 reportlab
 openpyxl
 click
 oracledb
+keyring
