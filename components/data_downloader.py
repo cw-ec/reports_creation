@@ -32,10 +32,12 @@ class DataDownloader:
                 oc[k] = content[k]
 
             return oc
-
-    def retrieve_credentials(self) -> list:
-        """Retrives the credentials for the database from the ODBC Data Source Manager"""
-        creds = keyring.get_credential(self.service, self.username)
+    @staticmethod
+    def retrieve_credentials(service: str, username: str):
+        """Extracts the credentials from the ODBC credential manager. Returns the simple credential object"""
+        c= keyring.get_credential(service, username)
+        print(type(c))
+        return c
 
     def download_data(self) -> None:
         """Downloads the data into the data folder"""
@@ -43,6 +45,9 @@ class DataDownloader:
         for dataset in self.params['data']:
 
             out_csv_nme = os.path.split(dataset['sql_path'])[-1].split('.')[0]
+
+            self.logger.info(f"Extracting credentials for: {dataset['username']} from {dataset['service_name']}")
+            credentials = self.retrieve_credentials(dataset['service_name'], dataset['username'])
 
             self.logger.info(f"Running query to extract {out_csv_nme}.csv")
 
@@ -52,14 +57,13 @@ class DataDownloader:
 
             # connect_string = f"oracle://{dataset['username']}:{dataset['password']}@{dataset['database']}"
 
-            # convert FED list to Tuple and add as an array to the SQL file
+            # Add FED Array to SQL file
             sql_file = sql_file.replace('ED_LIST_HERE', str(tuple(dataset['ed_list'])))
 
             oracledb.init_oracle_client()  # Should engage oracle thick mode if fails add lib_dir to oracle file on c drive 19_##
-
             # Create db connection
-            connection = oracledb.connect(user=dataset['username'],
-                                          password=dataset['password'],
+            connection = oracledb.connect(user=credentials.username,
+                                          password=credentials.password,
                                           dsn=f"{dataset['database']}")
 
             self.logger.info(f"Getting data for {out_csv_nme}")
@@ -74,10 +78,6 @@ class DataDownloader:
 
         # Get the parameters from the setting json
         self.settings = settings
-
-        # Hard coded for testing purposes but change to workflow for the prod version
-        self.service = 'cdb1'
-        self.username = 'usrnme'
 
         # Set output directory and create the directory
         self.out_path = ".\\data"
