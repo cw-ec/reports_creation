@@ -204,10 +204,11 @@ window should appear:
 Select the most uptodate available version of the OraClient Oracle driver (version 19.0 in the image above)
 
 4.) The Driver Configuration window should appear. Fill out the fields as follows.
-    - Data Source Name: Name of the database we're using (cdb1)
-    - Description: Describe the database (Corporate Database)
-    - TNS Service Name: The connection string to the database (cdb1.elections.ca)
-    - User ID: Your unique oracle User ID
+    
+- Data Source Name: Name of the database we're using (cdb1)
+- Description: Describe the database (Corporate Database)
+- TNS Service Name: The connection string to the database (cdb1.elections.ca)
+- User ID: Your unique oracle User ID
 
 Once complete it should look similar to the image below
 
