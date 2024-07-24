@@ -190,39 +190,55 @@ are properly protected
 1.) in the search bar at the bottom left of your screen search for the program 'ODBC Data Sources (64-bit)'. This is a 
 built-in credential manager which will be used to store your oracle database credentials.
 
-<img src="C:\reports_creation\docs\img\ODBC_cred_src.png"/>
+<img src="docs\img\ODBC_cred_src.png"/>
 
 Open the program and the following program should open:
 
-<img src="C:\reports_creation\docs\img\ODBC_cred_mgr.png"/>
+<img src="docs\img\ODBC_cred_mgr.png"/>
 
 2.) Ensure that you are in the User DSN tab and hit the 'Add...' button on the right hand side of the program. The following
 window should appear:
 
-<img src="C:\reports_creation\docs\img\ODBC_new_data_src.png"/>
+<img src="docs\img\ODBC_new_data_src.png"/>
 
 Select the most uptodate available version of the OraClient Oracle driver (version 19.0 in the image above)
 
 4.) The Driver Configuration window should appear. Fill out the fields as follows.
     - Data Source Name: Name of the database we're using (cdb1)
-    - Description: Describe the data base (Corporate Database)
-    - TNS Service Name: The connection string to the data base (cdb1.elections.ca)
+    - Description: Describe the database (Corporate Database)
+    - TNS Service Name: The connection string to the database (cdb1.elections.ca)
     - User ID: Your unique oracle User ID
 
-<img src="C:\reports_creation\docs\img\odbc_driver_config.png"/>
+Once complete it should look similar to the image below
 
-3.)
+<img src="docs\img\odbc_driver_config.png"/>
 
-    keyring.set_password('cdb1', 'wenkoffc', 'test123')
+Once the configuration is saved you can close the credential manager.
+
+3.) We now need to set the password for the service that we just setup to do this open a cmd window and type the command
+'python' and hit enter. This will activate python in the terminal. Once complete copy and paste the following script into
+the terminal:
+    
+    import keyring
+    keyring.set_password(service, username, password)
+
+Before running the command change the variables on the second line so that they are similar to the example below. Changing 
+service to match the Data Source Name from step 4 and changing username and password to match your oracle username and 
+password.
+
+    keyring.set_password('cdb1', 'smithj', 'expwd')
+
+Once the information is complete hit enter and the command should run. If no error appears this means that the password
+was set correctly. Setup is now complete, you can close the terminal.
 
 #### Workflow File Creation
 
 For the data download tool the format for the workflow JSON can be seen below:
 
     { "data": [
-        {
+        {   
+            "service": The name of the data service (Should match the Data Source Name from Step 4 of the tool setup) 
             "username": your oracle db username,
-            "password": your oracle db password,
             "database": connection string for the CDB,
             "sql_path": Path to the required sql file,
             "ed_list": an array of fed numbers to download the data for stored as integers
@@ -233,26 +249,26 @@ Using the above guide a complete workflow for this tool for three feds would loo
 
     {"data": [
         {   
+            "service": "cdb1",
             "username": "usernme",
-            "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\pd_desc.sql",
             "ed_list": [47001, 48001, 24001]
         },{
+            "service": "cdb1",
             "username": "usernme",
-            "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\pd_nums.sql",
             "ed_list": [47001, 48001, 24001] 
         },{
+            "service": "cdb1",
             "username": "usernme",
-            "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\ps_add.sql",
             "ed_list": [47001, 48001, 24001]
         },{
+            "service": "cdb1",
             "username": "usernme",
-            "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\strm.sql",
             "ed_list": [47001, 48001, 24001]
@@ -265,8 +281,7 @@ the tool to fail**
     \\ instead of \
 
 The above JSON would download all data for the three listed FEDs. A copy of this JSON can be found in the workflows
-for the folder but not in a working form as that would contain sensitive information. Care should be taken to protect 
-this file once created, and it should not be shared or placed on a shared drive.
+for the folder.
 
 #### Running the tool
 
