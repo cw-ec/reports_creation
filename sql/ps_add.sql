@@ -1,9 +1,33 @@
+--This query shows the information for every polling division belonging to a given ELCTRL_EVENT_ID. It also shows the polling sites that are attached to said polling divisions. This query is necessary to find MOB information for the PD Descriptions.  It will be joined with the PD_Numbers - SIMPLIFIED.sql query in the PYTHON scripts.
+--It connects to the CDB.
+
+
+--Normally, this query would connect to:
+--REDIST.RDSTRBTN_CRNT_IND = 'Y'
+--and EDEE.CRNT_IND ='Y'
+--and EDEE.ELCTRL_EVENT_ID  = '99'
+--Which is the normal RLS data.
+
+--Here, the sql pointed to:
+--EDEE.ELCTRL_EVENT_ID  = '88'
+--This is because the data hadn't been finalized in RLS when the data was queried.
+
+
+
 SELECT
---  Redistribution Information
+--REDISTRIBUTION INFORMATION
+-- The 2023 Representation Order RDSTRBTN_ID is 6.
+-- The RDSTRBTN_CRNT_IND is "Y" for the most recent, and active data.
   REDIST.RDSTRBTN_ID, REDIST.RDSTRBTN_YEAR, REDIST.RDSTRBTN_CRNT_IND,
 
+--SITE_IDs of different types to validate data.
+--SIT1.SITE_ID ORD_SITE_ID,  SIT2.SITE_ID MOB_SITE_ID, SIT3.SITE_ID ORD_ADV_SITE_ID, SIT4.SITE_ID MOB_ADV_SITE_ID,
 
-  --Province
+
+
+ --PROVINCE INFORMATION
+-- If the French and English province names are the same, PRVNC_NAMEE gets listed.
+-- If the French and English province names are different, PRVNC_NAMEE / PRVNC_NAMEF gets listed for the EDs outside of Quebec, and PRVNC_NAMEF / PRVNC_NAMEE gets listed for the EDs inside of Quebec.
   EDistrict.PRVNC_ID, PROV.CPC_PRVNC_NAME,
   UPPER (CASE
     WHEN PROV.PRVNC_NAMEE is not null then
@@ -21,44 +45,66 @@ SELECT
   END) AS PRVNC_NAME_BIL,
 
 
-  --ED Code, Electoral event
-  EDistrict.ED_CODE,  EDistrict.ED_NAMEE, EDistrict.ED_NAMEF,
- -- CASE
+
+--ED INFORMATION
+EDistrict.ED_CODE,
+-- ED 24020 needs a text replacement. Côte-du-Sud-Rivière-du-Loup-Kataskomiq-Témiscouata needs to be changed to Côte-du-Sud--Rivière-du-Loup--Kataskomiq--Témiscouata.
+REPLACE (EDistrict.ED_NAMEE, 'Côte-du-Sud-Rivière-du-Loup-Kataskomiq-Témiscouata', 'Côte-du-Sud--Rivière-du-Loup--Kataskomiq--Témiscouata') ED_NAMEE,
+REPLACE (EDistrict.ED_NAMEF, 'Côte-du-Sud-Rivière-du-Loup-Kataskomiq-Témiscouata', 'Côte-du-Sud--Rivière-du-Loup--Kataskomiq--Témiscouata') ED_NAMEF,
+-- If the French and English ED names are the same, ED_NAMEE gets listed.
+-- If the French and English ED names are different, ED_NAMEE / ED_NAMEF gets listed for the EDs outside of Quebec, and ED_NAMEF / ED_NAMEE gets listed for the EDs inside of Quebec.
+CASE
+    WHEN EDistrict.ED_CODE > 24000 and EDistrict.ED_CODE< 24999 and EDistrict.ED_NAMEE <> EDistrict.ED_NAMEF THEN REPLACE (EDistrict.ED_NAMEF, 'Côte-du-Sud-Rivière-du-Loup-Kataskomiq-Témiscouata', 'Côte-du-Sud--Rivière-du-Loup--Kataskomiq--Témiscouata') ||' / '|| REPLACE (EDistrict.ED_NAMEE, 'Côte-du-Sud-Rivière-du-Loup-Kataskomiq-Témiscouata', 'Côte-du-Sud--Rivière-du-Loup--Kataskomiq--Témiscouata')
+    WHEN (EDistrict.ED_CODE < 24000 or EDistrict.ED_CODE> 24999) and EDistrict.ED_NAMEE <> EDistrict.ED_NAMEF THEN REPLACE (EDistrict.ED_NAMEE, 'Côte-du-Sud-Rivière-du-Loup-Kataskomiq-Témiscouata', 'Côte-du-Sud--Rivière-du-Loup--Kataskomiq--Témiscouata') ||' / '|| REPLACE (EDistrict.ED_NAMEF, 'Côte-du-Sud-Rivière-du-Loup-Kataskomiq-Témiscouata', 'Côte-du-Sud--Rivière-du-Loup--Kataskomiq--Témiscouata')
+    ELSE REPLACE (EDistrict.ED_NAMEE, 'Côte-du-Sud-Rivière-du-Loup-Kataskomiq-Témiscouata', 'Côte-du-Sud--Rivière-du-Loup--Kataskomiq--Témiscouata')
+  END AS ED_NAME_BIL,
+
+--This is old code for replacing "--" with an en-dash.
+--Note that replacing "--" with an en-dash is now taken care of in Chris Wenkoff's Python scripts.
+-- CASE
 --    WHEN EDistrict.ED_CODE > 24000 and EDistrict.ED_CODE< 24999 and EDistrict.ED_NAMEE <> EDistrict.ED_NAMEF THEN (REPLACE (EDistrict.ED_NAMEF, '--', '—')) ||' / '|| (REPLACE (EDistrict.ED_NAMEE, '--', '—'))
  --   WHEN (EDistrict.ED_CODE < 24000 or EDistrict.ED_CODE> 24999) and EDistrict.ED_NAMEE <> EDistrict.ED_NAMEF THEN (REPLACE (EDistrict.ED_NAMEE, '--', '—')) ||' / '|| (REPLACE (EDistrict.ED_NAMEF, '--', '—'))
  --   ELSE (REPLACE (EDistrict.ED_NAMEE, '--', '—'))
  -- END AS ED_NAME_BIL,
 
-  CASE
-    WHEN EDistrict.ED_CODE > 24000 and EDistrict.ED_CODE< 24999 and EDistrict.ED_NAMEE <> EDistrict.ED_NAMEF THEN EDistrict.ED_NAMEF ||' / '|| EDistrict.ED_NAMEE
-    WHEN (EDistrict.ED_CODE < 24000 or EDistrict.ED_CODE> 24999) and EDistrict.ED_NAMEE <> EDistrict.ED_NAMEF THEN EDistrict.ED_NAMEE ||' / '|| EDistrict.ED_NAMEF
-    ELSE EDistrict.ED_NAMEE
-  END AS ED_NAME_BIL,
 
-
-
+  --Other ED information.
   EDEE.ELCTRL_EVENT_ID, EDEE.ED_ELCTRL_EVENT_ID,
   EDEE.CRNT_IND,
 
 
-  --  PD Information
+
+--ORD PD INFORMATION (for ORD/SBPD/MOB)
+-- This is akin to the full EMRP number that shows both the PD number and the PD suffix.
     CONCAT (CONCAT (PLL.PD_NBR, '-'), PLL.PD_NBR_SFX ) FULL_PD_NBR,
   PLL.PD_NBR, PLL.PD_NBR_SFX, PLL.PD_ID, PLL.VOID_IND, MPP.MOBILE_POLL_STN_ID, EA_PEC.ELECTOR_COUNT ELECTORS_LISTED,
+--SEEE1.SITE_ID ORD_PD_SITE_ID,  SEEE3.SITE_ID MOB_PD_SITE_ID,
 
-  PNAME.POLL_NAME POLL_NAME_FIXED,
- --REPLACE (PNAME.POLL_NAME, '--', '—') AS POLL_NAME_FIXED,
+--Combining Site_ID columns for both ORD/SBPDs with MOBs.
+  CASE
+        WHEN SEEE1.SITE_ID is not null then SEEE1.SITE_ID
+        ELSE SEEE3.SITE_ID
+      END AS PD_SITE_ID,
 
-  PLL.URBAN_RURAL_IND,
+--ORD PD Name
+PNAME.POLL_NAME POLL_NAME_FIXED,
+--REPLACE (PNAME.POLL_NAME, '--', '—') AS POLL_NAME_FIXED,
+--Note that replacing "--" with an en-dash is now taken care of in Chris Wenkoff's Python scripts.
+
+--More ORD PD Information
+PLL.URBAN_RURAL_IND,
 
 
 
-  --SBPD_INFO
-       --SBPD Building Address
+--SBPD INFORMATION
+--SBPD Building Address
         EC_ADD5.ADDRESS_ID SBPD_ADDRESS_ID,
 
-    --DEACTIVATED FROM_STE_NBR SBPD_FROM_STE_NBR, TO_STE_NBR SBPD_TO_STE_NBR, FROM_FLOOR SBPD_FROM_FLOOR, TO_FLOOR SBPD_TO_FLOOR,
+--DEACTIVATED FROM_STE_NBR SBPD_FROM_STE_NBR, TO_STE_NBR SBPD_TO_STE_NBR, FROM_FLOOR SBPD_FROM_FLOOR, TO_FLOOR SBPD_TO_FLOOR,
 
-   --SBPD Building Name
+--SBPD Building Name
+-- If the French and English building names are the same, BLDG_NAMEE gets listed.
+-- If the French and English building names are different, BLDG_NAMEE / BLDG_NAMEF gets listed for the EDs outside of Quebec, and BLDG_NAMEF / BLDG_NAMEE gets listed for the EDs inside of Quebec.
     CASE
     WHEN BLDG_NAMEE is not null then
       CASE
@@ -74,7 +120,7 @@ SELECT
       END
   END AS SBPD_BLDG_NAME_BIL,
 
-  --FINAL SBPD ADDRESS
+ --FINAL SBPD ADDRESS (involves many concatenations and English/French cardinal directions)
       case
     when
 
@@ -134,14 +180,11 @@ SELECT
   END as FINAL_SBPD_ADDRESS,
 
 
-
-
-
-
-  --SBPD PLACE_NAME
+--SBPD PLACE_NAME
   EP5.PLACE_NAME SBPD_PLACE_NAME,
 
-  --SBPD CSD_TYP_DESC
+
+--SBPD CSD_TYP_DESC
   CASE
     WHEN CSDT5.CSD_TYP_DESCE is not null then
       CASE
@@ -151,7 +194,8 @@ SELECT
       END
      END AS SBPD_CSD_TYP_DESC_BIL,
 
-    --SBPD FULL_PLACE
+
+--SBPD FULL_PLACE (involves a concatenation and English/French CSD type descriptions)
   EP5.PLACE_NAME ||', '||   CASE
     WHEN CSDT5.CSD_TYP_DESCE is not null then
       CASE
@@ -163,32 +207,12 @@ SELECT
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  --SITE Information
-  --
-  --SITE NAME
-  CASE
+--SITE INFORMATION (for ORD/SBPD/MOB)
+--
+--SITE NAME
+-- If the French and English site names are the same, SITE_NMEE gets listed.
+-- If the French and English site names are different, SITE_NMEE / SITE_NMEF gets listed for the EDs outside of Quebec, and SITE_NMEF / SITE_NMEE gets listed for the EDs inside of Quebec.
+CASE
     WHEN SIT1.SITE_NMEE is not null then
       CASE
         WHEN EDistrict.ED_CODE > 24000 and EDistrict.ED_CODE< 24999 and SIT1.SITE_NMEE <> SIT1.SITE_NMEF THEN SIT1.SITE_NMEF ||' / '|| SIT1.SITE_NMEE
@@ -203,43 +227,46 @@ SELECT
       END
   END AS SITE_NAME_BIL,
 
-  --SITE ADDRESS_ID
+
+--SITE ADDRESS_ID
   CASE
     WHEN EC_ADD1.ADDRESS_ID is not null then EC_ADD1.ADDRESS_ID
     ELSE EC_ADD3.ADDRESS_ID
   END AS SITE_ADDRESS_ID,
 
-  --SITE STE_NBR
+
+ --DEACTIVATED CODE
+  --SITE STE_NBR (for ORD/SBPD/MOB)
  -- CASE
  --   WHEN EC_ADD1.STE_NBR is not null then EC_ADD1.STE_NBR
  --   ELSE EC_ADD3.STE_NBR
  -- END AS SITE_STE_NBR,
 
-  --SITE ST_ADR_NBR
+  --SITE ST_ADR_NBR (for ORD/SBPD/MOB)
 --  CASE
   --  WHEN EC_ADD1.ST_ADR_NBR is not null then EC_ADD1.ST_ADR_NBR
   --  ELSE EC_ADD3.ST_ADR_NBR
  -- END AS SITE_ST_ADR_NBR,
 
-  --SITE ST_ADR_NBR_SFX_CDE
+  --SITE ST_ADR_NBR_SFX_CDE (for ORD/SBPD/MOB)
 --  CASE
  --   WHEN EC_ADD1.ST_ADR_NBR_SFX_CDE is not null then EC_ADD1.ST_ADR_NBR_SFX_CDE
   --  ELSE EC_ADD3.ST_ADR_NBR_SFX_CDE
  -- END AS SITE_ST_ADR_NBR_SFX_CDE,
 
-  --SITE ST_NME
+  --SITE ST_NME (for ORD/SBPD/MOB)
  -- CASE
   --  WHEN EC_ST1.ST_NME is not null then EC_ST1.ST_NME
   --  ELSE EC_ST3.ST_NME
  -- END AS SITE_ST_NME,
 
-   --SITE ST_TYP_CDE
+   --SITE ST_TYP_CDE (for ORD/SBPD/MOB)
  -- CASE
  --   WHEN EC_ST1.ST_TYP_CDE is not null then EC_ST1.ST_TYP_CDE
   --  ELSE EC_ST3.ST_TYP_CDE
  -- END AS SITE_ST_TYP_CDE,
 
-  --SITE ST_DRCTN_DESC
+  --SITE ST_DRCTN_DESC (for ORD/SBPD/MOB)
  -- CASE
   --  WHEN SD1.ST_DRCTN_DESCE is not null then
    --   CASE
@@ -256,7 +283,7 @@ SELECT
  -- END AS SITE_ST_DRCTN_DESC,
 
 
-    --SITE Full Street Address
+    --SITE Full Street Address (for ORD/SBPD/MOB)
   --CASE
   --  WHEN EC_ADD1.STE_NBR is not null then CONCAT (EC_ADD1.STE_NBR, ', ')
  --   WHEN EC_ADD1.STE_NBR is null and EC_ADD3.STE_NBR is not null then CONCAT (EC_ADD3.STE_NBR, ', ')
@@ -292,14 +319,16 @@ SELECT
     --  END
  -- END) as SITE_ADDRESS,
 
-  --SITE STRM
+  --SITE STRM (for ORD/SBPD/MOB)
   --CASE
    -- WHEN EC_ADD1.MERIDIAN_NBR is not null then EC_ADD1.SECTION_NBR ||' T'|| EC_ADD1.TWNSHP_NBR ||' R'|| EC_ADD1.RANGE_NBR ||' '|| EC_ADD1.MERIDIAN_NBR
    -- WHEN EC_ADD3.MERIDIAN_NBR is not null THEN EC_ADD3.SECTION_NBR ||' T'|| EC_ADD3.TWNSHP_NBR ||' R'|| EC_ADD3.RANGE_NBR ||' '|| EC_ADD3.MERIDIAN_NBR
    -- ELSE NULL
   --END AS SITE_TRM_ADDRESS,
 
-  --FINAL SITE_ADDRESS
+
+--FINAL SITE_ADDRESS (for ORD/SBPD/MOB)
+--Have fun trying to replicate this code!
   --
   case
     when
@@ -389,13 +418,15 @@ SELECT
       END)
   END as FINAL_SITE_ADDRESS,
 
-  --SITE PLACE_NAME
+
+--SITE PLACE_NAME (for ORD/SBPD/MOB)
   CASE
     WHEN EP1.PLACE_NAME is not null then EP1.PLACE_NAME
     ELSE EP3.PLACE_NAME
   END AS SITE_PLACE_NAME,
 
-  --SITE CSD_TYP_DESC
+
+--SITE CSD_TYP_DESC (for ORD/SBPD/MOB)
   CASE
     WHEN CSDT1.CSD_TYP_DESCE is not null then
       CASE
@@ -411,7 +442,8 @@ SELECT
       END
   END AS SITE_CSD_TYP_DESC_BIL,
 
-    --SITE FULL_PLACE
+
+--SITE FULL_PLACE (for ORD/SBPD/MOB)
   CASE
     WHEN EP1.PLACE_NAME is not null then CONCAT (EP1.PLACE_NAME, ', ')
     WHEN EP1.PLACE_NAME is null and EP3.PLACE_NAME is not null then CONCAT (EP3.PLACE_NAME, ', ')
@@ -431,33 +463,47 @@ SELECT
       END
   END AS FULL_SITE_PLACE,
 
-    --SITE  PSTL_CDE
+
+--SITE  PSTL_CDE (for ORD/SBPD/MOB)
   CASE
     WHEN EC_ADD1.PSTL_CDE is not null then EC_ADD1.PSTL_CDE
     ELSE EC_ADD3.PSTL_CDE
   END AS SITE_PSTL_CDE,
 
 
-  --ADV Information
 
-  --ADV Number
+--ADV INFORMATION for ADV (for ORD/SBPD/MOB)
+
+--ADV Number (for ORD/SBPD/MOB)
   PLL.ADVANCE_POLL_IND,
   CONCAT (CONCAT (PLL2.PD_NBR, '-'), PLL2.PD_NBR_SFX ) FULL_ADV_PD_NBR,
    PLL2.PD_NBR ADV_PD_NBR, PLL2.PD_NBR_SFX ADV_PD_NBR_SFX,
-  --Related Poll Table
+
+--SEEE2.SITE_ID ORD_ADVPD_SITE_ID,  SEEE4.SITE_ID MOB_ADVPD_SITE_ID,
+
+ CASE
+        WHEN SEEE2.SITE_ID is not null then SEEE2.SITE_ID
+        ELSE SEEE4.SITE_ID
+      END AS ADVPD_SITE_ID,
+
+
+--ESTABLISHING ADV POLL NAME (for ORD/SBPD/MOB)
+
+--Related Poll Table
   PARENT_PD_ID ADV_PD_ID,
-  --DEACTIVATED CHILD_PD_ID CHILD_ORD_PD_ID,
+--DEACTIVATED CHILD_PD_ID CHILD_ORD_PD_ID,
 
-  --ADV Name
-  --DEACTIVATED PNAME2.POLL_NAME_ID ADV_POLL_NAME_ID,
+--ADV PD Name (for ORD/SBPD/MOB)
+--DEACTIVATED PNAME2.POLL_NAME_ID ADV_POLL_NAME_ID,
+PNAME2.POLL_NAME ADV_POLL_NAME_FIXED,
+--REPLACE (PNAME2.POLL_NAME, '--', '—') AS ADV_POLL_NAME_FIXED,
+--Note that replacing "--" with an en-dash is now taken care of in Chris Wenkoff's Python scripts.
 
-    PNAME2.POLL_NAME ADV_POLL_NAME_FIXED,
-  --REPLACE (PNAME2.POLL_NAME, '--', '—') AS ADV_POLL_NAME_FIXED,
 
 
- --ADV SITE Information
+--ADV SITE INFORMATION (for ORD/SBPD/MOB)
 
-  --ADV SITE NAME
+--ADV SITE NAME (for ORD/SBPD/MOB)
   CASE
     WHEN SIT1.SITE_NMEE is not null then
       CASE
@@ -467,49 +513,52 @@ SELECT
       END
     WHEN SIT2.SITE_NMEE is null then
       CASE
-        WHEN EDistrict.ED_CODE > 24000 and EDistrict.ED_CODE< 24999 and SIT4.SITE_NMEE <> SIT3.SITE_NMEF THEN SIT4.SITE_NMEF ||' / '|| SIT4.SITE_NMEE
+        WHEN EDistrict.ED_CODE > 24000 and EDistrict.ED_CODE< 24999 and SIT4.SITE_NMEE <> SIT4.SITE_NMEF THEN SIT4.SITE_NMEF ||' / '|| SIT4.SITE_NMEE
         WHEN (EDistrict.ED_CODE < 24000 or EDistrict.ED_CODE> 24999) and SIT4.SITE_NMEE <> SIT4.SITE_NMEF THEN SIT4.SITE_NMEE ||' / '|| SIT4.SITE_NMEF
         ELSE SIT4.SITE_NMEE
       END
   END AS ADV_SITE_NAME_BIL,
 
-  --ADV SITE ADDRESS_ID
+
+--ADV SITE ADDRESS_ID (for ORD/SBPD/MOB)
   CASE
     WHEN EC_ADD2.ADDRESS_ID is not null then EC_ADD2.ADDRESS_ID
     ELSE EC_ADD4.ADDRESS_ID
   END AS ADV_SITE_ADDRESS_ID,
 
-  --ADV SITE STE_NBR
+--ADV SITE STE_NBR (for ORD/SBPD/MOB)
+--KEEP THE DEACTIVATED CODE AS A REFERENCE
+
  -- CASE
   --  WHEN EC_ADD2.STE_NBR is not null then EC_ADD2.STE_NBR
  --   ELSE EC_ADD4.STE_NBR
 --  END AS ADV_SITE_STE_NBR,
 
-  --ADV SITE ST_ADR_NBR
+  --ADV SITE ST_ADR_NBR (for ORD/SBPD/MOB)
  -- CASE
  --   WHEN EC_ADD2.ST_ADR_NBR is not null then EC_ADD2.ST_ADR_NBR
  --   ELSE EC_ADD4.ST_ADR_NBR
  -- END AS ADV_SITE_ST_ADR_NBR,
 
-  --ADV SITE ST_ADR_NBR_SFX_CDE
+  --ADV SITE ST_ADR_NBR_SFX_CDE (for ORD/SBPD/MOB)
  -- CASE
 --    WHEN EC_ADD2.ST_ADR_NBR_SFX_CDE is not null then EC_ADD2.ST_ADR_NBR_SFX_CDE
 --    ELSE EC_ADD4.ST_ADR_NBR_SFX_CDE
 --  END AS ADV_SITE_ST_ADR_NBR_SFX_CDE,
 
-  --ADV SITE ST_NME
+  --ADV SITE ST_NME (for ORD/SBPD/MOB)
  -- CASE
  --   WHEN EC_ST2.ST_NME is not null then EC_ST2.ST_NME
  --   ELSE EC_ST4.ST_NME
  -- END AS ADV_SITE_ST_NME,
 
-  --ADV SITE ST_TYP_CDE
+  --ADV SITE ST_TYP_CDE (for ORD/SBPD/MOB)
  -- CASE
 --    WHEN EC_ST2.ST_TYP_CDE is not null then EC_ST2.ST_TYP_CDE
 --    ELSE EC_ST4.ST_TYP_CDE
 --  END AS ADV_SITE_ST_TYP_CDE,
 
-  --ADV SITE ST_DRCTN_DESC
+  --ADV SITE ST_DRCTN_DESC (for ORD/SBPD/MOB)
  -- CASE
  --   WHEN SD2.ST_DRCTN_DESCE is not null then
  --     CASE
@@ -525,7 +574,7 @@ SELECT
   --    END
  -- END AS ADV_SITE_ST_DRCTN_DESC,
 
-    --ADV SITE Full Street Address
+    --ADV SITE Full Street Address (for ORD/SBPD/MOB)
 --  CASE
 --    WHEN EC_ADD2.STE_NBR is not null then CONCAT (EC_ADD2.STE_NBR, ', ')
 --    WHEN EC_ADD2.STE_NBR is null and EC_ADD4.STE_NBR is not null then CONCAT (EC_ADD4.STE_NBR, ', ')
@@ -569,7 +618,8 @@ SELECT
 --  END ADV_SITE_TRM_ADDRESS,
 
 
-  --FINAL_ADV SITE ADDRESS
+  --FINAL_ADV SITE ADDRESS (for ORD/SBPD/MOB)
+  --Good luck!
   --
   case
     when
@@ -659,13 +709,16 @@ SELECT
       END)
   END as FINAL_ADV_SITE_ADDRESS,
 
-  --ADV SITE PLACE_NAME
+
+--ADV SITE PLACE_NAME (for ORD/SBPD/MOB)
   CASE
     WHEN EP2.PLACE_NAME is not null then EP2.PLACE_NAME
     ELSE EP4.PLACE_NAME
   END AS ADV_SITE_PLACE_NAME,
 
-  --ADV SITE CSD_TYP_DESC
+
+--ADV SITE CSD_TYP_DESC (for ORD/SBPD/MOB)
+--This accounts for differences between English and French.
   CASE
     WHEN CSDT2.CSD_TYP_DESCE is not null then
       CASE
@@ -681,7 +734,9 @@ SELECT
       END
   END AS ADV_SITE_CSD_TYP_DESC,
 
-  --ADV SITE FULL_PLACE
+
+--ADV SITE FULL_PLACE (for ORD/SBPD/MOB)
+--This accounts for differences between English and French.
   CASE
     WHEN EP2.PLACE_NAME is not null then CONCAT (EP2.PLACE_NAME, ', ')
     WHEN EP2.PLACE_NAME is null and EP4.PLACE_NAME is not null then CONCAT (EP4.PLACE_NAME, ', ')
@@ -701,17 +756,25 @@ SELECT
       END
   END AS FULL_ADV_SITE_PLACE,
 
-  --ADV SITE PSTL_CDE
+
+--ADV SITE PSTL_CDE (for ORD/SBPD/MOB)
   CASE
     WHEN EC_ADD2.PSTL_CDE is not null then EC_ADD2.PSTL_CDE
     ELSE EC_ADD4.PSTL_CDE
-  END AS ADV_SITE_PSTL_CDE
+  END AS ADV_SITE_PSTL_CDE,
 
---FROM and Joins
+
+--ELECTORS LISTED VALUES.
+--Now derived from a table derived by Jessica Lachance. ELECTOR_COUNT_BY_PD_ID_20240423.xlsx
+    EA_PEC.ELECTOR_COUNT
+
+
+
+--TABLE JOINS
 FROM
   ecdba.REDISTRIBUTION REDIST
 
-  --JOIN Electoral District
+--JOIN Electoral District
   LEFT JOIN ecdba.ELECTORAL_DISTRICT EDistrict on
     REDIST.RDSTRBTN_ID = EDistrict.RDSTRBTN_ID
 
@@ -923,15 +986,17 @@ FROM
 --JOIN PD ELECTOR COUNT
  LEFT JOIN EGD_ADMIN.PD_ELECTOR_COUNT EA_PEC on
 PLL.PD_ID = EA_PEC.PD_ID and MPP.MOBILE_POLL_STN_ID  = EA_PEC.MOBILE_POLL_STN_ID
+--Now derived from a table derived by Jessica Lachance. ELECTOR_COUNT_BY_PD_ID_20240423.xlsx
 
---SBPD Information
 
-   --JOIN SBPD Data
- LEFT JOIN ECDBA.SBPD_POLL_PLACE SBPDPP on
- PLL.PD_ID = SBPDPP.PD_ID
+--SBPD JOIN INFORMATION
 
-     LEFT JOIN ECDBA.EC_ADDRESS   EC_ADD5 on
-     SBPDPP.ADDRESS_ID = EC_ADD5.ADDRESS_ID
+--JOIN SBPD Data
+  LEFT JOIN ECDBA.SBPD_POLL_PLACE SBPDPP on
+   PLL.PD_ID = SBPDPP.PD_ID
+
+  LEFT JOIN ECDBA.EC_ADDRESS   EC_ADD5 on
+   SBPDPP.ADDRESS_ID = EC_ADD5.ADDRESS_ID
 
 --JOIN SBPD EC_STREET
   LEFT JOIN ECDBA.EC_STREET EC_ST5 on
@@ -949,14 +1014,27 @@ PLL.PD_ID = EA_PEC.PD_ID and MPP.MOBILE_POLL_STN_ID  = EA_PEC.MOBILE_POLL_STN_ID
   LEFT JOIN ECDBA.CENSUS_SUBDIVISION CSD5 on
     EP5.PLACE_ID = CSD5.PLACE_ID
 
-  --JOIN SBPD CSD_TYPE
+--JOIN SBPD CSD_TYPE
   LEFT JOIN ECDBA.CSD_TYPE CSDT5 on
     CSD5.CSD_TYP_ID = CSDT5.CSD_TYP_ID
 
+--JOIN PD ELECTOR COUNT
+ LEFT JOIN EGD_ADMIN.PD_ELECTOR_COUNT EA_PEC on
+PLL.PD_ID = EA_PEC.PD_ID and MPP.MOBILE_POLL_STN_ID  = EA_PEC.MOBILE_POLL_STN_ID
+--Now derived from a table derived by Jessica Lachance. ELECTOR_COUNT_BY_PD_ID_20240423.xlsx
+
+
+
+--WHERE CLAUSES
+--For 2023 Redistribution, we used ELCTRL_EVENT_ID  = '88'.
+-- This will change to REDIST.RDSTRBTN_CRNT_IND = 'Y' in RLS once the data is finalized.
+-- This will change to EDEE.ELCTRL_EVENT_ID  = '99' in RLS once the data is finalized.
+-- This will change to EDEE.CRNT_IND ='Y' in RLS once the data is finalized.
+
 where
- REDIST.RDSTRBTN_CRNT_IND = 'N'
- -- and EDEE.CRNT_IND ='Y'
-  and EDEE.ELCTRL_EVENT_ID  = '88'
+--REDIST.RDSTRBTN_CRNT_IND = 'Y'
+--EDEE.CRNT_IND ='Y'
+EDEE.ELCTRL_EVENT_ID  = '88'
   and PLL.ADVANCE_POLL_IND = 'N'
   --and PLL.VOID_IND = 'N'
   and PLL.PD_NBR <> 999
