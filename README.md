@@ -64,6 +64,7 @@ The required additional python packages for this tool are as follows:
 - oracledb
 - click
 - openpyxl
+- keyring
 
 ### Python Installation / Setup
 
@@ -118,6 +119,21 @@ my python.exe was found at this location:
 Once you've found the correct path run the following command to update pip:
 
     python.exe pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --upgrade pip
+
+### Git
+
+This project is maintained using a version control software called git If wanting to download or 'clone' this repository
+on a production machine install git from the [git website](https://git-scm.com/). Once installed and configured (using all
+the default options is recommended) make sure to run the following command using them command line to avoid an error with 
+SSL certificates.
+
+    git config --global http.sslVerify false
+
+If unfamiliar wth git or version control it is recommended that a user familiarizes themselves with this process *before*
+cloning this repository or creating and pull requests. 
+
+Once familiar with git the repository can be cloned to a local drive via an IDE (recommended), Git CMD, or Git GUI. Should
+a user want to make changes to the repository please submit a pull request
 
 ### Other Considerations
 If downloading the data for this project (such as running the data download tool found in this repo, or running the SQL) 
@@ -181,14 +197,72 @@ The csv files produced above contain all the information necessary to create eve
 Indigenous Peoples report which requires the PDs and Indigenous Communities.xlsx file which is not one of the files produced
 by this tool and must be retrieved from a location TBD.
 
+#### Tool Specific Setup
+
+In order to run this tool an additional piece of setup needs to be completed in order to ensure that your oracle credentials 
+are properly protected
+
+1.) in the search bar at the bottom left of your screen search for the program 'ODBC Data Sources (64-bit)'. This is a 
+built-in credential manager which will be used to store your oracle database credentials.
+
+<img src="docs\img\ODBC_cred_src.png"/>
+
+Open the program and the following program should open:
+
+<img src="docs\img\ODBC_cred_mgr.png"/>
+
+2.) Ensure that you are in the User DSN tab and hit the 'Add...' button on the right hand side of the program. The following
+window should appear:
+
+<img src="docs\img\ODBC_new_data_src.png"/>
+
+Select the most uptodate available version of the OraClient Oracle driver (version 19.0 in the image above)
+
+Should an error appear that the driver is 'unsigned' or 'unmarked'. Copy the following command into the cmd window
+and hit enter
+
+    c:\windows\SysWOW64\odbcad32.exe
+
+This should bring up the credential manager with several new drivers and the oracle driver we want to use should appear 
+near the bottom of the list. Select it and continue with the next step of the setup process. 
+
+4.) The Driver Configuration window should now be open. Fill out the fields as follows.
+    
+- Data Source Name: Name of the database we're using (cdb1)
+- Description: Describe the database (Corporate Database)
+- TNS Service Name: The connection string to the database (cdb1.elections.ca)
+- User ID: Your unique oracle User ID
+
+Once complete it should look similar to the image below
+
+<img src="docs\img\odbc_driver_config.png"/>
+
+Once the configuration is saved you can close the credential manager.
+
+3.) We now need to set the password for the service that we just setup to do this open a cmd window and type the command
+'python' and hit enter. This will activate python in the terminal. Once complete copy and paste the following script into
+the terminal:
+    
+    import keyring
+    keyring.set_password(service, username, password)
+
+Before running the command change the variables on the second line so that they are similar to the example below. Changing 
+service to match the Data Source Name from step 4 and changing username and password to match your oracle username and 
+password.
+
+    keyring.set_password('cdb1', 'smithj', 'expwd')
+
+Once the information is complete hit enter and the command should run. If no error appears this means that the password
+was set correctly. Setup is now complete, you can close the terminal.
+
 #### Workflow File Creation
 
 For the data download tool the format for the workflow JSON can be seen below:
 
     { "data": [
-        {
+        {   
+            "service": The name of the data service (Should match the Data Source Name from Step 4 of the tool setup) 
             "username": your oracle db username,
-            "password": your oracle db password,
             "database": connection string for the CDB,
             "sql_path": Path to the required sql file,
             "ed_list": an array of fed numbers to download the data for stored as integers
@@ -199,26 +273,26 @@ Using the above guide a complete workflow for this tool for three feds would loo
 
     {"data": [
         {   
+            "service": "cdb1",
             "username": "usernme",
-            "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\pd_desc.sql",
             "ed_list": [47001, 48001, 24001]
         },{
+            "service": "cdb1",
             "username": "usernme",
-            "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\pd_nums.sql",
             "ed_list": [47001, 48001, 24001] 
         },{
+            "service": "cdb1",
             "username": "usernme",
-            "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\ps_add.sql",
             "ed_list": [47001, 48001, 24001]
         },{
+            "service": "cdb1",
             "username": "usernme",
-            "password": "pwd",
             "database": "db.connect.string",
             "sql_path": "C:\\reports_creation\\sql\\strm.sql",
             "ed_list": [47001, 48001, 24001]
@@ -231,8 +305,7 @@ the tool to fail**
     \\ instead of \
 
 The above JSON would download all data for the three listed FEDs. A copy of this JSON can be found in the workflows
-for the folder but not in a working form as that would contain sensitive information. Care should be taken to protect 
-this file once created, and it should not be shared or placed on a shared drive.
+for the folder.
 
 #### Running the tool
 
