@@ -120,6 +120,21 @@ Once you've found the correct path run the following command to update pip:
 
     python.exe pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --upgrade pip
 
+### Git
+
+This project is maintained using a version control software called git If wanting to download or 'clone' this repository
+on a production machine install git from the [git website](https://git-scm.com/). Once installed and configured (using all
+the default options is recommended) make sure to run the following command using them command line to avoid an error with 
+SSL certificates.
+
+    git config --global http.sslVerify false
+
+If unfamiliar wth git or version control it is recommended that a user familiarizes themselves with this process *before*
+cloning this repository or creating and pull requests. 
+
+Once familiar with git the repository can be cloned to a local drive via an IDE (recommended), Git CMD, or Git GUI. Should
+a user want to make changes to the repository please submit a pull request
+
 ### Other Considerations
 If downloading the data for this project (such as running the data download tool found in this repo, or running the SQL) 
 access to the corporate database as well as additional schema(s) is required. Please ensure that you have permission to 
@@ -203,7 +218,15 @@ window should appear:
 
 Select the most uptodate available version of the OraClient Oracle driver (version 19.0 in the image above)
 
-4.) The Driver Configuration window should appear. Fill out the fields as follows.
+Should an error appear that the driver is 'unsigned' or 'unmarked'. Copy the following command into the cmd window
+and hit enter
+
+    c:\windows\SysWOW64\odbcad32.exe
+
+This should bring up the credential manager with several new drivers and the oracle driver we want to use should appear 
+near the bottom of the list. Select it and continue with the next step of the setup process. 
+
+4.) The Driver Configuration window should now be open. Fill out the fields as follows.
     
 - Data Source Name: Name of the database we're using (cdb1)
 - Description: Describe the database (Corporate Database)

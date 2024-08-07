@@ -36,7 +36,6 @@ class DataDownloader:
     def retrieve_credentials(service: str, username: str):
         """Extracts the credentials from the ODBC credential manager. Returns the simple credential object"""
         c= keyring.get_credential(service, username)
-        print(type(c))
         return c
 
     def download_data(self) -> None:
